@@ -50,13 +50,16 @@ func (opt *renderOptions) getTitleBar() string {
 	const delim = "<ul><li> <li>|<li> </ul>"
 	if opt.titleBar == "" {
 		bar := "<div>"
-		if opt.column == 80 {
+		switch opt.column {
+		case 40:
+			bar += opt.makeA("home", "", *cmdHost+"index.m.html")
+		case 80:
 			bar += opt.makeA("home", "", *cmdHost)
-		} else {
-			bar += opt.makeA("home", "", "/index.m.html")
+		case 120:
+			bar += opt.makeA("home", "", *cmdHost+"index.w.html")
 		}
 		bar += delim + opt.makeA("github", "target='_blank'", opt.github)
-		bar += delim + opt.makeA("about", "", "/about.html") + "</div><hr>"
+		bar += delim + opt.makeA("about", "", *cmdHost+"about.html") + "</div><hr>"
 		opt.titleBar = bar
 	}
 
