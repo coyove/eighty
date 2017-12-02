@@ -48,22 +48,20 @@ func (opt *renderOptions) padToCenter(text string) []byte {
 
 func (opt *renderOptions) getTitleBar() string {
 	const delim = "<ul><li> <li>|<li> </ul>"
-	if opt.titleBar == "" {
-		bar := "<div>"
-		switch opt.column {
-		case 40:
-			bar += opt.makeA("home", "", *cmdHost+"index.m.html")
-		case 80:
-			bar += opt.makeA("home", "", *cmdHost)
-		case 120:
-			bar += opt.makeA("home", "", *cmdHost+"index.w.html")
-		}
-		bar += delim + opt.makeA("github", "target='_blank'", opt.github)
-		bar += delim + opt.makeA("about", "", *cmdHost+"about.html") + "</div><hr>"
-		opt.titleBar = bar
-	}
 
-	return opt.titleBar
+	bar := "<div>"
+	switch opt.column {
+	case 40:
+		bar += opt.makeA("home", "", *cmdHost+"index.m.html")
+	case 80:
+		bar += opt.makeA("home", "", *cmdHost)
+	case 120:
+		bar += opt.makeA("home", "", *cmdHost+"index.w.html")
+	}
+	bar += delim + opt.makeA("github", "target='_blank'", opt.github)
+	bar += delim + opt.makeA("about", "", *cmdHost+"about.html") + "</div><hr>"
+
+	return bar
 }
 
 func (opt *renderOptions) getCSS() string {
