@@ -51,7 +51,7 @@ func (opt *renderOptions) getTitleBar() string {
 	if opt.titleBar == "" {
 		bar := "<div>"
 		if opt.column == 80 {
-			bar += opt.makeA("home", "", "/")
+			bar += opt.makeA("home", "", *cmdHost)
 		} else {
 			bar += opt.makeA("home", "", "/index.m.html")
 		}
