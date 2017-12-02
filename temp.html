@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<title>{{.Title}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<meta charset="utf-8">
+
+<style>*{box-sizing:border-box}body{padding:4px;font-size:{{.FontHeight}}px;margin:0;line-height:1.5}#content{margin:0 auto;overflow:hidden}#content div{padding:1px 0;min-height:1em;margin:0}li,p,ul{display:inline-block;zoom:1;white-space:pre;padding:0;margin:0;font-family:consolas,monospace;text-align:center;text-decoration:none}a li,a p{text-decoration:underline}._mark *{color:black}</style>
+<style>{{.CtrlCSS}}</style>
+{{if .Index}}
+<style>._toc{display:none}</style>
+{{end}}
+
+<script type="text/javascript">
+    var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+    {{if eq .Column 80}}
+    if (width < 83 * {{.FontHeight}} / 2)
+        location.href = {{if .Index}}"index.m.html"{{else}}location.href.match(/\/([^\/]+?)\.html/)[1] + ".m.html"{{end}};
+    else if (width >= 123 * {{.FontHeight}} / 2)
+        location.href = {{if .Index}}"index.w.html"{{else}}location.href.match(/\/([^\/]+?)\.html/)[1] + ".w.html"{{end}};
+    {{end}}
+
+    {{if eq .Column 40}}
+    if (width >= 123 * {{.FontHeight}} / 2)
+        location.href = {{if .Index}}"index.w.html"{{else}}location.href.match(/\/([^\/]+?)\.m\.html/)[1] + ".w.html"{{end}};
+    else if (width >= 83 * {{.FontHeight}} / 2)
+        location.href = {{if .Index}}"index.html"{{else}}location.href.match(/\/([^\/]+?)\.m\.html/)[1] + ".html"{{end}};
+    {{end}}
+
+    {{if eq .Column 120}}
+    if (width < 83 * {{.FontHeight}} / 2)
+        location.href = {{if .Index}}"index.m.html"{{else}}location.href.match(/\/([^\/]+?)\.w\.html/)[1] + ".m.html"{{end}};
+    else if (width < 123 * {{.FontHeight}} / 2)
+        location.href = {{if .Index}}"index.html"{{else}}location.href.match(/\/([^\/]+?)\.w\.html/)[1] + ".html"{{end}};
+    {{end}}
+</script>
+
+<div id="content" style="width: {{.Width}}px">
+{{.Text}}
+</div>
+</html>
