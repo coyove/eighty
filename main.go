@@ -38,8 +38,8 @@ type renderOptions struct {
 }
 
 func (opt *renderOptions) makeA(text, target, href string) string {
-	p, t, s := CalcTag([]rune(text))
-	return "<a " + target + " href='" + href + "'>" + p + t + s + "</a>"
+	t := CalcTag([]rune(text))
+	return "<a " + target + " href='" + href + "'><dl>" + t + "</dl></a>"
 }
 
 func (opt *renderOptions) padToCenter(text string) []byte {
@@ -47,7 +47,7 @@ func (opt *renderOptions) padToCenter(text string) []byte {
 }
 
 func (opt *renderOptions) getTitleBar() string {
-	const delim = "<ul><li> <li>|<li> </ul>"
+	const delim = "<dl><dt> <dt>|<dt> </dl>"
 
 	bar := "<div>"
 	switch opt.column {
@@ -62,28 +62,6 @@ func (opt *renderOptions) getTitleBar() string {
 	bar += delim + opt.makeA("about", "", *cmdHost+"about.html") + "</div><hr>"
 
 	return bar
-}
-
-func (opt *renderOptions) getCSS() string {
-	if opt.css == "" {
-		css := &bytes.Buffer{}
-		css.WriteString(fmt.Sprintf("li{width:%dpx}", opt.fontSize/2))
-		for i := 1; i <= opt.column; i++ {
-			css.WriteString("p[")
-			if i <= 26 {
-				css.WriteByte(byte(i-1) + 'a')
-			} else {
-				j := i / 26
-				css.WriteByte(byte(j) + 'a')
-				css.WriteByte(byte(i-j*26) + 'a')
-			}
-			css.WriteString("]{width:")
-			css.WriteString(fmt.Sprintf("%dpx}", i*opt.fontSize/2))
-		}
-
-		opt.css = css.String()
-	}
-	return opt.css
 }
 
 func (opt *renderOptions) getFooter() string {
@@ -104,23 +82,25 @@ func renderContent(tmpl *template.Template, path string, opt *renderOptions) err
 
 	os.Remove(path)
 	f, _ := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0755)
-
+	w := opt.fontSize/2 + 1
 	return tmpl.Execute(f, struct {
-		Index      bool
-		Title      string
-		Text       string
-		Width      int
-		Column     int
-		FontHeight int
-		CtrlCSS    string
+		Index         bool
+		Title         string
+		Text          string
+		Column        int
+		FontHeight    int
+		FontWidth     int
+		WideFontWidth int
+		Width         int
 	}{
 		opt.index,
 		opt.title,
 		opt.getTitleBar() + opt.getHeader() + "<div></div>" + opt.content + "<hr>" + opt.getFooter(),
-		opt.column*opt.fontSize/2 + 2,
 		opt.column,
 		opt.fontSize,
-		opt.getCSS(),
+		w,
+		w * 2,
+		opt.column*w + 2,
 	})
 }
 
@@ -141,6 +121,7 @@ func main() {
 	filesSort := make([]int, 0)
 
 	tmpl, _ := template.ParseFiles("temp.html")
+
 	wg := &sync.WaitGroup{}
 	throt := 0
 	sp := time.Now()
@@ -168,15 +149,17 @@ func main() {
 
 				fo := FormatOptions{linkTarget: "target='_blank'", pc: []PrefixCallback{
 					PrefixCallback{
-						prefix: "####", callback: func(in string) bool {
-							o.title = in[4:]
-							return false
+						prefix: "##", callback: func(in words_t) words_t {
+							o.title = strings.TrimSpace(in.rawJoin()[2:])
+							return nil
 						},
 					},
 
 					PrefixCallback{
-						prefix: "****", callback: func(in string) bool {
-							if sdate := in[4:]; sdate != "" {
+						prefix: "#>", callback: func(in words_t) words_t {
+							sdate := strings.TrimSpace(in.rawJoin()[2:])
+
+							if sdate != "" {
 								date, err := time.Parse(time.RFC3339, sdate)
 								if err != nil {
 									ts, err := strconv.Atoi(sdate)
@@ -188,7 +171,7 @@ func main() {
 								}
 								o.date = date
 							}
-							return false
+							return nil
 						},
 					},
 				}}
@@ -245,43 +228,68 @@ func main() {
 	sort.Ints(filesSort)
 	index, indexm, indexw := bytes.Buffer{}, bytes.Buffer{}, bytes.Buffer{}
 	filecount := 0
+	files := make([]path_t, 0, len(filesSort)*5)
 
 	for i := len(filesSort) - 1; i >= 0; i-- {
 		d := filesSort[i]
 		y := d / 100
 		m := d - y*100
 
-		date := fmt.Sprintf("-- %d/%d\n", y, m)
+		date := fmt.Sprintf("%d/%d\n", y, m)
 
 		index.WriteString(date)
 		indexm.WriteString(date)
 		indexw.WriteString(date)
 
 		for _, p := range filesMap[d] {
-			filecount++
-			index.WriteString("  " + p.title + "\n    " + *cmdHost + p.full[5:] + " \n")
-			indexm.WriteString("  " + p.title + "\n    " + *cmdHost + p.mobile[5:] + " \n")
-			indexw.WriteString("  " + p.title + "\n    " + *cmdHost + p.wide[5:] + " \n")
+			files = append(files, p)
+
+			index.WriteString("????" + p.title + "\n")
+			indexm.WriteString("????" + p.title + "\n")
+			indexw.WriteString("????" + p.title + "\n")
 		}
 	}
+
+	fo := FormatOptions{width: 80,
+		pc: []PrefixCallback{
+			PrefixCallback{
+				prefix: "????", callback: func(in words_t) words_t {
+
+					for i, word := range in {
+						if i > 0 {
+							word.url = files[filecount].full[4:]
+						}
+					}
+					filecount++
+
+					in[0].value = []rune("    ")
+					in[0].ty = runeSpace
+					return in
+				},
+			},
+		}}
 
 	o := &renderOptions{
 		title:    *cmdTitle,
 		github:   *cmdGithub,
 		footer:   *cmdFooter,
 		index:    true,
-		content:  Format80(index.Bytes(), FormatOptions{width: 80}),
+		content:  Format80(index.Bytes(), fo),
 		column:   80,
 		fontSize: *cmdFontsize,
 	}
 	renderContent(tmpl, "blog/index.html", o)
 
 	o.column = 40
-	o.content = Format80(indexm.Bytes(), FormatOptions{width: 40})
+	fo.width = 40
+	filecount = 0
+	o.content = Format80(indexm.Bytes(), fo)
 	renderContent(tmpl, "blog/index.m.html", o)
 
 	o.column = 120
-	o.content = Format80(indexw.Bytes(), FormatOptions{width: 120})
+	fo.width = 120
+	filecount = 0
+	o.content = Format80(indexw.Bytes(), fo)
 	renderContent(tmpl, "blog/index.w.html", o)
 
 	log.Println("finished generating", filecount, "files in", time.Now().Sub(sp).Seconds(), "sec")

@@ -9,13 +9,6 @@ import (
 	"unicode/utf8"
 )
 
-var WIDTH = 40
-var TARGETBLANK = "target='_blank'"
-
-var (
-	ulSuffix = []byte("</ul>")
-)
-
 type word_t struct {
 	value []rune
 	ty    byte
@@ -233,84 +226,34 @@ func (w *words_t) dup() words_t {
 	return w2
 }
 
-func CalcTag(value []rune) (html string, openTag string, closeTag string) {
-	whole, flag := &bytes.Buffer{}, false
+func CalcTag(value []rune) string {
+	whole := &bytes.Buffer{}
+
 	for _, r := range value {
 		if runeWidth(r) == 1 {
-			whole.WriteString("<li>")
-			whole.WriteRune(r)
+			whole.WriteString("<dt>")
 		} else {
-			flag = true
-			break
+			whole.WriteString("<dd>")
 		}
+		whole.WriteRune(r)
 	}
 
-	if !flag {
-		return "<ul>", whole.String(), "</ul>"
-	}
+	return whole.String()
+}
 
-	// cjk
-	wt1, wt2 := []byte{'<', 'p', ' ', 0, '>'}, []byte{'<', 'p', ' ', 0, 0, '>'}
-	calc := func(w int) []byte {
-		if w <= 26 {
-			wt1[3] = byte(w-1) + 'a'
-			return wt1
-		}
+type lastBuffer struct {
+	bytes.Buffer
+	last string
+}
 
-		b2 := w / 26
-		wt2[3] = byte(b2) + 'a'
-		wt2[4] = byte(w-b2*26) + 'a'
-		return wt2
-	}
-
-	whole.Reset()
-	cjk := strings.Split(string(value), " ")
-	for i, part := range cjk {
-		if part != "" {
-			whole.Write(calc(stringWidth(part)))
-			whole.WriteString(part)
-
-			if i < len(cjk)-1 {
-				whole.WriteString("</p>")
-			}
-		}
-
-		if i < len(cjk)-1 {
-			whole.WriteString("<ul><li> </ul>")
-		}
-	}
-
-	return "", whole.String(), "</p>"
+func (buf *lastBuffer) WriteString(s string) (n int, err error) {
+	buf.last = s
+	return buf.Buffer.WriteString(s)
 }
 
 func (w *words_t) join(opt FormatOptions) *bytes.Buffer {
-	buf := &bytes.Buffer{}
+	buf := &lastBuffer{}
 	words := *w
-
-	for i := 0; i < len(words); {
-		word := words[i]
-		if word.isCJK() {
-			j := 0
-			for j = i; j < len(words); j++ {
-				if !words[j].isCJK() {
-					break
-				}
-			}
-
-			if j > i {
-				//   i            j
-				//   |            |
-				//  cjk cjk cjk latin latin ...
-				for x := i + 1; x < j; x++ {
-					words[i].value = append(words[i].value, words[x].value...)
-				}
-
-				words = append(words[:i+1], words[j:]...)
-			}
-		}
-
-		i++
-	}
 
 	buf.WriteString("<div")
 	if len(words) > 0 {
@@ -340,18 +283,17 @@ func (w *words_t) join(opt FormatOptions) *bytes.Buffer {
 		if i == 0 && len(word.value) >= 4 && word.startsWith("====") {
 			buf.Reset()
 			buf.WriteString("<hr>")
-			return buf
+			return &buf.Buffer
 		}
 
-		openTag, html, closeTag := CalcTag(word.value)
-		if bytes.HasSuffix(buf.Bytes(), ulSuffix) && openTag == "<ul>" {
-			buf.Truncate(buf.Len() - len(ulSuffix))
+		if buf.last == "</dl>" {
+			buf.Truncate(buf.Len() - 5)
 		} else {
-			buf.WriteString(openTag)
+			buf.WriteString("<dl>")
 		}
 
-		buf.WriteString(html)
-		buf.WriteString(closeTag)
+		buf.WriteString(CalcTag(word.value))
+		buf.WriteString("</dl>")
 
 		if word.url != "" {
 			if i == len(words)-1 || words[i+1].url != word.url {
@@ -361,7 +303,7 @@ func (w *words_t) join(opt FormatOptions) *bytes.Buffer {
 	}
 
 	buf.WriteString("</div>")
-	return buf
+	return &buf.Buffer
 }
 
 func (w *words_t) rawJoin() string {
@@ -481,7 +423,7 @@ func (s *stream_t) nextWord() *word_t {
 
 type PrefixCallback struct {
 	prefix   string
-	callback func(in string) bool
+	callback func(in words_t) words_t
 }
 
 type FormatOptions struct {
@@ -526,8 +468,8 @@ NEXT_LINE:
 		if len(line) > 0 {
 			if opt.pc != nil {
 				for _, cb := range opt.pc {
-					if line[0].startsWith(cb.prefix) && !cb.callback(line.rawJoin()) {
-						lines[i] = nil
+					if line[0].startsWith(cb.prefix) {
+						lines[i] = cb.callback(line)
 						continue NEXT_LINE
 					}
 				}
@@ -557,6 +499,10 @@ NEXT_LINE:
 			}
 			i++
 		}
+	}
+
+	if inURLSpace {
+		urlWordList.updateURL()
 	}
 
 	if tocnum := len(toc); tocnum > 0 && !opt.skipTOC {
@@ -591,10 +537,6 @@ NEXT_LINE:
 
 		toclines[tocnum] = words_t{&word_t{ty: runeNewline}}
 		lines = append(toclines, lines...)
-	}
-
-	if inURLSpace {
-		urlWordList.updateURL()
 	}
 
 	if opt.output == nil {

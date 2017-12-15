@@ -1,6 +1,5 @@
-####测试
-
-因为字间距的原因，全拉丁字母段落看上去十分辣眼睛……
+## 测试
+#> 2017-11-15T13:49:00+08:00
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae efficitur est, sit amet volutpat nulla. Suspendisse bibendum magna sem, vel ultrices ex ultricies ac. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam volutpat libero tortor, mollis gravida dui lacinia ut. Integer ut dolor ac massa scelerisque elementum. Fusce porta maximus ante ac sodales. Duis consectetur aliquet turpis. Integer vel ipsum orci. Vestibulum ultrices neque ac libero tincidunt venenatis.
 
