@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<title>Unicode 2.0 test page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<meta charset="utf-8">
+
+<style>
+    *{box-sizing:border-box}
+    body{padding:4px;font-size:14px;margin:0;line-height:1.5}
+    #content{margin:0 auto;overflow:hidden}
+    #content div{padding:1px 0;min-height:1em;margin:0}
+    dl,dt,dd{display:inline-block;zoom:1;*display:inline;white-space:pre;padding:0;margin:0;font-family:consolas,monospace;text-align:center;text-decoration:none}
+    a dt,a dd{border-bottom: solid 1px;cursor:pointer}
+    a:hover dt,a:hover dd{background-color:#ffa}
+    dt{width:8px}
+    dd{width:16px}
+    ._mark *{color:black}
+</style>
+
+
+
+<script type="text/javascript">
+    var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var name = location.href.match(/\/([^\/]+?)(\.w|\.m)?\.html/)[1];
+    var pre = [
+        name + ".m.html",
+        name + ".html"  ,
+        name + ".w.html"
+    ];
+
+    
+    
+    if (width >= 123 * 8)
+        location.href = pre[2];
+    else if (width >= 83 * 8)
+        location.href = pre[1];
+    
+    
+</script>
+
+<div id="content" style="width:322px">
+<div><a  href='http://127.0.0.1:8080/index.m.html'><dl><dt>h<dt>o<dt>m<dt>e</dl></a><dl><dt> <dt>|<dt> </dl><a target='_blank' href='https://github.com/coyove'><dl><dt>g<dt>i<dt>t<dt>h<dt>u<dt>b</dl></a><dl><dt> <dt>|<dt> </dl><a  href='http://127.0.0.1:8080/about.html'><dl><dt>a<dt>b<dt>o<dt>u<dt>t</dl></a></div><hr><div><dl><dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt>U<dt>n<dt>i<dt>c<dt>o<dt>d<dt>e<dt> <dt>2<dt>.<dt>0<dt> <dt>t<dt>e<dt>s<dt>t<dt> <dt>p<dt>a<dt>g<dt>e<dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> </dl></div><div><dl><dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt>2<dt>0<dt>1<dt>7<dt>-<dt>1<dt>1<dt>-<dt>1<dt>5<dt>T<dt>1<dt>3<dt>:<dt>4<dt>9<dt>:<dt>0<dt>0<dt>+<dt>0<dt>8<dt>:<dt>0<dt>0<dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> </dl></div><div></div><div class=_toc id=toc1><a  href='#mark1'><dl><dt>1<dt>.<dt> <dt>B<dt>a<dt>s<dt>i<dt>c<dt> <dt>L<dt>a<dt>t<dt>i<dt>n</dl></a></div>
+<div class=_toc id=toc2><a  href='#mark2'><dl><dt>2<dt>.<dt> <dt>L<dt>a<dt>t<dt>i<dt>n<dt>-<dt>1<dt> <dt>S<dt>u<dt>p<dt>p<dt>l<dt>e<dt>m<dt>e<dt>n<dt>t</dl></a></div>
+<div class=_toc id=toc3><a  href='#mark3'><dl><dt>3<dt>.<dt> <dt>L<dt>a<dt>t<dt>i<dt>n<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d<dt>-<dt>A</dl></a></div>
+<div class=_toc id=toc4><a  href='#mark4'><dl><dt>4<dt>.<dt> <dt>L<dt>a<dt>t<dt>i<dt>n<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d<dt>-<dt>B</dl></a></div>
+<div class=_toc id=toc5><a  href='#mark5'><dl><dt>5<dt>.<dt> <dt>I<dt>P<dt>A<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>s<dt>i<dt>o<dt>n<dt>s</dl></a></div>
+<div class=_toc id=toc6><a  href='#mark6'><dl><dt>6<dt>.<dt> <dt>S<dt>p<dt>a<dt>c<dt>i<dt>n<dt>g<dt> <dt>M<dt>o<dt>d<dt>i<dt>f<dt>i<dt>e<dt>r<dt> <dt>L<dt>e<dt>t<dt>t<dt>e<dt>r<dt>s</dl></a></div>
+<div class=_toc id=toc7><a  href='#mark7'><dl><dt>7<dt>.<dt> <dt>C<dt>o<dt>m<dt>b<dt>i<dt>n<dt>i<dt>n<dt>g<dt> <dt>D<dt>i<dt>a<dt>c<dt>r<dt>i<dt>t<dt>i<dt>c<dt>a<dt>l<dt> </dl></a></div>
+<div class=_toc id=toc8><a  href='#mark8'><dl><dt>8<dt>.<dt> <dt>G<dt>r<dt>e<dt>e<dt>k</dl></a></div>
+<div class=_toc id=toc9><a  href='#mark9'><dl><dt>9<dt>.<dt> <dt>C<dt>y<dt>r<dt>i<dt>l<dt>l<dt>i<dt>c</dl></a></div>
+<div class=_toc id=toc10><a  href='#mark10'><dl><dt>1<dt>0<dt>.<dt> <dt>A<dt>r<dt>m<dt>e<dt>n<dt>i<dt>a<dt>n</dl></a></div>
+<div class=_toc id=toc11><a  href='#mark11'><dl><dt>1<dt>1<dt>.<dt> <dt>H<dt>e<dt>b<dt>r<dt>e<dt>w</dl></a></div>
+<div class=_toc id=toc12><a  href='#mark12'><dl><dt>1<dt>2<dt>.<dt> <dt>A<dt>r<dt>a<dt>b<dt>i<dt>c</dl></a></div>
+<div class=_toc id=toc13><a  href='#mark13'><dl><dt>1<dt>3<dt>.<dt> <dt>D<dt>e<dt>v<dt>a<dt>n<dt>a<dt>g<dt>a<dt>r<dt>i</dl></a></div>
+<div class=_toc id=toc14><a  href='#mark14'><dl><dt>1<dt>4<dt>.<dt> <dt>B<dt>e<dt>n<dt>g<dt>a<dt>l<dt>i</dl></a></div>
+<div class=_toc id=toc15><a  href='#mark15'><dl><dt>1<dt>5<dt>.<dt> <dt>G<dt>u<dt>r<dt>m<dt>u<dt>k<dt>h<dt>i</dl></a></div>
+<div class=_toc id=toc16><a  href='#mark16'><dl><dt>1<dt>6<dt>.<dt> <dt>G<dt>u<dt>j<dt>a<dt>r<dt>a<dt>t<dt>i</dl></a></div>
+<div class=_toc id=toc17><a  href='#mark17'><dl><dt>1<dt>7<dt>.<dt> <dt>O<dt>r<dt>i<dt>y<dt>a</dl></a></div>
+<div class=_toc id=toc18><a  href='#mark18'><dl><dt>1<dt>8<dt>.<dt> <dt>T<dt>a<dt>m<dt>i<dt>l</dl></a></div>
+<div class=_toc id=toc19><a  href='#mark19'><dl><dt>1<dt>9<dt>.<dt> <dt>T<dt>e<dt>l<dt>u<dt>g<dt>u</dl></a></div>
+<div class=_toc id=toc20><a  href='#mark20'><dl><dt>2<dt>0<dt>.<dt> <dt>K<dt>a<dt>n<dt>n<dt>a<dt>d<dt>a</dl></a></div>
+<div class=_toc id=toc21><a  href='#mark21'><dl><dt>2<dt>1<dt>.<dt> <dt>M<dt>a<dt>l<dt>a<dt>y<dt>a<dt>l<dt>a<dt>m</dl></a></div>
+<div class=_toc id=toc22><a  href='#mark22'><dl><dt>2<dt>2<dt>.<dt> <dt>T<dt>h<dt>a<dt>i</dl></a></div>
+<div class=_toc id=toc23><a  href='#mark23'><dl><dt>2<dt>3<dt>.<dt> <dt>L<dt>a<dt>o</dl></a></div>
+<div class=_toc id=toc24><a  href='#mark24'><dl><dt>2<dt>4<dt>.<dt> <dt>T<dt>i<dt>b<dt>e<dt>t<dt>a<dt>n</dl></a></div>
+<div class=_toc id=toc25><a  href='#mark25'><dl><dt>2<dt>5<dt>.<dt> <dt>G<dt>e<dt>o<dt>r<dt>g<dt>i<dt>a<dt>n</dl></a></div>
+<div class=_toc id=toc26><a  href='#mark26'><dl><dt>2<dt>6<dt>.<dt> <dt>H<dt>a<dt>n<dt>g<dt>u<dt>l<dt> <dt>J<dt>a<dt>m<dt>o</dl></a></div>
+<div class=_toc id=toc27><a  href='#mark27'><dl><dt>2<dt>7<dt>.<dt> <dt>L<dt>a<dt>t<dt>i<dt>n<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d<dt> <dt>A<dt>d<dt>d<dt>i<dt>t<dt>i<dt>o<dt>n<dt>a<dt>l</dl></a></div>
+<div class=_toc id=toc28><a  href='#mark28'><dl><dt>2<dt>8<dt>.<dt> <dt>G<dt>r<dt>e<dt>e<dt>k<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d</dl></a></div>
+<div class=_toc id=toc29><a  href='#mark29'><dl><dt>2<dt>9<dt>.<dt> <dt>G<dt>e<dt>n<dt>e<dt>r<dt>a<dt>l<dt> <dt>P<dt>u<dt>n<dt>c<dt>t<dt>u<dt>a<dt>t<dt>i<dt>o<dt>n</dl></a></div>
+<div class=_toc id=toc30><a  href='#mark30'><dl><dt>3<dt>0<dt>.<dt> <dt>S<dt>u<dt>p<dt>e<dt>r<dt>s<dt>c<dt>r<dt>i<dt>p<dt>t<dt>s<dt> <dt>a<dt>n<dt>d<dt> <dt>S<dt>u<dt>b<dt>s<dt>c<dt>r<dt>i<dt>p<dt>t<dt>s</dl></a></div>
+<div class=_toc id=toc31><a  href='#mark31'><dl><dt>3<dt>1<dt>.<dt> <dt>C<dt>u<dt>r<dt>r<dt>e<dt>n<dt>c<dt>y<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div class=_toc id=toc32><a  href='#mark32'><dl><dt>3<dt>2<dt>.<dt> <dt>C<dt>o<dt>m<dt>b<dt>i<dt>n<dt>i<dt>n<dt>g<dt> <dt>M<dt>a<dt>r<dt>k<dt>s<dt> <dt>f<dt>o<dt>r<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div class=_toc id=toc33><a  href='#mark33'><dl><dt>3<dt>3<dt>.<dt> <dt>L<dt>e<dt>t<dt>t<dt>e<dt>r<dt>l<dt>i<dt>k<dt>e<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div class=_toc id=toc34><a  href='#mark34'><dl><dt>3<dt>4<dt>.<dt> <dt>N<dt>u<dt>m<dt>b<dt>e<dt>r<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div class=_toc id=toc35><a  href='#mark35'><dl><dt>3<dt>5<dt>.<dt> <dt>A<dt>r<dt>r<dt>o<dt>w<dt>s</dl></a></div>
+<div class=_toc id=toc36><a  href='#mark36'><dl><dt>3<dt>6<dt>.<dt> <dt>M<dt>a<dt>t<dt>h<dt>e<dt>m<dt>a<dt>t<dt>i<dt>c<dt>a<dt>l<dt> <dt>O<dt>p<dt>e<dt>r<dt>a<dt>t<dt>o<dt>r<dt>s</dl></a></div>
+<div class=_toc id=toc37><a  href='#mark37'><dl><dt>3<dt>7<dt>.<dt> <dt>M<dt>i<dt>s<dt>c<dt>e<dt>l<dt>l<dt>a<dt>n<dt>e<dt>o<dt>u<dt>s<dt> <dt>T<dt>e<dt>c<dt>h<dt>n<dt>i<dt>c<dt>a<dt>l</dl></a></div>
+<div class=_toc id=toc38><a  href='#mark38'><dl><dt>3<dt>8<dt>.<dt> <dt>C<dt>o<dt>n<dt>t<dt>r<dt>o<dt>l<dt> <dt>P<dt>i<dt>c<dt>t<dt>u<dt>r<dt>e<dt>s</dl></a></div>
+<div class=_toc id=toc39><a  href='#mark39'><dl><dt>3<dt>9<dt>.<dt> <dt>O<dt>p<dt>t<dt>i<dt>c<dt>a<dt>l<dt> <dt>C<dt>h<dt>a<dt>r<dt>a<dt>c<dt>t<dt>e<dt>r<dt> <dt>R<dt>e<dt>c<dt>o<dt>g<dt>n<dt>i<dt>t<dt>i<dt>o<dt>n</dl></a></div>
+<div class=_toc id=toc40><a  href='#mark40'><dl><dt>4<dt>0<dt>.<dt> <dt>E<dt>n<dt>c<dt>l<dt>o<dt>s<dt>e<dt>d<dt> <dt>A<dt>l<dt>p<dt>h<dt>a<dt>n<dt>u<dt>m<dt>e<dt>r<dt>i<dt>c<dt>s</dl></a></div>
+<div class=_toc id=toc41><a  href='#mark41'><dl><dt>4<dt>1<dt>.<dt> <dt>B<dt>o<dt>x<dt> <dt>D<dt>r<dt>a<dt>w<dt>i<dt>n<dt>g</dl></a></div>
+<div class=_toc id=toc42><a  href='#mark42'><dl><dt>4<dt>2<dt>.<dt> <dt>B<dt>l<dt>o<dt>c<dt>k<dt> <dt>E<dt>l<dt>e<dt>m<dt>e<dt>n<dt>t<dt>s</dl></a></div>
+<div class=_toc id=toc43><a  href='#mark43'><dl><dt>4<dt>3<dt>.<dt> <dt>G<dt>e<dt>o<dt>m<dt>e<dt>t<dt>r<dt>i<dt>c<dt> <dt>S<dt>h<dt>a<dt>p<dt>e<dt>s</dl></a></div>
+<div class=_toc id=toc44><a  href='#mark44'><dl><dt>4<dt>4<dt>.<dt> <dt>M<dt>i<dt>s<dt>c<dt>e<dt>l<dt>l<dt>a<dt>n<dt>e<dt>o<dt>u<dt>s<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div class=_toc id=toc45><a  href='#mark45'><dl><dt>4<dt>5<dt>.<dt> <dt>D<dt>i<dt>n<dt>g<dt>b<dt>a<dt>t<dt>s</dl></a></div>
+<div class=_toc id=toc46><a  href='#mark46'><dl><dt>4<dt>6<dt>.<dt> <dt>C<dt>J<dt>K<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s<dt> <dt>a<dt>n<dt>d<dt> <dt>P<dt>u<dt>n<dt>c<dt>t<dt>u<dt>a<dt>t<dt>i<dt>o<dt>n</dl></a></div>
+<div class=_toc id=toc47><a  href='#mark47'><dl><dt>4<dt>7<dt>.<dt> <dt>H<dt>i<dt>r<dt>a<dt>g<dt>a<dt>n<dt>a</dl></a></div>
+<div class=_toc id=toc48><a  href='#mark48'><dl><dt>4<dt>8<dt>.<dt> <dt>K<dt>a<dt>t<dt>a<dt>k<dt>a<dt>n<dt>a</dl></a></div>
+<div class=_toc id=toc49><a  href='#mark49'><dl><dt>4<dt>9<dt>.<dt> <dt>B<dt>o<dt>p<dt>o<dt>m<dt>o<dt>f</dl></a></div>
+<div class=_toc id=toc50><a  href='#mark50'><dl><dt>5<dt>0<dt>.<dt> <dt>H<dt>a<dt>n<dt>g<dt>u<dt>l<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y<dt> <dt>J<dt>a<dt>m<dt>o</dl></a></div>
+<div class=_toc id=toc51><a  href='#mark51'><dl><dt>5<dt>1<dt>.<dt> <dt>K<dt>a<dt>n<dt>b<dt>u<dt>n</dl></a></div>
+<div class=_toc id=toc52><a  href='#mark52'><dl><dt>5<dt>2<dt>.<dt> <dt>E<dt>n<dt>c<dt>l<dt>o<dt>s<dt>e<dt>d<dt> <dt>C<dt>J<dt>K<dt> <dt>L<dt>e<dt>t<dt>t<dt>e<dt>r<dt>s<dt> <dt>a<dt>n<dt>d<dt> <dt>M<dt>o<dt>n<dt>t<dt>h<dt>s</dl></a></div>
+<div class=_toc id=toc53><a  href='#mark53'><dl><dt>5<dt>3<dt>.<dt> <dt>C<dt>J<dt>K<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y</dl></a></div>
+<div class=_toc id=toc54><a  href='#mark54'><dl><dt>5<dt>4<dt>.<dt> <dt>C<dt>J<dt>K<dt> <dt>U<dt>n<dt>i<dt>f<dt>i<dt>e<dt>d<dt> <dt>I<dt>d<dt>e<dt>o<dt>g<dt>r<dt>a<dt>p<dt>h<dt>s</dl></a></div>
+<div class=_toc id=toc55><a  href='#mark55'><dl><dt>5<dt>5<dt>.<dt> <dt>H<dt>a<dt>n<dt>g<dt>u<dt>l<dt> <dt>S<dt>y<dt>l<dt>l<dt>a<dt>b<dt>l<dt>e<dt>s</dl></a></div>
+<div class=_toc id=toc56><a  href='#mark56'><dl><dt>5<dt>6<dt>.<dt> <dt>P<dt>r<dt>i<dt>v<dt>a<dt>t<dt>e<dt> <dt>U<dt>s<dt>e</dl></a></div>
+<div class=_toc id=toc57><a  href='#mark57'><dl><dt>5<dt>7<dt>.<dt> <dt>C<dt>J<dt>K<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y<dt> <dt>I<dt>d<dt>e<dt>o<dt>g<dt>r<dt>a<dt>p<dt>h<dt>s</dl></a></div>
+<div class=_toc id=toc58><a  href='#mark58'><dl><dt>5<dt>8<dt>.<dt> <dt>A<dt>l<dt>p<dt>h<dt>a<dt>b<dt>e<dt>t<dt>i<dt>c<dt> <dt>P<dt>r<dt>e<dt>s<dt>e<dt>n<dt>t<dt>a<dt>t<dt>i<dt>o<dt>n<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div class=_toc id=toc59><a  href='#mark59'><dl><dt>5<dt>9<dt>.<dt> <dt>A<dt>r<dt>a<dt>b<dt>i<dt>c<dt> <dt>P<dt>r<dt>e<dt>s<dt>e<dt>n<dt>t<dt>a<dt>t<dt>i<dt>o<dt>n<dt> <dt>F<dt>o<dt>r<dt>m<dt>s<dt>-<dt>A</dl></a></div>
+<div class=_toc id=toc60><a  href='#mark60'><dl><dt>6<dt>0<dt>.<dt> <dt>C<dt>o<dt>m<dt>b<dt>i<dt>n<dt>i<dt>n<dt>g<dt> <dt>H<dt>a<dt>l<dt>f<dt> <dt>M<dt>a<dt>r<dt>k<dt>s</dl></a></div>
+<div class=_toc id=toc61><a  href='#mark61'><dl><dt>6<dt>1<dt>.<dt> <dt>C<dt>J<dt>K<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div class=_toc id=toc62><a  href='#mark62'><dl><dt>6<dt>2<dt>.<dt> <dt>S<dt>m<dt>a<dt>l<dt>l<dt> <dt>F<dt>o<dt>r<dt>m<dt> <dt>V<dt>a<dt>r<dt>i<dt>a<dt>n<dt>t<dt>s</dl></a></div>
+<div class=_toc id=toc63><a  href='#mark63'><dl><dt>6<dt>3<dt>.<dt> <dt>A<dt>r<dt>a<dt>b<dt>i<dt>c<dt> <dt>P<dt>r<dt>e<dt>s<dt>e<dt>n<dt>t<dt>a<dt>t<dt>i<dt>o<dt>n<dt> <dt>F<dt>o<dt>r<dt>m<dt>s<dt>-<dt>B</dl></a></div>
+<div class=_toc id=toc64><a  href='#mark64'><dl><dt>6<dt>4<dt>.<dt> <dt>H<dt>a<dt>l<dt>f<dt>w<dt>i<dt>d<dt>t<dt>h<dt> <dt>a<dt>n<dt>d<dt> <dt>F<dt>u<dt>l<dt>l<dt>w<dt>i<dt>d<dt>t<dt>h<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div class=_toc id=toc65><a  href='#mark65'><dl><dt>6<dt>5<dt>.<dt> <dt>S<dt>p<dt>e<dt>c<dt>i<dt>a<dt>l<dt>s</dl></a></div>
+<div class=_toc id=toc66><a  href='#mark66'><dl><dt>6<dt>6<dt>.<dt> <dt>S<dt>p<dt>e<dt>c<dt>i<dt>a<dt>l<dt>s</dl></a></div>
+<div></div>
+
+
+<div></div>
+<div><dl><dt>T<dt>h<dt>i<dt>s<dt> <dt> <dt>p<dt>a<dt>g<dt>e<dt> <dt>c<dt>o<dt>n<dt>t<dt>a<dt>i<dt>n<dt>s<dt> <dt>c<dt>h<dt>a<dt>r<dt>a<dt>c<dt>t<dt>e<dt>r<dt>s<dt> <dt>f<dt>r<dt>o<dt>m<dt> <dt>e<dt>a<dt>c<dt>h</dl></div>
+<div><dl><dt>o<dt>f<dt> <dt>t<dt>h<dt>e<dt> <dt>U<dt>n<dt>i<dt>c<dt>o<dt>d<dt>e<dt> <dt>c<dt>h<dt>a<dt>r<dt>a<dt>c<dt>t<dt>e<dt>r<dt> <dt>b<dt>l<dt>o<dt>c<dt>k<dt>s<dt>.</dl></div>
+<div></div>
+<div><dl><dt>S<dt>e<dt>e<dt> <dt>a<dt>l<dt>s<dt>o<dt> <dt>U<dt>n<dt>i<dt>c<dt>o<dt>d<dt>e<dt> <dt>3<dt>.<dt>2<dt> <dt>t<dt>e<dt>s<dt>t<dt> <dt>p<dt>a<dt>g<dt>e<dt>.</dl></div>
+<div></div>
+<div class=_mark id=mark1><a  href='#toc1'><dl><dt>B<dt>a<dt>s<dt>i<dt>c<dt> <dt>L<dt>a<dt>t<dt>i<dt>n</dl></a></div>
+<div><dl><dt>!<dt> <dt>"<dt> <dt>#<dt> <dt>$<dt> <dt>%<dt> <dt>&<dt> <dt>'<dt> <dt>(<dt> <dt>)<dt> <dt>*<dt> <dt>+<dt> <dt>,<dt> <dt>-<dt> <dt>.<dt> <dt>/<dt> <dt> <dt>0<dt> <dt>1<dt> <dt>2<dt> <dt>3<dt> <dt>4</dl></div>
+<div><dl><dt>5<dt> <dt> <dt>6<dt> <dt>7<dt> <dt>8<dt> <dt>9<dt> <dt>:<dt> <dt>;<dt> <dt><<dt> <dt>=<dt> <dt>><dt> <dt>?<dt> <dt>@<dt> <dt>A<dt> <dt>B<dt> <dt>C<dt> <dt>D<dt> <dt>E<dt> <dt>F<dt> <dt>G<dt> <dt>H</dl></div>
+<div><dl><dt>I<dt> <dt> <dt>J<dt> <dt>K<dt> <dt>L<dt> <dt> <dt>M<dt> <dt>N<dt> <dt>O<dt> <dt> <dt>P<dt> <dt>Q<dt> <dt>R<dt> <dt> <dt>S<dt> <dt>T<dt> <dt>U<dt> <dt> <dt>V<dt> <dt>W<dt> <dt>X<dt> <dt>Y<dt> <dt>Z</dl></div>
+<div><dl><dt>[<dt> <dt>\<dt> <dt>]<dt> <dt>^<dt> <dt>_<dt> <dt>`<dt> <dt>a<dt> <dt> <dt>b<dt> <dt>c<dt> <dt>d<dt> <dt>e<dt> <dt>f<dt> <dt>g<dt> <dt>h<dt> <dt>i<dt> <dt>j<dt> <dt>k<dt> <dt>l<dt> <dt>m<dt> <dt>n</dl></div>
+<div><dl><dt> <dt>o<dt> <dt>p<dt> <dt>q<dt> <dt>r<dt> <dt>s<dt> <dt>t<dt> <dt>u<dt> <dt>v<dt> <dt>w<dt> <dt>x<dt> <dt>y<dt> <dt>z<dt> <dt>{<dt> <dt>|<dt> <dt>}<dt> <dt>~</dl></div>
+<div class=_mark id=mark2><a  href='#toc2'><dl><dt>L<dt>a<dt>t<dt>i<dt>n<dt>-<dt>1<dt> <dt>S<dt>u<dt>p<dt>p<dt>l<dt>e<dt>m<dt>e<dt>n<dt>t</dl></a></div>
+<div><dl><dt>¡<dt> <dt>¢<dt> <dt>£<dt> <dt>¤<dt> <dt>¥<dt> <dt>¦<dt> <dt>§<dt> <dt>¨<dt> <dt>©<dt> <dt>ª<dt> <dt> <dt>«<dt> <dt>¬<dt> <dt> <dt>®<dt> <dt>¯<dt> <dt>°<dt> <dt>±<dt> <dt> <dt> <dt>´<dt> <dt>µ<dt> </dl></div>
+<div><dl><dt>¶<dt> <dt>·<dt> <dt>¸<dt> <dt> <dt>º<dt> <dt> <dt>»<dt> <dt> <dt> <dt> <dt>¿<dt> <dt>À<dt> <dt>Á<dt> <dt>Â<dt> <dt>Ã<dt> <dt>Ä<dt> <dt>Å<dt> <dt>Æ<dt> <dt>Ç<dt> <dt>È<dt> <dt>É<dt> <dt>Ê<dt> <dt>Ë</dl></div>
+<div><dl><dt>Ì<dt> <dt> <dt>Í<dt> <dt>Î<dt> <dt>Ï<dt> <dt>Ð<dt> <dt>Ñ<dt> <dt>Ò<dt> <dt>Ó<dt> <dt>Ô<dt> <dt>Õ<dt> <dt>Ö<dt> <dt>×<dt> <dt>Ø<dt> <dt>Ù<dt> <dt>Ú<dt> <dt>Û<dt> <dt>Ü<dt> <dt>Ý<dt> <dt>Þ<dt> <dt>ß</dl></div>
+<div><dl><dt>à<dt> <dt> <dt>á<dt> <dt>â<dt> <dt>ã<dt> <dt>ä<dt> <dt>å<dt> <dt>æ<dt> <dt>ç<dt> <dt>è<dt> <dt>é<dt> <dt>ê<dt> <dt>ë<dt> <dt>ì<dt> <dt>í<dt> <dt>î<dt> <dt>ï<dt> <dt>ð<dt> <dt>ñ<dt> <dt>ò<dt> <dt>ó</dl></div>
+<div><dl><dt> <dt>ô<dt> <dt>õ<dt> <dt>ö<dt> <dt>÷<dt> <dt>ø<dt> <dt>ù<dt> <dt>ú<dt> <dt>û<dt> <dt>ü<dt> <dt>ý<dt> <dt>þ<dt> <dt>ÿ</dl></div>
+<div class=_mark id=mark3><a  href='#toc3'><dl><dt>L<dt>a<dt>t<dt>i<dt>n<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d<dt>-<dt>A</dl></a></div>
+<div><dl><dd>Ā<dt> <dt> <dd>ā<dt> <dd>Ă<dt> <dd>ă<dt> <dd>Ą<dt> <dd>ą<dt> <dd>Ć<dt> <dt> <dd>ć<dt> <dd>Ĉ<dt> <dd>ĉ<dt> <dd>Ċ<dt> <dd>ċ<dt> <dd>Č</dl></div>
+<div><dl><dd>č<dt> <dt> <dd>Ď<dt> <dd>ď<dt> <dd>Đ<dt> <dd>đ<dt> <dd>Ē<dt> <dd>ē<dt> <dt> <dd>Ĕ<dt> <dd>ĕ<dt> <dd>Ė<dt> <dd>ė<dt> <dd>Ę<dt> <dd>ę</dl></div>
+<div><dl><dd>Ě<dt> <dt> <dd>ě<dt> <dd>Ĝ<dt> <dd>ĝ<dt> <dd>Ğ<dt> <dd>ğ<dt> <dd>Ġ<dt> <dt> <dd>ġ<dt> <dd>Ģ<dt> <dd>ģ<dt> <dd>Ĥ<dt> <dd>ĥ<dt> <dd>Ħ</dl></div>
+<div><dl><dd>ħ<dt> <dt> <dd>Ĩ<dt> <dd>ĩ<dt> <dd>Ī<dt> <dd>ī<dt> <dd>Ĭ<dt> <dd>ĭ<dt> <dt> <dd>Į<dt> <dd>į<dt> <dd>İ<dt> <dd>ı<dt> <dd>Ĳ<dt> <dd>ĳ</dl></div>
+<div><dl><dd>Ĵ<dt> <dt> <dd>ĵ<dt> <dd>Ķ<dt> <dd>ķ<dt> <dd>ĸ<dt> <dd>Ĺ<dt> <dd>ĺ<dt> <dt> <dd>Ļ<dt> <dd>ļ<dt> <dd>Ľ<dt> <dd>ľ<dt> <dd>Ŀ<dt> <dd>ŀ</dl></div>
+<div><dl><dd>Ł<dt> <dt> <dd>ł<dt> <dd>Ń<dt> <dd>ń<dt> <dd>Ņ<dt> <dd>ņ<dt> <dd>Ň<dt> <dt> <dd>ň<dt> <dd>ŉ<dt> <dd>Ŋ<dt> <dd>ŋ<dt> <dd>Ō<dt> <dd>ō</dl></div>
+<div><dl><dd>Ŏ<dt> <dt> <dd>ŏ<dt> <dd>Ő<dt> <dd>ő<dt> <dd>Œ<dt> <dd>œ<dt> <dd>Ŕ<dt> <dt> <dd>ŕ<dt> <dd>Ŗ<dt> <dd>ŗ<dt> <dd>Ř<dt> <dd>ř<dt> <dd>Ś</dl></div>
+<div><dl><dd>ś<dt> <dt> <dd>Ŝ<dt> <dd>ŝ<dt> <dd>Ş<dt> <dd>ş<dt> <dd>Š<dt> <dd>š<dt> <dt> <dd>Ţ<dt> <dd>ţ<dt> <dd>Ť<dt> <dd>ť<dt> <dd>Ŧ<dt> <dd>ŧ</dl></div>
+<div><dl><dd>Ũ<dt> <dt> <dd>ũ<dt> <dd>Ū<dt> <dd>ū<dt> <dd>Ŭ<dt> <dd>ŭ<dt> <dd>Ů<dt> <dt> <dd>ů<dt> <dd>Ű<dt> <dd>ű<dt> <dd>Ų<dt> <dd>ų<dt> <dd>Ŵ</dl></div>
+<div><dl><dd>ŵ<dt> <dd>Ŷ<dt> <dd>ŷ<dt> <dd>Ÿ<dt> <dd>Ź<dt> <dd>ź<dt> <dd>Ż<dt> <dd>ż<dt> <dd>Ž<dt> <dd>ž<dt> <dd>ſ</dl></div>
+<div class=_mark id=mark4><a  href='#toc4'><dl><dt>L<dt>a<dt>t<dt>i<dt>n<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d<dt>-<dt>B</dl></a></div>
+<div><dl><dd>ƀ<dt> <dt> <dd>Ɓ<dt> <dd>Ƃ<dt> <dd>ƃ<dt> <dd>Ƅ<dt> <dd>ƅ<dt> <dd>Ɔ<dt> <dt> <dd>Ƈ<dt> <dd>ƈ<dt> <dd>Ɖ<dt> <dd>Ɗ<dt> <dd>Ƌ<dt> <dd>ƌ</dl></div>
+<div><dl><dd>ƍ<dt> <dt> <dd>Ǝ<dt> <dd>Ə<dt> <dd>Ɛ<dt> <dd>Ƒ<dt> <dd>ƒ<dt> <dd>Ɠ<dt> <dt> <dd>Ɣ<dt> <dd>ƕ<dt> <dd>Ɩ<dt> <dd>Ɨ<dt> <dd>Ƙ<dt> <dd>ƙ</dl></div>
+<div><dl><dd>ƚ<dt> <dt> <dd>ƛ<dt> <dd>Ɯ<dt> <dd>Ɲ<dt> <dd>ƞ<dt> <dd>Ɵ<dt> <dd>Ơ<dt> <dt> <dd>ơ<dt> <dd>Ƣ<dt> <dd>ƣ<dt> <dd>Ƥ<dt> <dd>ƥ<dt> <dd>Ʀ</dl></div>
+<div><dl><dd>Ƨ<dt> <dt> <dd>ƨ<dt> <dd>Ʃ<dt> <dd>ƪ<dt> <dd>ƫ<dt> <dd>Ƭ<dt> <dd>ƭ<dt> <dt> <dd>Ʈ<dt> <dd>Ư<dt> <dd>ư<dt> <dd>Ʊ<dt> <dd>Ʋ<dt> <dd>Ƴ</dl></div>
+<div><dl><dd>ƴ<dt> <dt> <dd>Ƶ<dt> <dd>ƶ<dt> <dd>Ʒ<dt> <dd>Ƹ<dt> <dd>ƹ<dt> <dd>ƺ<dt> <dt> <dd>ƻ<dt> <dd>Ƽ<dt> <dd>ƽ<dt> <dd>ƾ<dt> <dd>ƿ<dt> <dd>ǀ</dl></div>
+<div><dl><dd>ǁ<dt> <dt> <dd>ǂ<dt> <dd>ǃ<dt> <dd>Ǆ<dt> <dd>ǅ<dt> <dd>ǆ<dt> <dd>Ǉ<dt> <dt> <dd>ǈ<dt> <dd>ǉ<dt> <dd>Ǌ<dt> <dd>ǋ<dt> <dd>ǌ<dt> <dd>Ǎ</dl></div>
+<div><dl><dd>ǎ<dt> <dt> <dd>Ǐ<dt> <dd>ǐ<dt> <dd>Ǒ<dt> <dd>ǒ<dt> <dd>Ǔ<dt> <dd>ǔ<dt> <dt> <dd>Ǖ<dt> <dd>ǖ<dt> <dd>Ǘ<dt> <dd>ǘ<dt> <dd>Ǚ<dt> <dd>ǚ</dl></div>
+<div><dl><dd>Ǜ<dt> <dt> <dd>ǜ<dt> <dd>ǝ<dt> <dd>Ǟ<dt> <dd>ǟ<dt> <dd>Ǡ<dt> <dd>ǡ<dt> <dt> <dd>Ǣ<dt> <dd>ǣ<dt> <dd>Ǥ<dt> <dd>ǥ<dt> <dd>Ǧ<dt> <dd>ǧ</dl></div>
+<div><dl><dd>Ǩ<dt> <dt> <dd>ǩ<dt> <dd>Ǫ<dt> <dd>ǫ<dt> <dd>Ǭ<dt> <dd>ǭ<dt> <dd>Ǯ<dt> <dt> <dd>ǯ<dt> <dd>ǰ<dt> <dd>Ǳ<dt> <dd>ǲ<dt> <dd>ǳ<dt> <dd>Ǵ</dl></div>
+<div><dl><dd>ǵ<dt> <dd>Ǻ<dt> <dd>ǻ<dt> <dd>Ǽ<dt> <dd>ǽ<dt> <dd>Ǿ<dt> <dd>ǿ<dt> <dd>Ȁ<dt> <dd>ȁ<dt> <dd>Ȃ<dt> <dd>ȃ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark5><a  href='#toc5'><dl><dt>I<dt>P<dt>A<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>s<dt>i<dt>o<dt>n<dt>s</dl></a></div>
+<div><dl><dd>ɐ<dt> <dt> <dd>ɑ<dt> <dd>ɒ<dt> <dd>ɓ<dt> <dd>ɔ<dt> <dd>ɕ<dt> <dd>ɖ<dt> <dt> <dd>ɗ<dt> <dd>ɘ<dt> <dd>ə<dt> <dd>ɚ<dt> <dd>ɛ<dt> <dd>ɜ</dl></div>
+<div><dl><dd>ɝ<dt> <dt> <dd>ɞ<dt> <dd>ɟ<dt> <dd>ɠ<dt> <dd>ɡ<dt> <dd>ɢ<dt> <dd>ɣ<dt> <dt> <dd>ɤ<dt> <dd>ɥ<dt> <dd>ɦ<dt> <dd>ɧ<dt> <dd>ɨ<dt> <dd>ɩ</dl></div>
+<div><dl><dd>ɪ<dt> <dt> <dd>ɫ<dt> <dd>ɬ<dt> <dd>ɭ<dt> <dd>ɮ<dt> <dd>ɯ<dt> <dd>ɰ<dt> <dt> <dd>ɱ<dt> <dd>ɲ<dt> <dd>ɳ<dt> <dd>ɴ<dt> <dd>ɵ<dt> <dd>ɶ</dl></div>
+<div><dl><dd>ɷ<dt> <dt> <dd>ɸ<dt> <dd>ɹ<dt> <dd>ɺ<dt> <dd>ɻ<dt> <dd>ɼ<dt> <dd>ɽ<dt> <dt> <dd>ɾ<dt> <dd>ɿ<dt> <dd>ʀ<dt> <dd>ʁ<dt> <dd>ʂ<dt> <dd>ʃ</dl></div>
+<div><dl><dd>ʄ<dt> <dt> <dd>ʅ<dt> <dd>ʆ<dt> <dd>ʇ<dt> <dd>ʈ<dt> <dd>ʉ<dt> <dd>ʊ<dt> <dt> <dd>ʋ<dt> <dd>ʌ<dt> <dd>ʍ<dt> <dd>ʎ<dt> <dd>ʏ<dt> <dd>ʐ</dl></div>
+<div><dl><dd>ʑ<dt> <dt> <dd>ʒ<dt> <dd>ʓ<dt> <dd>ʔ<dt> <dd>ʕ<dt> <dd>ʖ<dt> <dd>ʗ<dt> <dt> <dd>ʘ<dt> <dd>ʙ<dt> <dd>ʚ<dt> <dd>ʛ<dt> <dd>ʜ<dt> <dd>ʝ</dl></div>
+<div><dl><dd>ʞ<dt> <dd>ʟ<dt> <dd>ʠ<dt> <dd>ʡ<dt> <dd>ʢ<dt> <dd>ʣ<dt> <dd>ʤ<dt> <dd>ʥ<dt> <dd>ʦ<dt> <dd>ʧ<dt> <dd>ʨ</dl></div>
+<div class=_mark id=mark6><a  href='#toc6'><dl><dt>S<dt>p<dt>a<dt>c<dt>i<dt>n<dt>g<dt> <dt>M<dt>o<dt>d<dt>i<dt>f<dt>i<dt>e<dt>r<dt> <dt>L<dt>e<dt>t<dt>t<dt>e<dt>r<dt>s</dl></a></div>
+<div><dl><dd>ʰ<dt> <dt> <dd>ʱ<dt> <dd>ʲ<dt> <dd>ʳ<dt> <dd>ʴ<dt> <dd>ʵ<dt> <dd>ʶ<dt> <dt> <dd>ʷ<dt> <dd>ʸ<dt> <dd>ʹ<dt> <dd>ʺ<dt> <dd>ʻ<dt> <dd>ʼ</dl></div>
+<div><dl><dd>ʽ<dt> <dt> <dd>ʾ<dt> <dd>ʿ<dt> <dd>ˀ<dt> <dd>ˁ<dt> <dd>˂<dt> <dd>˃<dt> <dt> <dd>˄<dt> <dd>˅<dt> <dd>ˆ<dt> <dd>ˇ<dt> <dd>ˈ<dt> <dd>ˉ</dl></div>
+<div><dl><dd>ˊ<dt> <dt> <dd>ˋ<dt> <dd>ˌ<dt> <dd>ˍ<dt> <dd>ˎ<dt> <dd>ˏ<dt> <dd>ː<dt> <dt> <dd>ˑ<dt> <dd>˒<dt> <dd>˓<dt> <dd>˔<dt> <dd>˕<dt> <dd>˖</dl></div>
+<div><dl><dd>˗<dt> <dt> <dd>˘<dt> <dd>˙<dt> <dd>˚<dt> <dd>˛<dt> <dd>˜<dt> <dd>˝<dt> <dt> <dd>˞<dt> <dd>ˠ<dt> <dd>ˡ<dt> <dd>ˢ<dt> <dd>ˣ<dt> <dd>ˤ</dl></div>
+<div><dl><dd>˥<dt> <dd>˦<dt> <dd>˧<dt> <dd>˨<dt> <dd>˩</dl></div>
+<div class=_mark id=mark7><a  href='#toc7'><dl><dt>C<dt>o<dt>m<dt>b<dt>i<dt>n<dt>i<dt>n<dt>g<dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt>D<dt>i<dt>a<dt>c<dt>r<dt>i<dt>t<dt>i<dt>c<dt>a<dt>l</dl></a></div>
+<div><dl><dt>M<dt>a<dt>r<dt>k<dt>s<dt>d<dt>e<dt>d<dt>e<dt>d<dt>e<dt>d<dt>e<dt>f<dt>v<dt>f<dt>r<dt>e<dt>f<dt>r<dt>f<dt>r</dl></div>
+<div><dl><dd>̀<dt> <dt> <dd>́<dt> <dd>̂<dt> <dd>̃<dt> <dd>̄<dt> <dd>̅<dt> <dd>̆<dt> <dt> <dd>̇<dt> <dd>̈<dt> <dd>̉<dt> <dd>̊<dt> <dd>̋<dt> <dd>̌</dl></div>
+<div><dl><dd>̍<dt> <dt> <dd>̎<dt> <dd>̏<dt> <dd>̐<dt> <dd>̑<dt> <dd>̒<dt> <dd>̓<dt> <dt> <dd>̔<dt> <dd>̕<dt> <dd>̖<dt> <dd>̗<dt> <dd>̘<dt> <dd>̙</dl></div>
+<div><dl><dd>̚<dt> <dt> <dd>̛<dt> <dd>̜<dt> <dd>̝<dt> <dd>̞<dt> <dd>̟<dt> <dd>̠<dt> <dt> <dd>̡<dt> <dd>̢<dt> <dd>̣<dt> <dd>̤<dt> <dd>̥<dt> <dd>̦</dl></div>
+<div><dl><dd>̧<dt> <dt> <dd>̨<dt> <dd>̩<dt> <dd>̪<dt> <dd>̫<dt> <dd>̬<dt> <dd>̭<dt> <dt> <dd>̮<dt> <dd>̯<dt> <dd>̰<dt> <dd>̱<dt> <dd>̲<dt> <dd>̳</dl></div>
+<div><dl><dd>̴<dt> <dt> <dd>̵<dt> <dd>̶<dt> <dd>̷<dt> <dd≯<dt> <dd>̹<dt> <dd>̺<dt> <dt> <dd>̻<dt> <dd>̼<dt> <dd>̽<dt> <dd>̾<dt> <dd>̿<dt> <dd>̀</dl></div>
+<div><dl><dd>́<dt> <dd>͂<dt> <dd>̓<dt> <dd>̈́<dt> <dd>ͅ<dt> <dd>͠<dt> <dd>͡</dl></div>
+<div class=_mark id=mark8><a  href='#toc8'><dl><dt>G<dt>r<dt>e<dt>e<dt>k</dl></a></div>
+<div><dl><dd>ʹ<dt> <dt> <dd>͵<dt> <dd>ͺ<dt> <dd>;<dt> <dd>΄<dt> <dd>΅<dt> <dd>Ά<dt> <dt> <dd>·<dt> <dd>Έ<dt> <dd>Ή<dt> <dd>Ί<dt> <dd>Ό<dt> <dd>Ύ</dl></div>
+<div><dl><dd>Ώ<dt> <dt> <dd>ΐ<dt> <dd>Α<dt> <dd>Β<dt> <dd>Γ<dt> <dd>Δ<dt> <dd>Ε<dt> <dt> <dd>Ζ<dt> <dd>Η<dt> <dd>Θ<dt> <dd>Ι<dt> <dd>Κ<dt> <dd>Λ</dl></div>
+<div><dl><dd>Μ<dt> <dt> <dd>Ν<dt> <dd>Ξ<dt> <dd>Ο<dt> <dd>Π<dt> <dd>Ρ<dt> <dd>Σ<dt> <dt> <dd>Τ<dt> <dd>Υ<dt> <dd>Φ<dt> <dd>Χ<dt> <dd>Ψ<dt> <dd>Ω</dl></div>
+<div><dl><dd>Ϊ<dt> <dt> <dd>Ϋ<dt> <dd>ά<dt> <dd>έ<dt> <dd>ή<dt> <dd>ί<dt> <dd>ΰ<dt> <dt> <dd>α<dt> <dd>β<dt> <dd>γ<dt> <dd>δ<dt> <dd>ε<dt> <dd>ζ</dl></div>
+<div><dl><dd>η<dt> <dt> <dd>θ<dt> <dd>ι<dt> <dd>κ<dt> <dd>λ<dt> <dd>μ<dt> <dd>ν<dt> <dt> <dd>ξ<dt> <dd>ο<dt> <dd>π<dt> <dd>ρ<dt> <dd>ς<dt> <dd>σ</dl></div>
+<div><dl><dd>τ<dt> <dt> <dd>υ<dt> <dd>φ<dt> <dd>χ<dt> <dd>ψ<dt> <dd>ω<dt> <dd>ϊ<dt> <dt> <dd>ϋ<dt> <dd>ό<dt> <dd>ύ<dt> <dd>ώ<dt> <dd>ϐ<dt> <dd>ϑ</dl></div>
+<div><dl><dd>ϒ<dt> <dt> <dd>ϓ<dt> <dd>ϔ<dt> <dd>ϕ<dt> <dd>ϖ<dt> <dd>Ϛ<dt> <dd>Ϝ<dt> <dt> <dd>Ϟ<dt> <dd>Ϡ<dt> <dd>Ϣ<dt> <dd>ϣ<dt> <dd>Ϥ<dt> <dd>ϥ</dl></div>
+<div><dl><dd>Ϧ<dt> <dt> <dd>ϧ<dt> <dd>Ϩ<dt> <dd>ϩ<dt> <dd>Ϫ<dt> <dd>ϫ<dt> <dd>Ϭ<dt> <dt> <dd>ϭ<dt> <dd>Ϯ<dt> <dd>ϯ<dt> <dd>ϰ<dt> <dd>ϱ<dt> <dd>ϲ</dl></div>
+<div><dl><dd>ϳ</dl></div>
+<div class=_mark id=mark9><a  href='#toc9'><dl><dt>C<dt>y<dt>r<dt>i<dt>l<dt>l<dt>i<dt>c</dl></a></div>
+<div><dl><dd>Ё<dt> <dt> <dd>Ђ<dt> <dd>Ѓ<dt> <dd>Є<dt> <dd>Ѕ<dt> <dd>І<dt> <dd>Ї<dt> <dt> <dd>Ј<dt> <dd>Љ<dt> <dd>Њ<dt> <dd>Ћ<dt> <dd>Ќ<dt> <dd>Ў</dl></div>
+<div><dl><dd>Џ<dt> <dt> <dd>А<dt> <dd>Б<dt> <dd>В<dt> <dd>Г<dt> <dd>Д<dt> <dd>Е<dt> <dt> <dd>Ж<dt> <dd>З<dt> <dd>И<dt> <dd>Й<dt> <dd>К<dt> <dd>Л</dl></div>
+<div><dl><dd>М<dt> <dt> <dd>Н<dt> <dd>О<dt> <dd>П<dt> <dd>Р<dt> <dd>С<dt> <dd>Т<dt> <dt> <dd>У<dt> <dd>Ф<dt> <dd>Х<dt> <dd>Ц<dt> <dd>Ч<dt> <dd>Ш</dl></div>
+<div><dl><dd>Щ<dt> <dt> <dd>Ъ<dt> <dd>Ы<dt> <dd>Ь<dt> <dd>Э<dt> <dd>Ю<dt> <dd>Я<dt> <dt> <dd>а<dt> <dd>б<dt> <dd>в<dt> <dd>г<dt> <dd>д<dt> <dd>е</dl></div>
+<div><dl><dd>ж<dt> <dt> <dd>з<dt> <dd>и<dt> <dd>й<dt> <dd>к<dt> <dd>л<dt> <dd>м<dt> <dt> <dd>н<dt> <dd>о<dt> <dd>п<dt> <dd>р<dt> <dd>с<dt> <dd>т</dl></div>
+<div><dl><dd>у<dt> <dt> <dd>ф<dt> <dd>х<dt> <dd>ц<dt> <dd>ч<dt> <dd>ш<dt> <dd>щ<dt> <dt> <dd>ъ<dt> <dd>ы<dt> <dd>ь<dt> <dd>э<dt> <dd>ю<dt> <dd>я</dl></div>
+<div><dl><dd>ё<dt> <dt> <dd>ђ<dt> <dd>ѓ<dt> <dd>є<dt> <dd>ѕ<dt> <dd>і<dt> <dd>ї<dt> <dt> <dd>ј<dt> <dd>љ<dt> <dd>њ<dt> <dd>ћ<dt> <dd>ќ<dt> <dd>ў</dl></div>
+<div><dl><dd>џ<dt> <dt> <dd>Ѡ<dt> <dd>ѡ<dt> <dd>Ѣ<dt> <dd>ѣ<dt> <dd>Ѥ<dt> <dd>ѥ<dt> <dt> <dd>Ѧ<dt> <dd>ѧ<dt> <dd>Ѩ<dt> <dd>ѩ<dt> <dd>Ѫ<dt> <dd>ѫ</dl></div>
+<div><dl><dd>Ѭ<dt> <dt> <dd>ѭ<dt> <dd>Ѯ<dt> <dd>ѯ<dt> <dd>Ѱ<dt> <dd>ѱ<dt> <dd>Ѳ<dt> <dt> <dd>ѳ<dt> <dd>Ѵ<dt> <dd>ѵ<dt> <dd>Ѷ<dt> <dd>ѷ<dt> <dd>Ѹ</dl></div>
+<div><dl><dd>ѹ<dt> <dd>Ѻ<dt> <dd>ѻ<dt> <dd>Ѽ<dt> <dd>ѽ<dt> <dd>Ѿ<dt> <dd>ѿ<dt> <dd>Ҁ<dt> <dd>ҁ<dt> <dd>҂<dt> <dd>҃<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark10><a  href='#toc10'><dl><dt>A<dt>r<dt>m<dt>e<dt>n<dt>i<dt>a<dt>n</dl></a></div>
+<div><dl><dd>Ա<dt> <dt> <dd>Բ<dt> <dd>Գ<dt> <dd>Դ<dt> <dd>Ե<dt> <dd>Զ<dt> <dd>Է<dt> <dt> <dd>Ը<dt> <dd>Թ<dt> <dd>Ժ<dt> <dd>Ի<dt> <dd>Լ<dt> <dd>Խ</dl></div>
+<div><dl><dd>Ծ<dt> <dt> <dd>Կ<dt> <dd>Հ<dt> <dd>Ձ<dt> <dd>Ղ<dt> <dd>Ճ<dt> <dd>Մ<dt> <dt> <dd>Յ<dt> <dd>Ն<dt> <dd>Շ<dt> <dd>Ո<dt> <dd>Չ<dt> <dd>Պ</dl></div>
+<div><dl><dd>Ջ<dt> <dt> <dd>Ռ<dt> <dd>Ս<dt> <dd>Վ<dt> <dd>Տ<dt> <dd>Ր<dt> <dd>Ց<dt> <dt> <dd>Ւ<dt> <dd>Փ<dt> <dd>Ք<dt> <dd>Օ<dt> <dd>Ֆ<dt> <dd>ՙ</dl></div>
+<div><dl><dd>՚<dt> <dt> <dd>՛<dt> <dd>՜<dt> <dd>՝<dt> <dd>՞<dt> <dd>՟<dt> <dd>ա<dt> <dt> <dd>բ<dt> <dd>գ<dt> <dd>դ<dt> <dd>ե<dt> <dd>զ<dt> <dd>է</dl></div>
+<div><dl><dd>ը<dt> <dt> <dd>թ<dt> <dd>ժ<dt> <dd>ի<dt> <dd>լ<dt> <dd>խ<dt> <dd>ծ<dt> <dt> <dd>կ<dt> <dd>հ<dt> <dd>ձ<dt> <dd>ղ<dt> <dd>ճ<dt> <dd>մ</dl></div>
+<div><dl><dd>յ<dt> <dt> <dd>ն<dt> <dd>շ<dt> <dd>ո<dt> <dd>չ<dt> <dd>պ<dt> <dd>ջ<dt> <dt> <dd>ռ<dt> <dd>ս<dt> <dd>վ<dt> <dd>տ<dt> <dd>ր<dt> <dd>ց</dl></div>
+<div><dl><dd>ւ<dt> <dd>փ<dt> <dd>ք<dt> <dd>օ<dt> <dd>ֆ<dt> <dd>և<dt> <dd>։</dl></div>
+<div class=_mark id=mark11><a  href='#toc11'><dl><dt>H<dt>e<dt>b<dt>r<dt>e<dt>w</dl></a></div>
+<div><dl><dd>֑<dt> <dt> <dd>֒<dt> <dd>֓<dt> <dd>֔<dt> <dd>֕<dt> <dd>֖<dt> <dd>֗<dt> <dt> <dd>֘<dt> <dd>֙<dt> <dd>֚<dt> <dd>֛<dt> <dd>֜<dt> <dd>֝</dl></div>
+<div><dl><dd>֞<dt> <dt> <dd>֟<dt> <dd>֠<dt> <dd>֡<dt> <dd>֣<dt> <dd>֤<dt> <dd>֥<dt> <dt> <dd>֦<dt> <dd>֧<dt> <dd>֨<dt> <dd>֩<dt> <dd>֪<dt> <dd>֫</dl></div>
+<div><dl><dd>֬<dt> <dt> <dd>֭<dt> <dd>֮<dt> <dd>֯<dt> <dd>ְ<dt> <dd>ֱ<dt> <dd>ֲ<dt> <dt> <dd>ֳ<dt> <dd>ִ<dt> <dd>ֵ<dt> <dd>ֶ<dt> <dd>ַ<dt> <dd>ָ</dl></div>
+<div><dl><dd>ֹ<dt> <dt> <dd>ֻ<dt> <dd>ּ<dt> <dd>ֽ<dt> <dd>־<dt> <dd>ֿ<dt> <dd>׀<dt> <dt> <dd>ׁ<dt> <dd>ׂ<dt> <dd>׃<dt> <dd>ׄ<dt> <dd>א<dt> <dd>ב</dl></div>
+<div><dl><dd>ג<dt> <dt> <dd>ד<dt> <dd>ה<dt> <dd>ו<dt> <dd>ז<dt> <dd>ח<dt> <dd>ט<dt> <dt> <dd>י<dt> <dd>ך<dt> <dd>כ<dt> <dd>ל<dt> <dd>ם<dt> <dd>מ</dl></div>
+<div><dl><dd>ן<dt> <dt> <dd>נ<dt> <dd>ס<dt> <dd>ע<dt> <dd>ף<dt> <dd>פ<dt> <dd>ץ<dt> <dt> <dd>צ<dt> <dd>ק<dt> <dd>ר<dt> <dd>ש<dt> <dd>ת<dt> <dd>װ</dl></div>
+<div><dl><dd>ױ<dt> <dd>ײ<dt> <dd>׳<dt> <dd>״</dl></div>
+<div class=_mark id=mark12><a  href='#toc12'><dl><dt>A<dt>r<dt>a<dt>b<dt>i<dt>c</dl></a></div>
+<div><dl><dd>،<dt> <dt> <dd>؛<dt> <dd>؟<dt> <dd>ء<dt> <dd>آ<dt> <dd>أ<dt> <dd>ؤ<dt> <dt> <dd>إ<dt> <dd>ئ<dt> <dd>ا<dt> <dd>ب<dt> <dd>ة<dt> <dd>ت</dl></div>
+<div><dl><dd>ث<dt> <dt> <dd>ج<dt> <dd>ح<dt> <dd>خ<dt> <dd>د<dt> <dd>ذ<dt> <dd>ر<dt> <dt> <dd>ز<dt> <dd>س<dt> <dd>ش<dt> <dd>ص<dt> <dd>ض<dt> <dd>ط</dl></div>
+<div><dl><dd>ظ<dt> <dt> <dd>ع<dt> <dd>غ<dt> <dd>ـ<dt> <dd>ف<dt> <dd>ق<dt> <dd>ك<dt> <dt> <dd>ل<dt> <dd>م<dt> <dd>ن<dt> <dd>ه<dt> <dd>و<dt> <dd>ى</dl></div>
+<div><dl><dd>ي<dt> <dt> <dd>ً<dt> <dd>ٌ<dt> <dd>ٍ<dt> <dd>َ<dt> <dd>ُ<dt> <dd>ِ<dt> <dt> <dd>ّ<dt> <dd>ْ<dt> <dd>٠<dt> <dd>١<dt> <dd>٢<dt> <dd>٣</dl></div>
+<div><dl><dd>٤<dt> <dt> <dd>٥<dt> <dd>٦<dt> <dd>٧<dt> <dd>٨<dt> <dd>٩<dt> <dd>٪<dt> <dt> <dd>٫<dt> <dd>٬<dt> <dd>٭<dt> <dd>ٰ<dt> <dd>ٱ<dt> <dd>ٲ</dl></div>
+<div><dl><dd>ٳ<dt> <dt> <dd>ٴ<dt> <dd>ٵ<dt> <dd>ٶ<dt> <dd>ٷ<dt> <dd>ٸ<dt> <dd>ٹ<dt> <dt> <dd>ٺ<dt> <dd>ٻ<dt> <dd>ټ<dt> <dd>ٽ<dt> <dd>پ<dt> <dd>ٿ</dl></div>
+<div><dl><dd>ڀ<dt> <dt> <dd>ځ<dt> <dd>ڂ<dt> <dd>ڃ<dt> <dd>ڄ<dt> <dd>څ<dt> <dd>چ<dt> <dt> <dd>ڇ<dt> <dd>ڈ<dt> <dd>ډ<dt> <dd>ڊ<dt> <dd>ڋ<dt> <dd>ڌ</dl></div>
+<div><dl><dd>ڍ<dt> <dt> <dd>ڎ<dt> <dd>ڏ<dt> <dd>ڐ<dt> <dd>ڑ<dt> <dd>ڒ<dt> <dd>ړ<dt> <dt> <dd>ڔ<dt> <dd>ڕ<dt> <dd>ږ<dt> <dd>ڗ<dt> <dd>ژ<dt> <dd>ڙ</dl></div>
+<div><dl><dd>ښ<dt> <dt> <dd>ڛ<dt> <dd>ڜ<dt> <dd>ڝ<dt> <dd>ڞ<dt> <dd>ڟ<dt> <dd>ڠ<dt> <dt> <dd>ڡ<dt> <dd>ڢ<dt> <dd>ڣ<dt> <dd>ڤ<dt> <dd>ڥ<dt> <dd>ڦ</dl></div>
+<div><dl><dd>ڧ<dt> <dd>ڨ<dt> <dd>ک<dt> <dd>ڪ<dt> <dd>ګ<dt> <dd>ڬ<dt> <dd>ڭ<dt> <dd>ڮ<dt> <dd>گ<dt> <dd>ڰ<dt> <dd>ڱ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark13><a  href='#toc13'><dl><dt>D<dt>e<dt>v<dt>a<dt>n<dt>a<dt>g<dt>a<dt>r<dt>i</dl></a></div>
+<div><dl><dd>ँ<dt> <dt> <dd>ं<dt> <dd>ः<dt> <dd>अ<dt> <dd>आ<dt> <dd>इ<dt> <dd>ई<dt> <dt> <dd>उ<dt> <dd>ऊ<dt> <dd>ऋ<dt> <dd>ऌ<dt> <dd>ऍ<dt> <dd>ऎ</dl></div>
+<div><dl><dd>ए<dt> <dt> <dd>ऐ<dt> <dd>ऑ<dt> <dd>ऒ<dt> <dd>ओ<dt> <dd>औ<dt> <dd>क<dt> <dt> <dd>ख<dt> <dd>ग<dt> <dd>घ<dt> <dd>ङ<dt> <dd>च<dt> <dd>छ</dl></div>
+<div><dl><dd>ज<dt> <dt> <dd>झ<dt> <dd>ञ<dt> <dd>ट<dt> <dd>ठ<dt> <dd>ड<dt> <dd>ढ<dt> <dt> <dd>ण<dt> <dd>त<dt> <dd>थ<dt> <dd>द<dt> <dd>ध<dt> <dd>न</dl></div>
+<div><dl><dd>ऩ<dt> <dt> <dd>प<dt> <dd>फ<dt> <dd>ब<dt> <dd>भ<dt> <dd>म<dt> <dd>य<dt> <dt> <dd>र<dt> <dd>ऱ<dt> <dd>ल<dt> <dd>ळ<dt> <dd>ऴ<dt> <dd>व</dl></div>
+<div><dl><dd>श<dt> <dt> <dd>ष<dt> <dd>स<dt> <dd>ह<dt> <dd>़<dt> <dd>ऽ<dt> <dd>ा<dt> <dt> <dd>ि<dt> <dd>ी<dt> <dd>ु<dt> <dd>ू<dt> <dd>ृ<dt> <dd>ॄ</dl></div>
+<div><dl><dd>ॅ<dt> <dt> <dd>ॆ<dt> <dd>े<dt> <dd>ै<dt> <dd>ॉ<dt> <dd>ॊ<dt> <dd>ो<dt> <dt> <dd>ौ<dt> <dd>्<dt> <dd>ॐ<dt> <dd>॑<dt> <dd>॒<dt> <dd>॓</dl></div>
+<div><dl><dd>॔<dt> <dt> <dd>क़<dt> <dd>ख़<dt> <dd>ग़<dt> <dd>ज़<dt> <dd>ड़<dt> <dd>ढ़<dt> <dt> <dd>फ़<dt> <dd>य़<dt> <dd>ॠ<dt> <dd>ॡ<dt> <dd>ॢ<dt> <dd>ॣ</dl></div>
+<div><dl><dd>।<dt> <dd>॥<dt> <dd>०<dt> <dd>१<dt> <dd>२<dt> <dd>३<dt> <dd>४<dt> <dd>५<dt> <dd>६<dt> <dd>७<dt> <dd>८<dt> <dd>९<dt> <dd>॰</dl></div>
+<div class=_mark id=mark14><a  href='#toc14'><dl><dt>B<dt>e<dt>n<dt>g<dt>a<dt>l<dt>i</dl></a></div>
+<div><dl><dd>ঁ<dt> <dt> <dd>ং<dt> <dd>ঃ<dt> <dd>অ<dt> <dd>আ<dt> <dd>ই<dt> <dd>ঈ<dt> <dt> <dd>উ<dt> <dd>ঊ<dt> <dd>ঋ<dt> <dd>ঌ<dt> <dd>এ<dt> <dd>ঐ</dl></div>
+<div><dl><dd>ও<dt> <dt> <dd>ঔ<dt> <dd>ক<dt> <dd>খ<dt> <dd>গ<dt> <dd>ঘ<dt> <dd>ঙ<dt> <dt> <dd>চ<dt> <dd>ছ<dt> <dd>জ<dt> <dd>ঝ<dt> <dd>ঞ<dt> <dd>ট</dl></div>
+<div><dl><dd>ঠ<dt> <dt> <dd>ড<dt> <dd>ঢ<dt> <dd>ণ<dt> <dd>ত<dt> <dd>থ<dt> <dd>দ<dt> <dt> <dd>ধ<dt> <dd>ন<dt> <dd>প<dt> <dd>ফ<dt> <dd>ব<dt> <dd>ভ</dl></div>
+<div><dl><dd>ম<dt> <dt> <dd>য<dt> <dd>র<dt> <dd>ল<dt> <dd>শ<dt> <dd>ষ<dt> <dd>স<dt> <dt> <dd>হ<dt> <dd>়<dt> <dd>া<dt> <dd>ি<dt> <dd>ী<dt> <dd>ু</dl></div>
+<div><dl><dd>ূ<dt> <dt> <dd>ৃ<dt> <dd>ৄ<dt> <dd>ে<dt> <dd>ৈ<dt> <dd>ো<dt> <dd>ৌ<dt> <dt> <dd>্<dt> <dd>ৗ<dt> <dd>ড়<dt> <dd>ঢ়<dt> <dd>য়<dt> <dd>ৠ</dl></div>
+<div><dl><dd>ৡ<dt> <dt> <dd>ৢ<dt> <dd>ৣ<dt> <dd>০<dt> <dd>১<dt> <dd>২<dt> <dd>৩<dt> <dt> <dd>৪<dt> <dd>৫<dt> <dd>৬<dt> <dd>৭<dt> <dd>৮<dt> <dd>৯</dl></div>
+<div><dl><dd>ৰ<dt> <dd>ৱ<dt> <dd>৲<dt> <dd>৳<dt> <dd>৴<dt> <dd>৵<dt> <dd>৶<dt> <dd>৷<dt> <dd>৸<dt> <dd>৹<dt> <dd>৺</dl></div>
+<div class=_mark id=mark15><a  href='#toc15'><dl><dt>G<dt>u<dt>r<dt>m<dt>u<dt>k<dt>h<dt>i</dl></a></div>
+<div><dl><dd>ਂ<dt> <dt> <dd>ਅ<dt> <dd>ਆ<dt> <dd>ਇ<dt> <dd>ਈ<dt> <dd>ਉ<dt> <dd>ਊ<dt> <dt> <dd>ਏ<dt> <dd>ਐ<dt> <dd>ਓ<dt> <dd>ਔ<dt> <dd>ਕ<dt> <dd>ਖ</dl></div>
+<div><dl><dd>ਗ<dt> <dt> <dd>ਘ<dt> <dd>ਙ<dt> <dd>ਚ<dt> <dd>ਛ<dt> <dd>ਜ<dt> <dd>ਝ<dt> <dt> <dd>ਞ<dt> <dd>ਟ<dt> <dd>ਠ<dt> <dd>ਡ<dt> <dd>ਢ<dt> <dd>ਣ</dl></div>
+<div><dl><dd>ਤ<dt> <dt> <dd>ਥ<dt> <dd>ਦ<dt> <dd>ਧ<dt> <dd>ਨ<dt> <dd>ਪ<dt> <dd>ਫ<dt> <dt> <dd>ਬ<dt> <dd>ਭ<dt> <dd>ਮ<dt> <dd>ਯ<dt> <dd>ਰ<dt> <dd>ਲ</dl></div>
+<div><dl><dd>ਲ਼<dt> <dt> <dd>ਵ<dt> <dd>ਸ਼<dt> <dd>ਸ<dt> <dd>ਹ<dt> <dd>਼<dt> <dd>ਾ<dt> <dt> <dd>ਿ<dt> <dd>ੀ<dt> <dd>ੁ<dt> <dd>ੂ<dt> <dd>ੇ<dt> <dd>ੈ</dl></div>
+<div><dl><dd>ੋ<dt> <dt> <dd>ੌ<dt> <dd>੍<dt> <dd>ਖ਼<dt> <dd>ਗ਼<dt> <dd>ਜ਼<dt> <dd>ੜ<dt> <dt> <dd>ਫ਼<dt> <dd>੦<dt> <dd>੧<dt> <dd>੨<dt> <dd>੩<dt> <dd>੪</dl></div>
+<div><dl><dd>੫<dt> <dd>੬<dt> <dd>੭<dt> <dd>੮<dt> <dd>੯<dt> <dd>ੰ<dt> <dd>ੱ<dt> <dd>ੲ<dt> <dd>ੳ<dt> <dd>ੴ</dl></div>
+<div class=_mark id=mark16><a  href='#toc16'><dl><dt>G<dt>u<dt>j<dt>a<dt>r<dt>a<dt>t<dt>i</dl></a></div>
+<div><dl><dd>ઁ<dt> <dt> <dd>ં<dt> <dd>ઃ<dt> <dd>અ<dt> <dd>આ<dt> <dd>ઇ<dt> <dd>ઈ<dt> <dt> <dd>ઉ<dt> <dd>ઊ<dt> <dd>ઋ<dt> <dd>ઍ<dt> <dd>એ<dt> <dd>ઐ</dl></div>
+<div><dl><dd>ઑ<dt> <dt> <dd>ઓ<dt> <dd>ઔ<dt> <dd>ક<dt> <dd>ખ<dt> <dd>ગ<dt> <dd>ઘ<dt> <dt> <dd>ઙ<dt> <dd>ચ<dt> <dd>છ<dt> <dd>જ<dt> <dd>ઝ<dt> <dd>ઞ</dl></div>
+<div><dl><dd>ટ<dt> <dt> <dd>ઠ<dt> <dd>ડ<dt> <dd>ઢ<dt> <dd>ણ<dt> <dd>ત<dt> <dd>થ<dt> <dt> <dd>દ<dt> <dd>ધ<dt> <dd>ન<dt> <dd>પ<dt> <dd>ફ<dt> <dd>બ</dl></div>
+<div><dl><dd>ભ<dt> <dt> <dd>મ<dt> <dd>ય<dt> <dd>ર<dt> <dd>લ<dt> <dd>ળ<dt> <dd>વ<dt> <dt> <dd>શ<dt> <dd>ષ<dt> <dd>સ<dt> <dd>હ<dt> <dd>઼<dt> <dd>ઽ</dl></div>
+<div><dl><dd>ા<dt> <dt> <dd>િ<dt> <dd>ી<dt> <dd>ુ<dt> <dd>ૂ<dt> <dd>ૃ<dt> <dd>ૄ<dt> <dt> <dd>ૅ<dt> <dd>ે<dt> <dd>ૈ<dt> <dd>ૉ<dt> <dd>ો<dt> <dd>ૌ</dl></div>
+<div><dl><dd>્<dt> <dd>ૐ<dt> <dd>ૠ<dt> <dd>૦<dt> <dd>૧<dt> <dd>૨<dt> <dd>૩<dt> <dd>૪<dt> <dd>૫<dt> <dd>૬<dt> <dd>૭<dt> <dd>૮<dt> <dd>૯</dl></div>
+<div class=_mark id=mark17><a  href='#toc17'><dl><dt>O<dt>r<dt>i<dt>y<dt>a</dl></a></div>
+<div><dl><dd>ଁ<dt> <dt> <dd>ଂ<dt> <dd>ଃ<dt> <dd>ଅ<dt> <dd>ଆ<dt> <dd>ଇ<dt> <dd>ଈ<dt> <dt> <dd>ଉ<dt> <dd>ଊ<dt> <dd>ଋ<dt> <dd>ଌ<dt> <dd>ଏ<dt> <dd>ଐ</dl></div>
+<div><dl><dd>ଓ<dt> <dt> <dd>ଔ<dt> <dd>କ<dt> <dd>ଖ<dt> <dd>ଗ<dt> <dd>ଘ<dt> <dd>ଙ<dt> <dt> <dd>ଚ<dt> <dd>ଛ<dt> <dd>ଜ<dt> <dd>ଝ<dt> <dd>ଞ<dt> <dd>ଟ</dl></div>
+<div><dl><dd>ଠ<dt> <dt> <dd>ଡ<dt> <dd>ଢ<dt> <dd>ଣ<dt> <dd>ତ<dt> <dd>ଥ<dt> <dd>ଦ<dt> <dt> <dd>ଧ<dt> <dd>ନ<dt> <dd>ପ<dt> <dd>ଫ<dt> <dd>ବ<dt> <dd>ଭ</dl></div>
+<div><dl><dd>ମ<dt> <dt> <dd>ଯ<dt> <dd>ର<dt> <dd>ଲ<dt> <dd>ଳ<dt> <dd>ଶ<dt> <dd>ଷ<dt> <dt> <dd>ସ<dt> <dd>ହ<dt> <dd>଼<dt> <dd>ଽ<dt> <dd>ା<dt> <dd>ି</dl></div>
+<div><dl><dd>ୀ<dt> <dt> <dd>ୁ<dt> <dd>ୂ<dt> <dd>ୃ<dt> <dd>େ<dt> <dd>ୈ<dt> <dd>ୋ<dt> <dt> <dd>ୌ<dt> <dd>୍<dt> <dd>ୖ<dt> <dd>ୗ<dt> <dd>ଡ଼<dt> <dd>ଢ଼</dl></div>
+<div><dl><dd>ୟ<dt> <dt> <dd>ୠ<dt> <dd>ୡ<dt> <dd>୦<dt> <dd>୧<dt> <dd>୨<dt> <dd>୩<dt> <dt> <dd>୪<dt> <dd>୫<dt> <dd>୬<dt> <dd>୭<dt> <dd>୮<dt> <dd>୯</dl></div>
+<div><dl><dd>୰</dl></div>
+<div class=_mark id=mark18><a  href='#toc18'><dl><dt>T<dt>a<dt>m<dt>i<dt>l</dl></a></div>
+<div><dl><dd>ஂ<dt> <dt> <dd>ஃ<dt> <dd>அ<dt> <dd>ஆ<dt> <dd>இ<dt> <dd>ஈ<dt> <dd>உ<dt> <dt> <dd>ஊ<dt> <dd>எ<dt> <dd>ஏ<dt> <dd>ஐ<dt> <dd>ஒ<dt> <dd>ஓ</dl></div>
+<div><dl><dd>ஔ<dt> <dt> <dd>க<dt> <dd>ங<dt> <dd>ச<dt> <dd>ஜ<dt> <dd>ஞ<dt> <dd>ட<dt> <dt> <dd>ண<dt> <dd>த<dt> <dd>ந<dt> <dd>ன<dt> <dd>ப<dt> <dd>ம</dl></div>
+<div><dl><dd>ய<dt> <dt> <dd>ர<dt> <dd>ற<dt> <dd>ல<dt> <dd>ள<dt> <dd>ழ<dt> <dd>வ<dt> <dt> <dd>ஷ<dt> <dd>ஸ<dt> <dd>ஹ<dt> <dd>ா<dt> <dd>ி<dt> <dd>ீ</dl></div>
+<div><dl><dd>ு<dt> <dt> <dd>ூ<dt> <dd>ெ<dt> <dd>ே<dt> <dd>ை<dt> <dd>ொ<dt> <dd>ோ<dt> <dt> <dd>ௌ<dt> <dd>்<dt> <dd>ௗ<dt> <dd>௧<dt> <dd>௨<dt> <dd>௩</dl></div>
+<div><dl><dd>௪<dt> <dd>௫<dt> <dd>௬<dt> <dd>௭<dt> <dd>௮<dt> <dd>௯<dt> <dd>௰<dt> <dd>௱<dt> <dd>௲</dl></div>
+<div class=_mark id=mark19><a  href='#toc19'><dl><dt>T<dt>e<dt>l<dt>u<dt>g<dt>u</dl></a></div>
+<div><dl><dd>ఁ<dt> <dt> <dd>ం<dt> <dd>ః<dt> <dd>అ<dt> <dd>ఆ<dt> <dd>ఇ<dt> <dd>ఈ<dt> <dt> <dd>ఉ<dt> <dd>ఊ<dt> <dd>ఋ<dt> <dd>ఌ<dt> <dd>ఎ<dt> <dd>ఏ</dl></div>
+<div><dl><dd>ఐ<dt> <dt> <dd>ఒ<dt> <dd>ఓ<dt> <dd>ఔ<dt> <dd>క<dt> <dd>ఖ<dt> <dd>గ<dt> <dt> <dd>ఘ<dt> <dd>ఙ<dt> <dd>చ<dt> <dd>ఛ<dt> <dd>జ<dt> <dd>ఝ</dl></div>
+<div><dl><dd>ఞ<dt> <dt> <dd>ట<dt> <dd>ఠ<dt> <dd>డ<dt> <dd>ఢ<dt> <dd>ణ<dt> <dd>త<dt> <dt> <dd>థ<dt> <dd>ద<dt> <dd>ధ<dt> <dd>న<dt> <dd>ప<dt> <dd>ఫ</dl></div>
+<div><dl><dd>బ<dt> <dt> <dd>భ<dt> <dd>మ<dt> <dd>య<dt> <dd>ర<dt> <dd>ఱ<dt> <dd>ల<dt> <dt> <dd>ళ<dt> <dd>వ<dt> <dd>శ<dt> <dd>ష<dt> <dd>స<dt> <dd>హ</dl></div>
+<div><dl><dd>ా<dt> <dt> <dd>ి<dt> <dd>ీ<dt> <dd>ు<dt> <dd>ూ<dt> <dd>ృ<dt> <dd>ౄ<dt> <dt> <dd>ె<dt> <dd>ే<dt> <dd>ై<dt> <dd>ొ<dt> <dd>ో<dt> <dd>ౌ</dl></div>
+<div><dl><dd>్<dt> <dt> <dd>ౕ<dt> <dd>ౖ<dt> <dd>ౠ<dt> <dd>ౡ<dt> <dd>౦<dt> <dd>౧<dt> <dt> <dd>౨<dt> <dd>౩<dt> <dd>౪<dt> <dd>౫<dt> <dd>౬<dt> <dd>౭</dl></div>
+<div><dl><dd>౮<dt> <dd>౯</dl></div>
+<div class=_mark id=mark20><a  href='#toc20'><dl><dt>K<dt>a<dt>n<dt>n<dt>a<dt>d<dt>a</dl></a></div>
+<div><dl><dd>ಂ<dt> <dt> <dd>ಃ<dt> <dd>ಅ<dt> <dd>ಆ<dt> <dd>ಇ<dt> <dd>ಈ<dt> <dd>ಉ<dt> <dt> <dd>ಊ<dt> <dd>ಋ<dt> <dd>ಌ<dt> <dd>ಎ<dt> <dd>ಏ<dt> <dd>ಐ</dl></div>
+<div><dl><dd>ಒ<dt> <dt> <dd>ಓ<dt> <dd>ಔ<dt> <dd>ಕ<dt> <dd>ಖ<dt> <dd>ಗ<dt> <dd>ಘ<dt> <dt> <dd>ಙ<dt> <dd>ಚ<dt> <dd>ಛ<dt> <dd>ಜ<dt> <dd>ಝ<dt> <dd>ಞ</dl></div>
+<div><dl><dd>ಟ<dt> <dt> <dd>ಠ<dt> <dd>ಡ<dt> <dd>ಢ<dt> <dd>ಣ<dt> <dd>ತ<dt> <dd>ಥ<dt> <dt> <dd>ದ<dt> <dd>ಧ<dt> <dd>ನ<dt> <dd>ಪ<dt> <dd>ಫ<dt> <dd>ಬ</dl></div>
+<div><dl><dd>ಭ<dt> <dt> <dd>ಮ<dt> <dd>ಯ<dt> <dd>ರ<dt> <dd>ಱ<dt> <dd>ಲ<dt> <dd>ಳ<dt> <dt> <dd>ವ<dt> <dd>ಶ<dt> <dd>ಷ<dt> <dd>ಸ<dt> <dd>ಹ<dt> <dd>ಾ</dl></div>
+<div><dl><dd>ಿ<dt> <dt> <dd>ೀ<dt> <dd>ು<dt> <dd>ೂ<dt> <dd>ೃ<dt> <dd>ೄ<dt> <dd>ೆ<dt> <dt> <dd>ೇ<dt> <dd>ೈ<dt> <dd>ೊ<dt> <dd>ೋ<dt> <dd>ೌ<dt> <dd>್</dl></div>
+<div><dl><dd>ೕ<dt> <dt> <dd>ೖ<dt> <dd>ೞ<dt> <dd>ೠ<dt> <dd>ೡ<dt> <dd>೦<dt> <dd>೧<dt> <dt> <dd>೨<dt> <dd>೩<dt> <dd>೪<dt> <dd>೫<dt> <dd>೬<dt> <dd>೭</dl></div>
+<div><dl><dd>೮<dt> <dd>೯</dl></div>
+<div class=_mark id=mark21><a  href='#toc21'><dl><dt>M<dt>a<dt>l<dt>a<dt>y<dt>a<dt>l<dt>a<dt>m</dl></a></div>
+<div><dl><dd>ം<dt> <dt> <dd>ഃ<dt> <dd>അ<dt> <dd>ആ<dt> <dd>ഇ<dt> <dd>ഈ<dt> <dd>ഉ<dt> <dt> <dd>ഊ<dt> <dd>ഋ<dt> <dd>ഌ<dt> <dd>എ<dt> <dd>ഏ<dt> <dd>ഐ</dl></div>
+<div><dl><dd>ഒ<dt> <dt> <dd>ഓ<dt> <dd>ഔ<dt> <dd>ക<dt> <dd>ഖ<dt> <dd>ഗ<dt> <dd>ഘ<dt> <dt> <dd>ങ<dt> <dd>ച<dt> <dd>ഛ<dt> <dd>ജ<dt> <dd>ഝ<dt> <dd>ഞ</dl></div>
+<div><dl><dd>ട<dt> <dt> <dd>ഠ<dt> <dd>ഡ<dt> <dd>ഢ<dt> <dd>ണ<dt> <dd>ത<dt> <dd>ഥ<dt> <dt> <dd>ദ<dt> <dd>ധ<dt> <dd>ന<dt> <dd>പ<dt> <dd>ഫ<dt> <dd>ബ</dl></div>
+<div><dl><dd>ഭ<dt> <dt> <dd>മ<dt> <dd>യ<dt> <dd>ര<dt> <dd>റ<dt> <dd>ല<dt> <dd>ള<dt> <dt> <dd>ഴ<dt> <dd>വ<dt> <dd>ശ<dt> <dd>ഷ<dt> <dd>സ<dt> <dd>ഹ</dl></div>
+<div><dl><dd>ാ<dt> <dt> <dd>ി<dt> <dd>ീ<dt> <dd>ു<dt> <dd>ൂ<dt> <dd>ൃ<dt> <dd>െ<dt> <dt> <dd>േ<dt> <dd>ൈ<dt> <dd>ൊ<dt> <dd>ോ<dt> <dd>ൌ<dt> <dd>്</dl></div>
+<div><dl><dd>ൗ<dt> <dd>ൠ<dt> <dd>ൡ<dt> <dd>൦<dt> <dd>൧<dt> <dd>൨<dt> <dd>൩<dt> <dd>൪<dt> <dd>൫<dt> <dd>൬<dt> <dd>൭<dt> <dd>൮<dt> <dd>൯</dl></div>
+<div class=_mark id=mark22><a  href='#toc22'><dl><dt>T<dt>h<dt>a<dt>i</dl></a></div>
+<div><dl><dd>ก<dt> <dt> <dd>ข<dt> <dd>ฃ<dt> <dd>ค<dt> <dd>ฅ<dt> <dd>ฆ<dt> <dd>ง<dt> <dt> <dd>จ<dt> <dd>ฉ<dt> <dd>ช<dt> <dd>ซ<dt> <dd>ฌ<dt> <dd>ญ</dl></div>
+<div><dl><dd>ฎ<dt> <dt> <dd>ฏ<dt> <dd>ฐ<dt> <dd>ฑ<dt> <dd>ฒ<dt> <dd>ณ<dt> <dd>ด<dt> <dt> <dd>ต<dt> <dd>ถ<dt> <dd>ท<dt> <dd>ธ<dt> <dd>น<dt> <dd>บ</dl></div>
+<div><dl><dd>ป<dt> <dt> <dd>ผ<dt> <dd>ฝ<dt> <dd>พ<dt> <dd>ฟ<dt> <dd>ภ<dt> <dd>ม<dt> <dt> <dd>ย<dt> <dd>ร<dt> <dd>ฤ<dt> <dd>ล<dt> <dd>ฦ<dt> <dd>ว</dl></div>
+<div><dl><dd>ศ<dt> <dt> <dd>ษ<dt> <dd>ส<dt> <dd>ห<dt> <dd>ฬ<dt> <dd>อ<dt> <dd>ฮ<dt> <dt> <dd>ฯ<dt> <dd>ะ<dt> <dd>ั<dt> <dd>า<dt> <dd>ำ<dt> <dd>ิ</dl></div>
+<div><dl><dd>ี<dt> <dt> <dd>ึ<dt> <dd>ื<dt> <dd>ุ<dt> <dd>ู<dt> <dd>ฺ<dt> <dd>฿<dt> <dt> <dd>เ<dt> <dd>แ<dt> <dd>โ<dt> <dd>ใ<dt> <dd>ไ<dt> <dd>ๅ</dl></div>
+<div><dl><dd>ๆ<dt> <dt> <dd>็<dt> <dd>่<dt> <dd>้<dt> <dd>๊<dt> <dd>๋<dt> <dd>์<dt> <dt> <dd>ํ<dt> <dd>๎<dt> <dd>๏<dt> <dd>๐<dt> <dd>๑<dt> <dd>๒</dl></div>
+<div><dl><dd>๓<dt> <dd>๔<dt> <dd>๕<dt> <dd>๖<dt> <dd>๗<dt> <dd>๘<dt> <dd>๙<dt> <dd>๚<dt> <dd>๛</dl></div>
+<div class=_mark id=mark23><a  href='#toc23'><dl><dt>L<dt>a<dt>o</dl></a></div>
+<div><dl><dd>ກ<dt> <dt> <dd>ຂ<dt> <dd>ຄ<dt> <dd>ງ<dt> <dd>ຈ<dt> <dd>ຊ<dt> <dd>ຍ<dt> <dt> <dd>ດ<dt> <dd>ຕ<dt> <dd>ຖ<dt> <dd>ທ<dt> <dd>ນ<dt> <dd>ບ</dl></div>
+<div><dl><dd>ປ<dt> <dt> <dd>ຜ<dt> <dd>ຝ<dt> <dd>ພ<dt> <dd>ຟ<dt> <dd>ມ<dt> <dd>ຢ<dt> <dt> <dd>ຣ<dt> <dd>ລ<dt> <dd>ວ<dt> <dd>ສ<dt> <dd>ຫ<dt> <dd>ອ</dl></div>
+<div><dl><dd>ຮ<dt> <dt> <dd>ຯ<dt> <dd>ະ<dt> <dd>ັ<dt> <dd>າ<dt> <dd>ຳ<dt> <dd>ິ<dt> <dt> <dd>ີ<dt> <dd>ຶ<dt> <dd>ື<dt> <dd>ຸ<dt> <dd>ູ<dt> <dd>ົ</dl></div>
+<div><dl><dd>ຼ<dt> <dt> <dd>ຽ<dt> <dd>ເ<dt> <dd>ແ<dt> <dd>ໂ<dt> <dd>ໃ<dt> <dd>ໄ<dt> <dt> <dd>ໆ<dt> <dd>່<dt> <dd>້<dt> <dd>໊<dt> <dd>໋<dt> <dd>໌</dl></div>
+<div><dl><dd>ໍ<dt> <dd>໐<dt> <dd>໑<dt> <dd>໒<dt> <dd>໓<dt> <dd>໔<dt> <dd>໕<dt> <dd>໖<dt> <dd>໗<dt> <dd>໘<dt> <dd>໙<dt> <dd>ໜ<dt> <dd>ໝ</dl></div>
+<div class=_mark id=mark24><a  href='#toc24'><dl><dt>T<dt>i<dt>b<dt>e<dt>t<dt>a<dt>n</dl></a></div>
+<div><dl><dd>ༀ<dt> <dt> <dd>༁<dt> <dd>༂<dt> <dd>༃<dt> <dd>༄<dt> <dd>༅<dt> <dd>༆<dt> <dt> <dd>༇<dt> <dd>༈<dt> <dd>༉<dt> <dd>༊<dt> <dd>་<dt> <dd>༌</dl></div>
+<div><dl><dd>།<dt> <dt> <dd>༎<dt> <dd>༏<dt> <dd>༐<dt> <dd>༑<dt> <dd>༒<dt> <dd>༓<dt> <dt> <dd>༔<dt> <dd>༕<dt> <dd>༖<dt> <dd>༗<dt> <dd>༘<dt> <dd>༙</dl></div>
+<div><dl><dd>༚<dt> <dt> <dd>༛<dt> <dd>༜<dt> <dd>༝<dt> <dd>༞<dt> <dd>༟<dt> <dd>༠<dt> <dt> <dd>༡<dt> <dd>༢<dt> <dd>༣<dt> <dd>༤<dt> <dd>༥<dt> <dd>༦</dl></div>
+<div><dl><dd>༧<dt> <dt> <dd>༨<dt> <dd>༩<dt> <dd>༪<dt> <dd>༫<dt> <dd>༬<dt> <dd>༭<dt> <dt> <dd>༮<dt> <dd>༯<dt> <dd>༰<dt> <dd>༱<dt> <dd>༲<dt> <dd>༳</dl></div>
+<div><dl><dd>༴<dt> <dt> <dd>༵<dt> <dd>༶<dt> <dd>༷<dt> <dd>༸<dt> <dd>༹<dt> <dd>༺<dt> <dt> <dd>༻<dt> <dd>༼<dt> <dd>༽<dt> <dd>༾<dt> <dd>༿<dt> <dd>ཀ</dl></div>
+<div><dl><dd>ཁ<dt> <dt> <dd>ག<dt> <dd>གྷ<dt> <dd>ང<dt> <dd>ཅ<dt> <dd>ཆ<dt> <dd>ཇ<dt> <dt> <dd>ཉ<dt> <dd>ཊ<dt> <dd>ཋ<dt> <dd>ཌ<dt> <dd>ཌྷ<dt> <dd>ཎ</dl></div>
+<div><dl><dd>ཏ<dt> <dt> <dd>ཐ<dt> <dd>ད<dt> <dd>དྷ<dt> <dd>ན<dt> <dd>པ<dt> <dd>ཕ<dt> <dt> <dd>བ<dt> <dd>བྷ<dt> <dd>མ<dt> <dd>ཙ<dt> <dd>ཚ<dt> <dd>ཛ</dl></div>
+<div><dl><dd>ཛྷ<dt> <dt> <dd>ཝ<dt> <dd>ཞ<dt> <dd>ཟ<dt> <dd>འ<dt> <dd>ཡ<dt> <dd>ར<dt> <dt> <dd>ལ<dt> <dd>ཤ<dt> <dd>ཥ<dt> <dd>ས<dt> <dd>ཧ<dt> <dd>ཨ</dl></div>
+<div><dl><dd>ཀྵ<dt> <dt> <dd>ཱ<dt> <dd>ི<dt> <dd>ཱི<dt> <dd>ུ<dt> <dd>ཱུ<dt> <dd>ྲྀ<dt> <dt> <dd>ཷ<dt> <dd>ླྀ<dt> <dd>ཹ<dt> <dd>ེ<dt> <dd>ཻ<dt> <dd>ོ</dl></div>
+<div><dl><dd>ཽ<dt> <dd>ཾ<dt> <dd>ཿ<dt> <dd>ྀ<dt> <dd>ཱྀ<dt> <dd>ྂ<dt> <dd>ྃ<dt> <dd>྄<dt> <dd>྅<dt> <dd>྆<dt> <dd>྇<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark25><a  href='#toc25'><dl><dt>G<dt>e<dt>o<dt>r<dt>g<dt>i<dt>a<dt>n</dl></a></div>
+<div><dl><dd>Ⴀ<dt> <dt> <dd>Ⴁ<dt> <dd>Ⴂ<dt> <dd>Ⴃ<dt> <dd>Ⴄ<dt> <dd>Ⴅ<dt> <dd>Ⴆ<dt> <dt> <dd>Ⴇ<dt> <dd>Ⴈ<dt> <dd>Ⴉ<dt> <dd>Ⴊ<dt> <dd>Ⴋ<dt> <dd>Ⴌ</dl></div>
+<div><dl><dd>Ⴍ<dt> <dt> <dd>Ⴎ<dt> <dd>Ⴏ<dt> <dd>Ⴐ<dt> <dd>Ⴑ<dt> <dd>Ⴒ<dt> <dd>Ⴓ<dt> <dt> <dd>Ⴔ<dt> <dd>Ⴕ<dt> <dd>Ⴖ<dt> <dd>Ⴗ<dt> <dd>Ⴘ<dt> <dd>Ⴙ</dl></div>
+<div><dl><dd>Ⴚ<dt> <dt> <dd>Ⴛ<dt> <dd>Ⴜ<dt> <dd>Ⴝ<dt> <dd>Ⴞ<dt> <dd>Ⴟ<dt> <dd>Ⴠ<dt> <dt> <dd>Ⴡ<dt> <dd>Ⴢ<dt> <dd>Ⴣ<dt> <dd>Ⴤ<dt> <dd>Ⴥ<dt> <dd>ა</dl></div>
+<div><dl><dd>ბ<dt> <dt> <dd>გ<dt> <dd>დ<dt> <dd>ე<dt> <dd>ვ<dt> <dd>ზ<dt> <dd>თ<dt> <dt> <dd>ი<dt> <dd>კ<dt> <dd>ლ<dt> <dd>მ<dt> <dd>ნ<dt> <dd>ო</dl></div>
+<div><dl><dd>პ<dt> <dt> <dd>ჟ<dt> <dd>რ<dt> <dd>ს<dt> <dd>ტ<dt> <dd>უ<dt> <dd>ფ<dt> <dt> <dd>ქ<dt> <dd>ღ<dt> <dd>ყ<dt> <dd>შ<dt> <dd>ჩ<dt> <dd>ც</dl></div>
+<div><dl><dd>ძ<dt> <dd>წ<dt> <dd>ჭ<dt> <dd>ხ<dt> <dd>ჯ<dt> <dd>ჰ<dt> <dd>ჱ<dt> <dd>ჲ<dt> <dd>ჳ<dt> <dd>ჴ<dt> <dd>ჵ<dt> <dd>ჶ<dt> <dd>჻</dl></div>
+<div class=_mark id=mark26><a  href='#toc26'><dl><dt>H<dt>a<dt>n<dt>g<dt>u<dt>l<dt> <dt>J<dt>a<dt>m<dt>o</dl></a></div>
+<div><dl><dd>ᄀ<dt> <dt> <dd>ᄁ<dt> <dd>ᄂ<dt> <dd>ᄃ<dt> <dd>ᄄ<dt> <dd>ᄅ<dt> <dd>ᄆ<dt> <dt> <dd>ᄇ<dt> <dd>ᄈ<dt> <dd>ᄉ<dt> <dd>ᄊ<dt> <dd>ᄋ<dt> <dd>ᄌ</dl></div>
+<div><dl><dd>ᄍ<dt> <dt> <dd>ᄎ<dt> <dd>ᄏ<dt> <dd>ᄐ<dt> <dd>ᄑ<dt> <dd>ᄒ<dt> <dd>ᄓ<dt> <dt> <dd>ᄔ<dt> <dd>ᄕ<dt> <dd>ᄖ<dt> <dd>ᄗ<dt> <dd>ᄘ<dt> <dd>ᄙ</dl></div>
+<div><dl><dd>ᄚ<dt> <dt> <dd>ᄛ<dt> <dd>ᄜ<dt> <dd>ᄝ<dt> <dd>ᄞ<dt> <dd>ᄟ<dt> <dd>ᄠ<dt> <dt> <dd>ᄡ<dt> <dd>ᄢ<dt> <dd>ᄣ<dt> <dd>ᄤ<dt> <dd>ᄥ<dt> <dd>ᄦ</dl></div>
+<div><dl><dd>ᄧ<dt> <dt> <dd>ᄨ<dt> <dd>ᄩ<dt> <dd>ᄪ<dt> <dd>ᄫ<dt> <dd>ᄬ<dt> <dd>ᄭ<dt> <dt> <dd>ᄮ<dt> <dd>ᄯ<dt> <dd>ᄰ<dt> <dd>ᄱ<dt> <dd>ᄲ<dt> <dd>ᄳ</dl></div>
+<div><dl><dd>ᄴ<dt> <dt> <dd>ᄵ<dt> <dd>ᄶ<dt> <dd>ᄷ<dt> <dd>ᄸ<dt> <dd>ᄹ<dt> <dd>ᄺ<dt> <dt> <dd>ᄻ<dt> <dd>ᄼ<dt> <dd>ᄽ<dt> <dd>ᄾ<dt> <dd>ᄿ<dt> <dd>ᅀ</dl></div>
+<div><dl><dd>ᅁ<dt> <dt> <dd>ᅂ<dt> <dd>ᅃ<dt> <dd>ᅄ<dt> <dd>ᅅ<dt> <dd>ᅆ<dt> <dd>ᅇ<dt> <dt> <dd>ᅈ<dt> <dd>ᅉ<dt> <dd>ᅊ<dt> <dd>ᅋ<dt> <dd>ᅌ<dt> <dd>ᅍ</dl></div>
+<div><dl><dd>ᅎ<dt> <dt> <dd>ᅏ<dt> <dd>ᅐ<dt> <dd>ᅑ<dt> <dd>ᅒ<dt> <dd>ᅓ<dt> <dd>ᅔ<dt> <dt> <dd>ᅕ<dt> <dd>ᅖ<dt> <dd>ᅗ<dt> <dd>ᅘ<dt> <dd>ᅙ<dt> <dd>ᅟ</dl></div>
+<div><dl><dd>ᅠ<dt> <dt> <dd>ᅡ<dt> <dd>ᅢ<dt> <dd>ᅣ<dt> <dd>ᅤ<dt> <dd>ᅥ<dt> <dd>ᅦ<dt> <dt> <dd>ᅧ<dt> <dd>ᅨ<dt> <dd>ᅩ<dt> <dd>ᅪ<dt> <dd>ᅫ<dt> <dd>ᅬ</dl></div>
+<div><dl><dd>ᅭ<dt> <dt> <dd>ᅮ<dt> <dd>ᅯ<dt> <dd>ᅰ<dt> <dd>ᅱ<dt> <dd>ᅲ<dt> <dd>ᅳ<dt> <dt> <dd>ᅴ<dt> <dd>ᅵ<dt> <dd>ᅶ<dt> <dd>ᅷ<dt> <dd>ᅸ<dt> <dd>ᅹ</dl></div>
+<div><dl><dd>ᅺ<dt> <dd>ᅻ<dt> <dd>ᅼ<dt> <dd>ᅽ<dt> <dd>ᅾ<dt> <dd>ᅿ<dt> <dd>ᆀ<dt> <dd>ᆁ<dt> <dd>ᆂ<dt> <dd>ᆃ<dt> <dd>ᆄ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark27><a  href='#toc27'><dl><dt>L<dt>a<dt>t<dt>i<dt>n<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d<dt> <dt>A<dt>d<dt>d<dt>i<dt>t<dt>i<dt>o<dt>n<dt>a<dt>l</dl></a></div>
+<div><dl><dd>Ḁ<dt> <dt> <dd>ḁ<dt> <dd>Ḃ<dt> <dd>ḃ<dt> <dd>Ḅ<dt> <dd>ḅ<dt> <dd>Ḇ<dt> <dt> <dd>ḇ<dt> <dd>Ḉ<dt> <dd>ḉ<dt> <dd>Ḋ<dt> <dd>ḋ<dt> <dd>Ḍ</dl></div>
+<div><dl><dd>ḍ<dt> <dt> <dd>Ḏ<dt> <dd>ḏ<dt> <dd>Ḑ<dt> <dd>ḑ<dt> <dd>Ḓ<dt> <dd>ḓ<dt> <dt> <dd>Ḕ<dt> <dd>ḕ<dt> <dd>Ḗ<dt> <dd>ḗ<dt> <dd>Ḙ<dt> <dd>ḙ</dl></div>
+<div><dl><dd>Ḛ<dt> <dt> <dd>ḛ<dt> <dd>Ḝ<dt> <dd>ḝ<dt> <dd>Ḟ<dt> <dd>ḟ<dt> <dd>Ḡ<dt> <dt> <dd>ḡ<dt> <dd>Ḣ<dt> <dd>ḣ<dt> <dd>Ḥ<dt> <dd>ḥ<dt> <dd>Ḧ</dl></div>
+<div><dl><dd>ḧ<dt> <dt> <dd>Ḩ<dt> <dd>ḩ<dt> <dd>Ḫ<dt> <dd>ḫ<dt> <dd>Ḭ<dt> <dd>ḭ<dt> <dt> <dd>Ḯ<dt> <dd>ḯ<dt> <dd>Ḱ<dt> <dd>ḱ<dt> <dd>Ḳ<dt> <dd>ḳ</dl></div>
+<div><dl><dd>Ḵ<dt> <dt> <dd>ḵ<dt> <dd>Ḷ<dt> <dd>ḷ<dt> <dd>Ḹ<dt> <dd>ḹ<dt> <dd>Ḻ<dt> <dt> <dd>ḻ<dt> <dd>Ḽ<dt> <dd>ḽ<dt> <dd>Ḿ<dt> <dd>ḿ<dt> <dd>Ṁ</dl></div>
+<div><dl><dd>ṁ<dt> <dt> <dd>Ṃ<dt> <dd>ṃ<dt> <dd>Ṅ<dt> <dd>ṅ<dt> <dd>Ṇ<dt> <dd>ṇ<dt> <dt> <dd>Ṉ<dt> <dd>ṉ<dt> <dd>Ṋ<dt> <dd>ṋ<dt> <dd>Ṍ<dt> <dd>ṍ</dl></div>
+<div><dl><dd>Ṏ<dt> <dt> <dd>ṏ<dt> <dd>Ṑ<dt> <dd>ṑ<dt> <dd>Ṓ<dt> <dd>ṓ<dt> <dd>Ṕ<dt> <dt> <dd>ṕ<dt> <dd>Ṗ<dt> <dd>ṗ<dt> <dd>Ṙ<dt> <dd>ṙ<dt> <dd>Ṛ</dl></div>
+<div><dl><dd>ṛ<dt> <dt> <dd>Ṝ<dt> <dd>ṝ<dt> <dd>Ṟ<dt> <dd>ṟ<dt> <dd>Ṡ<dt> <dd>ṡ<dt> <dt> <dd>Ṣ<dt> <dd>ṣ<dt> <dd>Ṥ<dt> <dd>ṥ<dt> <dd>Ṧ<dt> <dd>ṧ</dl></div>
+<div><dl><dd>Ṩ<dt> <dt> <dd>ṩ<dt> <dd>Ṫ<dt> <dd>ṫ<dt> <dd>Ṭ<dt> <dd>ṭ<dt> <dd>Ṯ<dt> <dt> <dd>ṯ<dt> <dd>Ṱ<dt> <dd>ṱ<dt> <dd>Ṳ<dt> <dd>ṳ<dt> <dd>Ṵ</dl></div>
+<div><dl><dd>ṵ<dt> <dd>Ṷ<dt> <dd>ṷ<dt> <dd>Ṹ<dt> <dd>ṹ<dt> <dd>Ṻ<dt> <dd>ṻ<dt> <dd>Ṽ<dt> <dd>ṽ<dt> <dd>Ṿ<dt> <dd>ṿ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark28><a  href='#toc28'><dl><dt>G<dt>r<dt>e<dt>e<dt>k<dt> <dt>E<dt>x<dt>t<dt>e<dt>n<dt>d<dt>e<dt>d</dl></a></div>
+<div><dl><dd>ἀ<dt> <dt> <dd>ἁ<dt> <dd>ἂ<dt> <dd>ἃ<dt> <dd>ἄ<dt> <dd>ἅ<dt> <dd>ἆ<dt> <dt> <dd>ἇ<dt> <dd>Ἀ<dt> <dd>Ἁ<dt> <dd>Ἂ<dt> <dd>Ἃ<dt> <dd>Ἄ</dl></div>
+<div><dl><dd>Ἅ<dt> <dt> <dd>Ἆ<dt> <dd>Ἇ<dt> <dd>ἐ<dt> <dd>ἑ<dt> <dd>ἒ<dt> <dd>ἓ<dt> <dt> <dd>ἔ<dt> <dd>ἕ<dt> <dd>Ἐ<dt> <dd>Ἑ<dt> <dd>Ἒ<dt> <dd>Ἓ</dl></div>
+<div><dl><dd>Ἔ<dt> <dt> <dd>Ἕ<dt> <dd>ἠ<dt> <dd>ἡ<dt> <dd>ἢ<dt> <dd>ἣ<dt> <dd>ἤ<dt> <dt> <dd>ἥ<dt> <dd>ἦ<dt> <dd>ἧ<dt> <dd>Ἠ<dt> <dd>Ἡ<dt> <dd>Ἢ</dl></div>
+<div><dl><dd>Ἣ<dt> <dt> <dd>Ἤ<dt> <dd>Ἥ<dt> <dd>Ἦ<dt> <dd>Ἧ<dt> <dd>ἰ<dt> <dd>ἱ<dt> <dt> <dd>ἲ<dt> <dd>ἳ<dt> <dd>ἴ<dt> <dd>ἵ<dt> <dd>ἶ<dt> <dd>ἷ</dl></div>
+<div><dl><dd>Ἰ<dt> <dt> <dd>Ἱ<dt> <dd>Ἲ<dt> <dd>Ἳ<dt> <dd>Ἴ<dt> <dd>Ἵ<dt> <dd>Ἶ<dt> <dt> <dd>Ἷ<dt> <dd>ὀ<dt> <dd>ὁ<dt> <dd>ὂ<dt> <dd>ὃ<dt> <dd>ὄ</dl></div>
+<div><dl><dd>ὅ<dt> <dt> <dd>Ὀ<dt> <dd>Ὁ<dt> <dd>Ὂ<dt> <dd>Ὃ<dt> <dd>Ὄ<dt> <dd>Ὅ<dt> <dt> <dd>ὐ<dt> <dd>ὑ<dt> <dd>ὒ<dt> <dd>ὓ<dt> <dd>ὔ<dt> <dd>ὕ</dl></div>
+<div><dl><dd>ὖ<dt> <dt> <dd>ὗ<dt> <dd>Ὑ<dt> <dd>Ὓ<dt> <dd>Ὕ<dt> <dd>Ὗ<dt> <dd>ὠ<dt> <dt> <dd>ὡ<dt> <dd>ὢ<dt> <dd>ὣ<dt> <dd>ὤ<dt> <dd>ὥ<dt> <dd>ὦ</dl></div>
+<div><dl><dd>ὧ<dt> <dt> <dd>Ὠ<dt> <dd>Ὡ<dt> <dd>Ὢ<dt> <dd>Ὣ<dt> <dd>Ὤ<dt> <dd>Ὥ<dt> <dt> <dd>Ὦ<dt> <dd>Ὧ<dt> <dd>ὰ<dt> <dd>ά<dt> <dd>ὲ<dt> <dd>έ</dl></div>
+<div><dl><dd>ὴ<dt> <dt> <dd>ή<dt> <dd>ὶ<dt> <dd>ί<dt> <dd>ὸ<dt> <dd>ό<dt> <dd>ὺ<dt> <dt> <dd>ύ<dt> <dd>ὼ<dt> <dd>ώ<dt> <dd>ᾀ<dt> <dd>ᾁ<dt> <dd>ᾂ</dl></div>
+<div><dl><dd>ᾃ<dt> <dd>ᾄ<dt> <dd>ᾅ<dt> <dd>ᾆ<dt> <dd>ᾇ<dt> <dd>ᾈ<dt> <dd>ᾉ<dt> <dd>ᾊ<dt> <dd>ᾋ<dt> <dd>ᾌ<dt> <dd>ᾍ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark29><a  href='#toc29'><dl><dt>G<dt>e<dt>n<dt>e<dt>r<dt>a<dt>l<dt> <dt>P<dt>u<dt>n<dt>c<dt>t<dt>u<dt>a<dt>t<dt>i<dt>o<dt>n</dl></a></div>
+<div><dl><dd> <dt> <dt> <dd> <dt> <dd> <dt> <dd> <dt> <dd> <dt> <dd> <dt> <dd> <dt> <dt> <dd> <dt> <dd> <dt> <dd> <dt> <dd> <dt> <dd>​<dt> <dd>‌</dl></div>
+<div><dl><dd>‍<dt> <dt> <dd>‎<dt> <dd>‏<dt> <dd>‐<dt> <dd>‑<dt> <dd>‒<dt> <dd>–<dt> <dt> <dd>—<dt> <dd>―<dt> <dd>‖<dt> <dd>‗<dt> <dd>‘<dt> <dd>’</dl></div>
+<div><dl><dd>‚<dt> <dt> <dd>‛<dt> <dd>“<dt> <dd>”<dt> <dd>„<dt> <dd>‟<dt> <dd>†<dt> <dt> <dd>‡<dt> <dd>•<dt> <dd>‣<dt> <dd>․<dt> <dd>‥<dt> <dd>…</dl></div>
+<div><dl><dd>‧<dt> <dt> <dd> <dt> <dd> <dt> <dd>‪<dt> <dd>‫<dt> <dd>‬<dt> <dd>‭<dt> <dt> <dd>‮<dt> <dd>‰<dt> <dd>‱<dt> <dd>′<dt> <dd>″<dt> <dd>‴</dl></div>
+<div><dl><dd>‵<dt> <dt> <dd>‶<dt> <dd>‷<dt> <dd>‸<dt> <dd>‹<dt> <dd>›<dt> <dd>※<dt> <dt> <dd>‼<dt> <dd>‽<dt> <dd>‾<dt> <dd>‿<dt> <dd>⁀<dt> <dd>⁁</dl></div>
+<div><dl><dd>⁂<dt> <dd>⁃<dt> <dd>⁄<dt> <dd>⁅<dt> <dd>⁆<dt> <dd>⁪<dt> <dd>⁫<dt> <dd>⁬<dt> <dd>⁭<dt> <dd>⁮<dt> <dd>⁯<dd>‬<dd>‬<dd>‬</dl></div>
+<div class=_mark id=mark30><a  href='#toc30'><dl><dt>S<dt>u<dt>p<dt>e<dt>r<dt>s<dt>c<dt>r<dt>i<dt>p<dt>t<dt>s<dt> <dt>a<dt>n<dt>d<dt> <dt>S<dt>u<dt>b<dt>s<dt>c<dt>r<dt>i<dt>p<dt>t<dt>s</dl></a></div>
+<div><dl><dd>⁰<dt> <dt> <dd>⁴<dt> <dd>⁵<dt> <dd>⁶<dt> <dd>⁷<dt> <dd>⁸<dt> <dd>⁹<dt> <dt> <dd>⁺<dt> <dd>⁻<dt> <dd>⁼<dt> <dd>⁽<dt> <dd>⁾<dt> <dd>ⁿ</dl></div>
+<div><dl><dd>₀<dt> <dt> <dd>₁<dt> <dd>₂<dt> <dd>₃<dt> <dd>₄<dt> <dd>₅<dt> <dd>₆<dt> <dt> <dd>₇<dt> <dd>₈<dt> <dd>₉<dt> <dd>₊<dt> <dd>₋<dt> <dd>₌</dl></div>
+<div><dl><dd>₍<dt> <dd>₎</dl></div>
+<div class=_mark id=mark31><a  href='#toc31'><dl><dt>C<dt>u<dt>r<dt>r<dt>e<dt>n<dt>c<dt>y<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div><dl><dd>₠<dt> <dd>₡<dt> <dd>₢<dt> <dd>₣<dt> <dd>₤<dt> <dd>₥<dt> <dd>₦<dt> <dd>₧<dt> <dd>₨<dt> <dd>₩<dt> <dd>₪<dt> <dd>₫</dl></div>
+<div class=_mark id=mark32><a  href='#toc32'><dl><dt>C<dt>o<dt>m<dt>b<dt>i<dt>n<dt>i<dt>n<dt>g<dt> <dt>M<dt>a<dt>r<dt>k<dt>s<dt> <dt>f<dt>o<dt>r<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div><dl><dd>⃐<dt> <dt> <dd>⃑<dt> <dd>⃒<dt> <dd>⃓<dt> <dd>⃔<dt> <dd>⃕<dt> <dd>⃖<dt> <dt> <dd>⃗<dt> <dd>⃘<dt> <dd>⃙<dt> <dd>⃚<dt> <dd>⃛<dt> <dd>⃜</dl></div>
+<div><dl><dd>⃝<dt> <dd>⃞<dt> <dd>⃟<dt> <dd>⃠<dt> <dd>⃡</dl></div>
+<div class=_mark id=mark33><a  href='#toc33'><dl><dt>L<dt>e<dt>t<dt>t<dt>e<dt>r<dt>l<dt>i<dt>k<dt>e<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div><dl><dd>℀<dt> <dt> <dd>℁<dt> <dd>ℂ<dt> <dd>℃<dt> <dd>℄<dt> <dd>℅<dt> <dd>℆<dt> <dt> <dd>ℇ<dt> <dd>℈<dt> <dd>℉<dt> <dd>ℊ<dt> <dd>ℋ<dt> <dd>ℌ</dl></div>
+<div><dl><dd>ℍ<dt> <dt> <dd>ℎ<dt> <dd>ℏ<dt> <dd>ℐ<dt> <dd>ℑ<dt> <dd>ℒ<dt> <dd>ℓ<dt> <dt> <dd>℔<dt> <dd>ℕ<dt> <dd>№<dt> <dd>℗<dt> <dd>℘<dt> <dd>ℙ</dl></div>
+<div><dl><dd>ℚ<dt> <dt> <dd>ℛ<dt> <dd>ℜ<dt> <dd>ℝ<dt> <dd>℞<dt> <dd>℟<dt> <dd>℠<dt> <dt> <dd>℡<dt> <dd>™<dt> <dd>℣<dt> <dd>ℤ<dt> <dd>℥<dt> <dd>Ω</dl></div>
+<div><dl><dd>℧<dt> <dt> <dd>ℨ<dt> <dd>℩<dt> <dd>K<dt> <dd>Å<dt> <dd>ℬ<dt> <dd>ℭ<dt> <dt> <dd>℮<dt> <dd>ℯ<dt> <dd>ℰ<dt> <dd>ℱ<dt> <dd>Ⅎ<dt> <dd>ℳ</dl></div>
+<div><dl><dd>ℴ<dt> <dd>ℵ<dt> <dd>ℶ<dt> <dd>ℷ<dt> <dd>ℸ</dl></div>
+<div class=_mark id=mark34><a  href='#toc34'><dl><dt>N<dt>u<dt>m<dt>b<dt>e<dt>r<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div><dl><dd>⅓<dt> <dt> <dd>⅔<dt> <dd>⅕<dt> <dd>⅖<dt> <dd>⅗<dt> <dd>⅘<dt> <dd>⅙<dt> <dt> <dd>⅚<dt> <dd>⅛<dt> <dd>⅜<dt> <dd>⅝<dt> <dd>⅞<dt> <dd>⅟</dl></div>
+<div><dl><dd>Ⅰ<dt> <dt> <dd>Ⅱ<dt> <dd>Ⅲ<dt> <dd>Ⅳ<dt> <dd>Ⅴ<dt> <dd>Ⅵ<dt> <dd>Ⅶ<dt> <dt> <dd>Ⅷ<dt> <dd>Ⅸ<dt> <dd>Ⅹ<dt> <dd>Ⅺ<dt> <dd>Ⅻ<dt> <dd>Ⅼ</dl></div>
+<div><dl><dd>Ⅽ<dt> <dt> <dd>Ⅾ<dt> <dd>Ⅿ<dt> <dd>ⅰ<dt> <dd>ⅱ<dt> <dd>ⅲ<dt> <dd>ⅳ<dt> <dt> <dd>ⅴ<dt> <dd>ⅵ<dt> <dd>ⅶ<dt> <dd>ⅷ<dt> <dd>ⅸ<dt> <dd>ⅹ</dl></div>
+<div><dl><dd>ⅺ<dt> <dd>ⅻ<dt> <dd>ⅼ<dt> <dd>ⅽ<dt> <dd>ⅾ<dt> <dd>ⅿ<dt> <dd>ↀ<dt> <dd>ↁ<dt> <dd>ↂ</dl></div>
+<div class=_mark id=mark35><a  href='#toc35'><dl><dt>A<dt>r<dt>r<dt>o<dt>w<dt>s</dl></a></div>
+<div><dl><dd>←<dt> <dt> <dd>↑<dt> <dd>→<dt> <dd>↓<dt> <dd>↔<dt> <dd>↕<dt> <dd>↖<dt> <dt> <dd>↗<dt> <dd>↘<dt> <dd>↙<dt> <dd>↚<dt> <dd>↛<dt> <dd>↜</dl></div>
+<div><dl><dd>↝<dt> <dt> <dd>↞<dt> <dd>↟<dt> <dd>↠<dt> <dd>↡<dt> <dd>↢<dt> <dd>↣<dt> <dt> <dd>↤<dt> <dd>↥<dt> <dd>↦<dt> <dd>↧<dt> <dd>↨<dt> <dd>↩</dl></div>
+<div><dl><dd>↪<dt> <dt> <dd>↫<dt> <dd>↬<dt> <dd>↭<dt> <dd>↮<dt> <dd>↯<dt> <dd>↰<dt> <dt> <dd>↱<dt> <dd>↲<dt> <dd>↳<dt> <dd>↴<dt> <dd>↵<dt> <dd>↶</dl></div>
+<div><dl><dd>↷<dt> <dt> <dd>↸<dt> <dd>↹<dt> <dd>↺<dt> <dd>↻<dt> <dd>↼<dt> <dd>↽<dt> <dt> <dd>↾<dt> <dd>↿<dt> <dd>⇀<dt> <dd>⇁<dt> <dd>⇂<dt> <dd>⇃</dl></div>
+<div><dl><dd>⇄<dt> <dt> <dd>⇅<dt> <dd>⇆<dt> <dd>⇇<dt> <dd>⇈<dt> <dd>⇉<dt> <dd>⇊<dt> <dt> <dd>⇋<dt> <dd>⇌<dt> <dd>⇍<dt> <dd>⇎<dt> <dd>⇏<dt> <dd>⇐</dl></div>
+<div><dl><dd>⇑<dt> <dt> <dd>⇒<dt> <dd>⇓<dt> <dd>⇔<dt> <dd>⇕<dt> <dd>⇖<dt> <dd>⇗<dt> <dt> <dd>⇘<dt> <dd>⇙<dt> <dd>⇚<dt> <dd>⇛<dt> <dd>⇜<dt> <dd>⇝</dl></div>
+<div><dl><dd>⇞<dt> <dd>⇟<dt> <dd>⇠<dt> <dd>⇡<dt> <dd>⇢<dt> <dd>⇣<dt> <dd>⇤<dt> <dd>⇥<dt> <dd>⇦<dt> <dd>⇧<dt> <dd>⇨<dt> <dd>⇩<dt> <dd>⇪</dl></div>
+<div class=_mark id=mark36><a  href='#toc36'><dl><dt>M<dt>a<dt>t<dt>h<dt>e<dt>m<dt>a<dt>t<dt>i<dt>c<dt>a<dt>l<dt> <dt>O<dt>p<dt>e<dt>r<dt>a<dt>t<dt>o<dt>r<dt>s</dl></a></div>
+<div><dl><dd>∀<dt> <dt> <dd>∁<dt> <dd>∂<dt> <dd>∃<dt> <dd>∄<dt> <dd>∅<dt> <dd>∆<dt> <dt> <dd>∇<dt> <dd>∈<dt> <dd>∉<dt> <dd>∊<dt> <dd>∋<dt> <dd>∌</dl></div>
+<div><dl><dd>∍<dt> <dt> <dd>∎<dt> <dd>∏<dt> <dd>∐<dt> <dd>∑<dt> <dd>−<dt> <dd>∓<dt> <dt> <dd>∔<dt> <dd>∕<dt> <dd>∖<dt> <dd>∗<dt> <dd>∘<dt> <dd>∙</dl></div>
+<div><dl><dd>√<dt> <dt> <dd>∛<dt> <dd>∜<dt> <dd>∝<dt> <dd>∞<dt> <dd>∟<dt> <dd>∠<dt> <dt> <dd>∡<dt> <dd>∢<dt> <dd>∣<dt> <dd>∤<dt> <dd>∥<dt> <dd>∦</dl></div>
+<div><dl><dd>∧<dt> <dt> <dd>∨<dt> <dd>∩<dt> <dd>∪<dt> <dd>∫<dt> <dd>∬<dt> <dd>∭<dt> <dt> <dd>∮<dt> <dd>∯<dt> <dd>∰<dt> <dd>∱<dt> <dd>∲<dt> <dd>∳</dl></div>
+<div><dl><dd>∴<dt> <dt> <dd>∵<dt> <dd>∶<dt> <dd>∷<dt> <dd>∸<dt> <dd>∹<dt> <dd>∺<dt> <dt> <dd>∻<dt> <dd>∼<dt> <dd>∽<dt> <dd>∾<dt> <dd>∿<dt> <dd>≀</dl></div>
+<div><dl><dd>≁<dt> <dt> <dd>≂<dt> <dd>≃<dt> <dd>≄<dt> <dd>≅<dt> <dd>≆<dt> <dd>≇<dt> <dt> <dd>≈<dt> <dd>≉<dt> <dd>≊<dt> <dd>≋<dt> <dd>≌<dt> <dd>≍</dl></div>
+<div><dl><dd>≎<dt> <dt> <dd>≏<dt> <dd>≐<dt> <dd>≑<dt> <dd>≒<dt> <dd>≓<dt> <dd>≔<dt> <dt> <dd>≕<dt> <dd>≖<dt> <dd>≗<dt> <dd>≘<dt> <dd>≙<dt> <dd>≚</dl></div>
+<div><dl><dd>≛<dt> <dt> <dd>≜<dt> <dd>≝<dt> <dd>≞<dt> <dd>≟<dt> <dd>≠<dt> <dd>≡<dt> <dt> <dd>≢<dt> <dd>≣<dt> <dd>≤<dt> <dd>≥<dt> <dd>≦<dt> <dd>≧</dl></div>
+<div><dl><dd>≨<dt> <dt> <dd>≩<dt> <dd>≪<dt> <dd>≫<dt> <dd>≬<dt> <dd>≭<dt> <dd>≮<dt> <dt> <dd>≯<dt> <dd>≰<dt> <dd>≱<dt> <dd>≲<dt> <dd>≳<dt> <dd>≴</dl></div>
+<div><dl><dd>≵<dt> <dd>≶<dt> <dd>≷<dt> <dd>≸<dt> <dd>≹<dt> <dd>≺<dt> <dd>≻<dt> <dd>≼<dt> <dd>≽<dt> <dd>≾<dt> <dd>≿<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark37><a  href='#toc37'><dl><dt>M<dt>i<dt>s<dt>c<dt>e<dt>l<dt>l<dt>a<dt>n<dt>e<dt>o<dt>u<dt>s<dt> <dt>T<dt>e<dt>c<dt>h<dt>n<dt>i<dt>c<dt>a<dt>l</dl></a></div>
+<div><dl><dd>⌀<dt> <dt> <dd>⌂<dt> <dd>⌃<dt> <dd>⌄<dt> <dd>⌅<dt> <dd>⌆<dt> <dd>⌇<dt> <dt> <dd>⌈<dt> <dd>⌉<dt> <dd>⌊<dt> <dd>⌋<dt> <dd>⌌<dt> <dd>⌍</dl></div>
+<div><dl><dd>⌎<dt> <dt> <dd>⌏<dt> <dd>⌐<dt> <dd>⌑<dt> <dd>⌒<dt> <dd>⌓<dt> <dd>⌔<dt> <dt> <dd>⌕<dt> <dd>⌖<dt> <dd>⌗<dt> <dd>⌘<dt> <dd>⌙<dt> <dd>⌚</dl></div>
+<div><dl><dd>⌛<dt> <dt> <dd>⌜<dt> <dd>⌝<dt> <dd>⌞<dt> <dd>⌟<dt> <dd>⌠<dt> <dd>⌡<dt> <dt> <dd>⌢<dt> <dd>⌣<dt> <dd>⌤<dt> <dd>⌥<dt> <dd>⌦<dt> <dd>⌧</dl></div>
+<div><dl><dd>⌨<dt> <dt> <dd>〈<dt> <dd>〉<dt> <dd>⌫<dt> <dd>⌬<dt> <dd>⌭<dt> <dd>⌮<dt> <dt> <dd>⌯<dt> <dd>⌰<dt> <dd>⌱<dt> <dd>⌲<dt> <dd>⌳<dt> <dd>⌴</dl></div>
+<div><dl><dd>⌵<dt> <dt> <dd>⌶<dt> <dd>⌷<dt> <dd>⌸<dt> <dd>⌹<dt> <dd>⌺<dt> <dd>⌻<dt> <dt> <dd>⌼<dt> <dd>⌽<dt> <dd>⌾<dt> <dd>⌿<dt> <dd>⍀<dt> <dd>⍁</dl></div>
+<div><dl><dd>⍂<dt> <dt> <dd>⍃<dt> <dd>⍄<dt> <dd>⍅<dt> <dd>⍆<dt> <dd>⍇<dt> <dd>⍈<dt> <dt> <dd>⍉<dt> <dd>⍊<dt> <dd>⍋<dt> <dd>⍌<dt> <dd>⍍<dt> <dd>⍎</dl></div>
+<div><dl><dd>⍏<dt> <dt> <dd>⍐<dt> <dd>⍑<dt> <dd>⍒<dt> <dd>⍓<dt> <dd>⍔<dt> <dd>⍕<dt> <dt> <dd>⍖<dt> <dd>⍗<dt> <dd>⍘<dt> <dd>⍙<dt> <dd>⍚<dt> <dd>⍛</dl></div>
+<div><dl><dd>⍜<dt> <dt> <dd>⍝<dt> <dd>⍞<dt> <dd>⍟<dt> <dd>⍠<dt> <dd>⍡<dt> <dd>⍢<dt> <dt> <dd>⍣<dt> <dd>⍤<dt> <dd>⍥<dt> <dd>⍦<dt> <dd>⍧<dt> <dd>⍨</dl></div>
+<div><dl><dd>⍩<dt> <dt> <dd>⍪<dt> <dd>⍫<dt> <dd>⍬<dt> <dd>⍭<dt> <dd>⍮<dt> <dd>⍯<dt> <dt> <dd>⍰<dt> <dd>⍱<dt> <dd>⍲<dt> <dd>⍳<dt> <dd>⍴<dt> <dd>⍵</dl></div>
+<div><dl><dd>⍶<dt> <dd>⍷<dt> <dd>⍸<dt> <dd>⍹<dt> <dd>⍺</dl></div>
+<div class=_mark id=mark38><a  href='#toc38'><dl><dt>C<dt>o<dt>n<dt>t<dt>r<dt>o<dt>l<dt> <dt>P<dt>i<dt>c<dt>t<dt>u<dt>r<dt>e<dt>s</dl></a></div>
+<div><dl><dd>␀<dt> <dt> <dd>␁<dt> <dd>␂<dt> <dd>␃<dt> <dd>␄<dt> <dd>␅<dt> <dd>␆<dt> <dt> <dd>␇<dt> <dd>␈<dt> <dd>␉<dt> <dd>␊<dt> <dd>␋<dt> <dd>␌</dl></div>
+<div><dl><dd>␍<dt> <dt> <dd>␎<dt> <dd>␏<dt> <dd>␐<dt> <dd>␑<dt> <dd>␒<dt> <dd>␓<dt> <dt> <dd>␔<dt> <dd>␕<dt> <dd>␖<dt> <dd>␗<dt> <dd>␘<dt> <dd>␙</dl></div>
+<div><dl><dd>␚<dt> <dd>␛<dt> <dd>␜<dt> <dd>␝<dt> <dd>␞<dt> <dd>␟<dt> <dd>␠<dt> <dd>␡<dt> <dd>␢<dt> <dd>␣<dt> <dd>␤</dl></div>
+<div class=_mark id=mark39><a  href='#toc39'><dl><dt>O<dt>p<dt>t<dt>i<dt>c<dt>a<dt>l<dt> <dt>C<dt>h<dt>a<dt>r<dt>a<dt>c<dt>t<dt>e<dt>r<dt> <dt>R<dt>e<dt>c<dt>o<dt>g<dt>n<dt>i<dt>t<dt>i<dt>o<dt>n</dl></a></div>
+<div><dl><dd>⑀<dt> <dd>⑁<dt> <dd>⑂<dt> <dd>⑃<dt> <dd>⑄<dt> <dd>⑅<dt> <dd>⑆<dt> <dd>⑇<dt> <dd>⑈<dt> <dd>⑉<dt> <dd>⑊</dl></div>
+<div class=_mark id=mark40><a  href='#toc40'><dl><dt>E<dt>n<dt>c<dt>l<dt>o<dt>s<dt>e<dt>d<dt> <dt>A<dt>l<dt>p<dt>h<dt>a<dt>n<dt>u<dt>m<dt>e<dt>r<dt>i<dt>c<dt>s</dl></a></div>
+<div><dl><dd>①<dt> <dt> <dd>②<dt> <dd>③<dt> <dd>④<dt> <dd>⑤<dt> <dd>⑥<dt> <dd>⑦<dt> <dt> <dd>⑧<dt> <dd>⑨<dt> <dd>⑩<dt> <dd>⑪<dt> <dd>⑫<dt> <dd>⑬</dl></div>
+<div><dl><dd>⑭<dt> <dt> <dd>⑮<dt> <dd>⑯<dt> <dd>⑰<dt> <dd>⑱<dt> <dd>⑲<dt> <dd>⑳<dt> <dt> <dd>⑴<dt> <dd>⑵<dt> <dd>⑶<dt> <dd>⑷<dt> <dd>⑸<dt> <dd>⑹</dl></div>
+<div><dl><dd>⑺<dt> <dt> <dd>⑻<dt> <dd>⑼<dt> <dd>⑽<dt> <dd>⑾<dt> <dd>⑿<dt> <dd>⒀<dt> <dt> <dd>⒁<dt> <dd>⒂<dt> <dd>⒃<dt> <dd>⒄<dt> <dd>⒅<dt> <dd>⒆</dl></div>
+<div><dl><dd>⒇<dt> <dt> <dd>⒈<dt> <dd>⒉<dt> <dd>⒊<dt> <dd>⒋<dt> <dd>⒌<dt> <dd>⒍<dt> <dt> <dd>⒎<dt> <dd>⒏<dt> <dd>⒐<dt> <dd>⒑<dt> <dd>⒒<dt> <dd>⒓</dl></div>
+<div><dl><dd>⒔<dt> <dt> <dd>⒕<dt> <dd>⒖<dt> <dd>⒗<dt> <dd>⒘<dt> <dd>⒙<dt> <dd>⒚<dt> <dt> <dd>⒛<dt> <dd>⒜<dt> <dd>⒝<dt> <dd>⒞<dt> <dd>⒟<dt> <dd>⒠</dl></div>
+<div><dl><dd>⒡<dt> <dt> <dd>⒢<dt> <dd>⒣<dt> <dd>⒤<dt> <dd>⒥<dt> <dd>⒦<dt> <dd>⒧<dt> <dt> <dd>⒨<dt> <dd>⒩<dt> <dd>⒪<dt> <dd>⒫<dt> <dd>⒬<dt> <dd>⒭</dl></div>
+<div><dl><dd>⒮<dt> <dt> <dd>⒯<dt> <dd>⒰<dt> <dd>⒱<dt> <dd>⒲<dt> <dd>⒳<dt> <dd>⒴<dt> <dt> <dd>⒵<dt> <dd>Ⓐ<dt> <dd>Ⓑ<dt> <dd>Ⓒ<dt> <dd>Ⓓ<dt> <dd>Ⓔ</dl></div>
+<div><dl><dd>Ⓕ<dt> <dt> <dd>Ⓖ<dt> <dd>Ⓗ<dt> <dd>Ⓘ<dt> <dd>Ⓙ<dt> <dd>Ⓚ<dt> <dd>Ⓛ<dt> <dt> <dd>Ⓜ<dt> <dd>Ⓝ<dt> <dd>Ⓞ<dt> <dd>Ⓟ<dt> <dd>Ⓠ<dt> <dd>Ⓡ</dl></div>
+<div><dl><dd>Ⓢ<dt> <dt> <dd>Ⓣ<dt> <dd>Ⓤ<dt> <dd>Ⓥ<dt> <dd>Ⓦ<dt> <dd>Ⓧ<dt> <dd>Ⓨ<dt> <dt> <dd>Ⓩ<dt> <dd>ⓐ<dt> <dd>ⓑ<dt> <dd>ⓒ<dt> <dd>ⓓ<dt> <dd>ⓔ</dl></div>
+<div><dl><dd>ⓕ<dt> <dd>ⓖ<dt> <dd>ⓗ<dt> <dd>ⓘ<dt> <dd>ⓙ<dt> <dd>ⓚ<dt> <dd>ⓛ<dt> <dd>ⓜ<dt> <dd>ⓝ<dt> <dd>ⓞ<dt> <dd>ⓟ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark41><a  href='#toc41'><dl><dt>B<dt>o<dt>x<dt> <dt>D<dt>r<dt>a<dt>w<dt>i<dt>n<dt>g</dl></a></div>
+<div><dl><dd>─<dt> <dt> <dd>━<dt> <dd>│<dt> <dd>┃<dt> <dd>┄<dt> <dd>┅<dt> <dd>┆<dt> <dt> <dd>┇<dt> <dd>┈<dt> <dd>┉<dt> <dd>┊<dt> <dd>┋<dt> <dd>┌</dl></div>
+<div><dl><dd>┍<dt> <dt> <dd>┎<dt> <dd>┏<dt> <dd>┐<dt> <dd>┑<dt> <dd>┒<dt> <dd>┓<dt> <dt> <dd>└<dt> <dd>┕<dt> <dd>┖<dt> <dd>┗<dt> <dd>┘<dt> <dd>┙</dl></div>
+<div><dl><dd>┚<dt> <dt> <dd>┛<dt> <dd>├<dt> <dd>┝<dt> <dd>┞<dt> <dd>┟<dt> <dd>┠<dt> <dt> <dd>┡<dt> <dd>┢<dt> <dd>┣<dt> <dd>┤<dt> <dd>┥<dt> <dd>┦</dl></div>
+<div><dl><dd>┧<dt> <dt> <dd>┨<dt> <dd>┩<dt> <dd>┪<dt> <dd>┫<dt> <dd>┬<dt> <dd>┭<dt> <dt> <dd>┮<dt> <dd>┯<dt> <dd>┰<dt> <dd>┱<dt> <dd>┲<dt> <dd>┳</dl></div>
+<div><dl><dd>┴<dt> <dt> <dd>┵<dt> <dd>┶<dt> <dd>┷<dt> <dd>┸<dt> <dd>┹<dt> <dd>┺<dt> <dt> <dd>┻<dt> <dd>┼<dt> <dd>┽<dt> <dd>┾<dt> <dd>┿<dt> <dd>╀</dl></div>
+<div><dl><dd>╁<dt> <dt> <dd>╂<dt> <dd>╃<dt> <dd>╄<dt> <dd>╅<dt> <dd>╆<dt> <dd>╇<dt> <dt> <dd>╈<dt> <dd>╉<dt> <dd>╊<dt> <dd>╋<dt> <dd>╌<dt> <dd>╍</dl></div>
+<div><dl><dd>╎<dt> <dt> <dd>╏<dt> <dd>═<dt> <dd>║<dt> <dd>╒<dt> <dd>╓<dt> <dd>╔<dt> <dt> <dd>╕<dt> <dd>╖<dt> <dd>╗<dt> <dd>╘<dt> <dd>╙<dt> <dd>╚</dl></div>
+<div><dl><dd>╛<dt> <dt> <dd>╜<dt> <dd>╝<dt> <dd>╞<dt> <dd>╟<dt> <dd>╠<dt> <dd>╡<dt> <dt> <dd>╢<dt> <dd>╣<dt> <dd>╤<dt> <dd>╥<dt> <dd>╦<dt> <dd>╧</dl></div>
+<div><dl><dd>╨<dt> <dt> <dd>╩<dt> <dd>╪<dt> <dd>╫<dt> <dd>╬<dt> <dd>╭<dt> <dd>╮<dt> <dt> <dd>╯<dt> <dd>╰<dt> <dd>╱<dt> <dd>╲<dt> <dd>╳<dt> <dd>╴</dl></div>
+<div><dl><dd>╵<dt> <dd>╶<dt> <dd>╷<dt> <dd>╸<dt> <dd>╹<dt> <dd>╺<dt> <dd>╻<dt> <dd>╼<dt> <dd>╽<dt> <dd>╾<dt> <dd>╿</dl></div>
+<div class=_mark id=mark42><a  href='#toc42'><dl><dt>B<dt>l<dt>o<dt>c<dt>k<dt> <dt>E<dt>l<dt>e<dt>m<dt>e<dt>n<dt>t<dt>s</dl></a></div>
+<div><dl><dd>▀<dt> <dt> <dd>▁<dt> <dd>▂<dt> <dd>▃<dt> <dd>▄<dt> <dd>▅<dt> <dd>▆<dt> <dt> <dd>▇<dt> <dd>█<dt> <dd>▉<dt> <dd>▊<dt> <dd>▋<dt> <dd>▌</dl></div>
+<div><dl><dd>▍<dt> <dd>▎<dt> <dd>▏<dt> <dd>▐<dt> <dd>░<dt> <dd>▒<dt> <dd>▓<dt> <dd>▔<dt> <dd>▕</dl></div>
+<div class=_mark id=mark43><a  href='#toc43'><dl><dt>G<dt>e<dt>o<dt>m<dt>e<dt>t<dt>r<dt>i<dt>c<dt> <dt>S<dt>h<dt>a<dt>p<dt>e<dt>s</dl></a></div>
+<div><dl><dd>■<dt> <dt> <dd>□<dt> <dd>▢<dt> <dd>▣<dt> <dd>▤<dt> <dd>▥<dt> <dd>▦<dt> <dt> <dd>▧<dt> <dd>▨<dt> <dd>▩<dt> <dd>▪<dt> <dd>▫<dt> <dd>▬</dl></div>
+<div><dl><dd>▭<dt> <dt> <dd>▮<dt> <dd>▯<dt> <dd>▰<dt> <dd>▱<dt> <dd>▲<dt> <dd>△<dt> <dt> <dd>▴<dt> <dd>▵<dt> <dd>▶<dt> <dd>▷<dt> <dd>▸<dt> <dd>▹</dl></div>
+<div><dl><dd>►<dt> <dt> <dd>▻<dt> <dd>▼<dt> <dd>▽<dt> <dd>▾<dt> <dd>▿<dt> <dd>◀<dt> <dt> <dd>◁<dt> <dd>◂<dt> <dd>◃<dt> <dd>◄<dt> <dd>◅<dt> <dd>◆</dl></div>
+<div><dl><dd>◇<dt> <dt> <dd>◈<dt> <dd>◉<dt> <dd>◊<dt> <dd>○<dt> <dd>◌<dt> <dd>◍<dt> <dt> <dd>◎<dt> <dd>●<dt> <dd>◐<dt> <dd>◑<dt> <dd>◒<dt> <dd>◓</dl></div>
+<div><dl><dd>◔<dt> <dt> <dd>◕<dt> <dd>◖<dt> <dd>◗<dt> <dd>◘<dt> <dd>◙<dt> <dd>◚<dt> <dt> <dd>◛<dt> <dd>◜<dt> <dd>◝<dt> <dd>◞<dt> <dd>◟<dt> <dd>◠</dl></div>
+<div><dl><dd>◡<dt> <dt> <dd>◢<dt> <dd>◣<dt> <dd>◤<dt> <dd>◥<dt> <dd>◦<dt> <dd>◧<dt> <dt> <dd>◨<dt> <dd>◩<dt> <dd>◪<dt> <dd>◫<dt> <dd>◬<dt> <dd>◭</dl></div>
+<div><dl><dd>◮<dt> <dd>◯</dl></div>
+<div class=_mark id=mark44><a  href='#toc44'><dl><dt>M<dt>i<dt>s<dt>c<dt>e<dt>l<dt>l<dt>a<dt>n<dt>e<dt>o<dt>u<dt>s<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s</dl></a></div>
+<div><dl><dd>☀<dt> <dt> <dd>☁<dt> <dd>☂<dt> <dd>☃<dt> <dd>☄<dt> <dd>★<dt> <dd>☆<dt> <dt> <dd>☇<dt> <dd>☈<dt> <dd>☉<dt> <dd>☊<dt> <dd>☋<dt> <dd>☌</dl></div>
+<div><dl><dd>☍<dt> <dt> <dd>☎<dt> <dd>☏<dt> <dd>☐<dt> <dd>☑<dt> <dd>☒<dt> <dd>☓<dt> <dt> <dd>☚<dt> <dd>☛<dt> <dd>☜<dt> <dd>☝<dt> <dd>☞<dt> <dd>☟</dl></div>
+<div><dl><dd>☠<dt> <dt> <dd>☡<dt> <dd>☢<dt> <dd>☣<dt> <dd>☤<dt> <dd>☥<dt> <dd>☦<dt> <dt> <dd>☧<dt> <dd>☨<dt> <dd>☩<dt> <dd>☪<dt> <dd>☫<dt> <dd>☬</dl></div>
+<div><dl><dd>☭<dt> <dt> <dd>☮<dt> <dd>☯<dt> <dd>☰<dt> <dd>☱<dt> <dd>☲<dt> <dd>☳<dt> <dt> <dd>☴<dt> <dd>☵<dt> <dd>☶<dt> <dd>☷<dt> <dd>☸<dt> <dd>☹</dl></div>
+<div><dl><dd>☺<dt> <dt> <dd>☻<dt> <dd>☼<dt> <dd>☽<dt> <dd>☾<dt> <dd>☿<dt> <dd>♀<dt> <dt> <dd>♁<dt> <dd>♂<dt> <dd>♃<dt> <dd>♄<dt> <dd>♅<dt> <dd>♆</dl></div>
+<div><dl><dd>♇<dt> <dt> <dd>♈<dt> <dd>♉<dt> <dd>♊<dt> <dd>♋<dt> <dd>♌<dt> <dd>♍<dt> <dt> <dd>♎<dt> <dd>♏<dt> <dd>♐<dt> <dd>♑<dt> <dd>♒<dt> <dd>♓</dl></div>
+<div><dl><dd>♔<dt> <dt> <dd>♕<dt> <dd>♖<dt> <dd>♗<dt> <dd>♘<dt> <dd>♙<dt> <dd>♚<dt> <dt> <dd>♛<dt> <dd>♜<dt> <dd>♝<dt> <dd>♞<dt> <dd>♟<dt> <dd>♠</dl></div>
+<div><dl><dd>♡<dt> <dt> <dd>♢<dt> <dd>♣<dt> <dd>♤<dt> <dd>♥<dt> <dd>♦<dt> <dd>♧<dt> <dt> <dd>♨<dt> <dd>♩<dt> <dd>♪<dt> <dd>♫<dt> <dd>♬<dt> <dd>♭</dl></div>
+<div><dl><dd>♮<dt> <dd>♯</dl></div>
+<div class=_mark id=mark45><a  href='#toc45'><dl><dt>D<dt>i<dt>n<dt>g<dt>b<dt>a<dt>t<dt>s</dl></a></div>
+<div><dl><dd>✁<dt> <dt> <dd>✂<dt> <dd>✃<dt> <dd>✄<dt> <dd>✆<dt> <dd>✇<dt> <dd>✈<dt> <dt> <dd>✉<dt> <dd>✌<dt> <dd>✍<dt> <dd>✎<dt> <dd>✏<dt> <dd>✐</dl></div>
+<div><dl><dd>✑<dt> <dt> <dd>✒<dt> <dd>✓<dt> <dd>✔<dt> <dd>✕<dt> <dd>✖<dt> <dd>✗<dt> <dt> <dd>✘<dt> <dd>✙<dt> <dd>✚<dt> <dd>✛<dt> <dd>✜<dt> <dd>✝</dl></div>
+<div><dl><dd>✞<dt> <dt> <dd>✟<dt> <dd>✠<dt> <dd>✡<dt> <dd>✢<dt> <dd>✣<dt> <dd>✤<dt> <dt> <dd>✥<dt> <dd>✦<dt> <dd>✧<dt> <dd>✩<dt> <dd>✪<dt> <dd>✫</dl></div>
+<div><dl><dd>✬<dt> <dt> <dd>✭<dt> <dd>✮<dt> <dd>✯<dt> <dd>✰<dt> <dd>✱<dt> <dd>✲<dt> <dt> <dd>✳<dt> <dd>✴<dt> <dd>✵<dt> <dd>✶<dt> <dd>✷<dt> <dd>✸</dl></div>
+<div><dl><dd>✹<dt> <dt> <dd>✺<dt> <dd>✻<dt> <dd>✼<dt> <dd>✽<dt> <dd>✾<dt> <dd>✿<dt> <dt> <dd>❀<dt> <dd>❁<dt> <dd>❂<dt> <dd>❃<dt> <dd>❄<dt> <dd>❅</dl></div>
+<div><dl><dd>❆<dt> <dt> <dd>❇<dt> <dd>❈<dt> <dd>❉<dt> <dd>❊<dt> <dd>❋<dt> <dd>❍<dt> <dt> <dd>❏<dt> <dd>❐<dt> <dd>❑<dt> <dd>❒<dt> <dd>❖<dt> <dd>❘</dl></div>
+<div><dl><dd>❙<dt> <dt> <dd>❚<dt> <dd>❛<dt> <dd>❜<dt> <dd>❝<dt> <dd>❞<dt> <dd>❡<dt> <dt> <dd>❢<dt> <dd>❣<dt> <dd>❤<dt> <dd>❥<dt> <dd>❦<dt> <dd>❧</dl></div>
+<div><dl><dd>❶<dt> <dt> <dd>❷<dt> <dd>❸<dt> <dd>❹<dt> <dd>❺<dt> <dd>❻<dt> <dd>❼<dt> <dt> <dd>❽<dt> <dd>❾<dt> <dd>❿<dt> <dd>➀<dt> <dd>➁<dt> <dd>➂</dl></div>
+<div><dl><dd>➃<dt> <dt> <dd>➄<dt> <dd>➅<dt> <dd>➆<dt> <dd>➇<dt> <dd>➈<dt> <dd>➉<dt> <dt> <dd>➊<dt> <dd>➋<dt> <dd>➌<dt> <dd>➍<dt> <dd>➎<dt> <dd>➏</dl></div>
+<div><dl><dd>➐<dt> <dd>➑<dt> <dd>➒<dt> <dd>➓<dt> <dd>➔<dt> <dd>➘<dt> <dd>➙<dt> <dd>➚<dt> <dd>➛<dt> <dd>➜<dt> <dd>➝<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark46><a  href='#toc46'><dl><dt>C<dt>J<dt>K<dt> <dt>S<dt>y<dt>m<dt>b<dt>o<dt>l<dt>s<dt> <dt>a<dt>n<dt>d<dt> <dt>P<dt>u<dt>n<dt>c<dt>t<dt>u<dt>a<dt>t<dt>i<dt>o<dt>n</dl></a></div>
+<div><dl><dd>　<dt> <dt> <dd>、<dt> <dd>。<dt> <dd>〃<dt> <dd>〄<dt> <dd>々<dt> <dd>〆<dt> <dt> <dd>〇<dt> <dd>〈<dt> <dd>〉<dt> <dd>《<dt> <dd>》<dt> <dd>「</dl></div>
+<div><dl><dd>」<dt> <dt> <dd>『<dt> <dd>』<dt> <dd>【<dt> <dd>】<dt> <dd>〒<dt> <dd>〓<dt> <dt> <dd>〔<dt> <dd>〕<dt> <dd>〖<dt> <dd>〗<dt> <dd>〘<dt> <dd>〙</dl></div>
+<div><dl><dd>〚<dt> <dt> <dd>〛<dt> <dd>〜<dt> <dd>〝<dt> <dd>〞<dt> <dd>〟<dt> <dd>〠<dt> <dt> <dd>〡<dt> <dd>〢<dt> <dd>〣<dt> <dd>〤<dt> <dd>〥<dt> <dd>〦</dl></div>
+<div><dl><dd>〧<dt> <dt> <dd>〨<dt> <dd>〩<dt> <dd>〪<dt> <dd>〫<dt> <dd>〬<dt> <dd>〭<dt> <dt> <dd>〮<dt> <dd>〯<dt> <dd>〰<dt> <dd>〱<dt> <dd>〲<dt> <dd>〳</dl></div>
+<div><dl><dd>〴<dt> <dd>〵<dt> <dd>〶<dt> <dd>〷<dt> <dd>〿</dl></div>
+<div class=_mark id=mark47><a  href='#toc47'><dl><dt>H<dt>i<dt>r<dt>a<dt>g<dt>a<dt>n<dt>a</dl></a></div>
+<div><dl><dd>ぁ<dt> <dt> <dd>あ<dt> <dd>ぃ<dt> <dd>い<dt> <dd>ぅ<dt> <dd>う<dt> <dd>ぇ<dt> <dt> <dd>え<dt> <dd>ぉ<dt> <dd>お<dt> <dd>か<dt> <dd>が<dt> <dd>き</dl></div>
+<div><dl><dd>ぎ<dt> <dt> <dd>く<dt> <dd>ぐ<dt> <dd>け<dt> <dd>げ<dt> <dd>こ<dt> <dd>ご<dt> <dt> <dd>さ<dt> <dd>ざ<dt> <dd>し<dt> <dd>じ<dt> <dd>す<dt> <dd>ず</dl></div>
+<div><dl><dd>せ<dt> <dt> <dd>ぜ<dt> <dd>そ<dt> <dd>ぞ<dt> <dd>た<dt> <dd>だ<dt> <dd>ち<dt> <dt> <dd>ぢ<dt> <dd>っ<dt> <dd>つ<dt> <dd>づ<dt> <dd>て<dt> <dd>で</dl></div>
+<div><dl><dd>と<dt> <dt> <dd>ど<dt> <dd>な<dt> <dd>に<dt> <dd>ぬ<dt> <dd>ね<dt> <dd>の<dt> <dt> <dd>は<dt> <dd>ば<dt> <dd>ぱ<dt> <dd>ひ<dt> <dd>び<dt> <dd>ぴ</dl></div>
+<div><dl><dd>ふ<dt> <dt> <dd>ぶ<dt> <dd>ぷ<dt> <dd>へ<dt> <dd>べ<dt> <dd>ぺ<dt> <dd>ほ<dt> <dt> <dd>ぼ<dt> <dd>ぽ<dt> <dd>ま<dt> <dd>み<dt> <dd>む<dt> <dd>め</dl></div>
+<div><dl><dd>も<dt> <dt> <dd>ゃ<dt> <dd>や<dt> <dd>ゅ<dt> <dd>ゆ<dt> <dd>ょ<dt> <dd>よ<dt> <dt> <dd>ら<dt> <dd>り<dt> <dd>る<dt> <dd>れ<dt> <dd>ろ<dt> <dd>ゎ</dl></div>
+<div><dl><dd>わ<dt> <dd>ゐ<dt> <dd>ゑ<dt> <dd>を<dt> <dd>ん<dt> <dd>ゔ<dt> <dd>゙<dt> <dd>゚<dt> <dd>゛<dt> <dd>゜<dt> <dd>ゝ<dt> <dd>ゞ</dl></div>
+<div class=_mark id=mark48><a  href='#toc48'><dl><dt>K<dt>a<dt>t<dt>a<dt>k<dt>a<dt>n<dt>a</dl></a></div>
+<div><dl><dd>ァ<dt> <dt> <dd>ア<dt> <dd>ィ<dt> <dd>イ<dt> <dd>ゥ<dt> <dd>ウ<dt> <dd>ェ<dt> <dt> <dd>エ<dt> <dd>ォ<dt> <dd>オ<dt> <dd>カ<dt> <dd>ガ<dt> <dd>キ</dl></div>
+<div><dl><dd>ギ<dt> <dt> <dd>ク<dt> <dd>グ<dt> <dd>ケ<dt> <dd>ゲ<dt> <dd>コ<dt> <dd>ゴ<dt> <dt> <dd>サ<dt> <dd>ザ<dt> <dd>シ<dt> <dd>ジ<dt> <dd>ス<dt> <dd>ズ</dl></div>
+<div><dl><dd>セ<dt> <dt> <dd>ゼ<dt> <dd>ソ<dt> <dd>ゾ<dt> <dd>タ<dt> <dd>ダ<dt> <dd>チ<dt> <dt> <dd>ヂ<dt> <dd>ッ<dt> <dd>ツ<dt> <dd>ヅ<dt> <dd>テ<dt> <dd>デ</dl></div>
+<div><dl><dd>ト<dt> <dt> <dd>ド<dt> <dd>ナ<dt> <dd>ニ<dt> <dd>ヌ<dt> <dd>ネ<dt> <dd>ノ<dt> <dt> <dd>ハ<dt> <dd>バ<dt> <dd>パ<dt> <dd>ヒ<dt> <dd>ビ<dt> <dd>ピ</dl></div>
+<div><dl><dd>フ<dt> <dt> <dd>ブ<dt> <dd>プ<dt> <dd>ヘ<dt> <dd>ベ<dt> <dd>ペ<dt> <dd>ホ<dt> <dt> <dd>ボ<dt> <dd>ポ<dt> <dd>マ<dt> <dd>ミ<dt> <dd>ム<dt> <dd>メ</dl></div>
+<div><dl><dd>モ<dt> <dt> <dd>ャ<dt> <dd>ヤ<dt> <dd>ュ<dt> <dd>ユ<dt> <dd>ョ<dt> <dd>ヨ<dt> <dt> <dd>ラ<dt> <dd>リ<dt> <dd>ル<dt> <dd>レ<dt> <dd>ロ<dt> <dd>ヮ</dl></div>
+<div><dl><dd>ワ<dt> <dt> <dd>ヰ<dt> <dd>ヱ<dt> <dd>ヲ<dt> <dd>ン<dt> <dd>ヴ<dt> <dd>ヵ<dt> <dt> <dd>ヶ<dt> <dd>ヷ<dt> <dd>ヸ<dt> <dd>ヹ<dt> <dd>ヺ<dt> <dd>・</dl></div>
+<div><dl><dd>ー<dt> <dd>ヽ<dt> <dd>ヾ</dl></div>
+<div class=_mark id=mark49><a  href='#toc49'><dl><dt>B<dt>o<dt>p<dt>o<dt>m<dt>o<dt>f</dl></a></div>
+<div><dl><dd>ㄅ<dt> <dt> <dd>ㄆ<dt> <dd>ㄇ<dt> <dd>ㄈ<dt> <dd>ㄉ<dt> <dd>ㄊ<dt> <dd>ㄋ<dt> <dt> <dd>ㄌ<dt> <dd>ㄍ<dt> <dd>ㄎ<dt> <dd>ㄏ<dt> <dd>ㄐ<dt> <dd>ㄑ</dl></div>
+<div><dl><dd>ㄒ<dt> <dt> <dd>ㄓ<dt> <dd>ㄔ<dt> <dd>ㄕ<dt> <dd>ㄖ<dt> <dd>ㄗ<dt> <dd>ㄘ<dt> <dt> <dd>ㄙ<dt> <dd>ㄚ<dt> <dd>ㄛ<dt> <dd>ㄜ<dt> <dd>ㄝ<dt> <dd>ㄞ</dl></div>
+<div><dl><dd>ㄟ<dt> <dt> <dd>ㄠ<dt> <dd>ㄡ<dt> <dd>ㄢ<dt> <dd>ㄣ<dt> <dd>ㄤ<dt> <dd>ㄥ<dt> <dt> <dd>ㄦ<dt> <dd>ㄧ<dt> <dd>ㄨ<dt> <dd>ㄩ<dt> <dd>ㄪ<dt> <dd>ㄫ</dl></div>
+<div><dl><dd>ㄬ</dl></div>
+<div class=_mark id=mark50><a  href='#toc50'><dl><dt>H<dt>a<dt>n<dt>g<dt>u<dt>l<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y<dt> <dt>J<dt>a<dt>m<dt>o</dl></a></div>
+<div><dl><dd>ㄱ<dt> <dt> <dd>ㄲ<dt> <dd>ㄳ<dt> <dd>ㄴ<dt> <dd>ㄵ<dt> <dd>ㄶ<dt> <dd>ㄷ<dt> <dt> <dd>ㄸ<dt> <dd>ㄹ<dt> <dd>ㄺ<dt> <dd>ㄻ<dt> <dd>ㄼ<dt> <dd>ㄽ</dl></div>
+<div><dl><dd>ㄾ<dt> <dt> <dd>ㄿ<dt> <dd>ㅀ<dt> <dd>ㅁ<dt> <dd>ㅂ<dt> <dd>ㅃ<dt> <dd>ㅄ<dt> <dt> <dd>ㅅ<dt> <dd>ㅆ<dt> <dd>ㅇ<dt> <dd>ㅈ<dt> <dd>ㅉ<dt> <dd>ㅊ</dl></div>
+<div><dl><dd>ㅋ<dt> <dt> <dd>ㅌ<dt> <dd>ㅍ<dt> <dd>ㅎ<dt> <dd>ㅏ<dt> <dd>ㅐ<dt> <dd>ㅑ<dt> <dt> <dd>ㅒ<dt> <dd>ㅓ<dt> <dd>ㅔ<dt> <dd>ㅕ<dt> <dd>ㅖ<dt> <dd>ㅗ</dl></div>
+<div><dl><dd>ㅘ<dt> <dt> <dd>ㅙ<dt> <dd>ㅚ<dt> <dd>ㅛ<dt> <dd>ㅜ<dt> <dd>ㅝ<dt> <dd>ㅞ<dt> <dt> <dd>ㅟ<dt> <dd>ㅠ<dt> <dd>ㅡ<dt> <dd>ㅢ<dt> <dd>ㅣ<dt> <dd>ㅤ</dl></div>
+<div><dl><dd>ㅥ<dt> <dt> <dd>ㅦ<dt> <dd>ㅧ<dt> <dd>ㅨ<dt> <dd>ㅩ<dt> <dd>ㅪ<dt> <dd>ㅫ<dt> <dt> <dd>ㅬ<dt> <dd>ㅭ<dt> <dd>ㅮ<dt> <dd>ㅯ<dt> <dd>ㅰ<dt> <dd>ㅱ</dl></div>
+<div><dl><dd>ㅲ<dt> <dt> <dd>ㅳ<dt> <dd>ㅴ<dt> <dd>ㅵ<dt> <dd>ㅶ<dt> <dd>ㅷ<dt> <dd>ㅸ<dt> <dt> <dd>ㅹ<dt> <dd>ㅺ<dt> <dd>ㅻ<dt> <dd>ㅼ<dt> <dd>ㅽ<dt> <dd>ㅾ</dl></div>
+<div><dl><dd>ㅿ<dt> <dt> <dd>ㆀ<dt> <dd>ㆁ<dt> <dd>ㆂ<dt> <dd>ㆃ<dt> <dd>ㆄ<dt> <dd>ㆅ<dt> <dt> <dd>ㆆ<dt> <dd>ㆇ<dt> <dd>ㆈ<dt> <dd>ㆉ<dt> <dd>ㆊ<dt> <dd>ㆋ</dl></div>
+<div><dl><dd>ㆌ<dt> <dd>ㆍ<dt> <dd>ㆎ</dl></div>
+<div class=_mark id=mark51><a  href='#toc51'><dl><dt>K<dt>a<dt>n<dt>b<dt>u<dt>n</dl></a></div>
+<div><dl><dd>㆐<dt> <dt> <dd>㆑<dt> <dd>㆒<dt> <dd>㆓<dt> <dd>㆔<dt> <dd>㆕<dt> <dd>㆖<dt> <dt> <dd>㆗<dt> <dd>㆘<dt> <dd>㆙<dt> <dd>㆚<dt> <dd>㆛<dt> <dd>㆜</dl></div>
+<div><dl><dd>㆝<dt> <dd>㆞<dt> <dd>㆟</dl></div>
+<div class=_mark id=mark52><a  href='#toc52'><dl><dt>E<dt>n<dt>c<dt>l<dt>o<dt>s<dt>e<dt>d<dt> <dt>C<dt>J<dt>K<dt> <dt>L<dt>e<dt>t<dt>t<dt>e<dt>r<dt>s<dt> <dt>a<dt>n<dt>d<dt> <dt>M<dt>o<dt>n<dt>t<dt>h<dt>s</dl></a></div>
+<div><dl><dd>㈀<dt> <dt> <dd>㈁<dt> <dd>㈂<dt> <dd>㈃<dt> <dd>㈄<dt> <dd>㈅<dt> <dd>㈆<dt> <dt> <dd>㈇<dt> <dd>㈈<dt> <dd>㈉<dt> <dd>㈊<dt> <dd>㈋<dt> <dd>㈌</dl></div>
+<div><dl><dd>㈍<dt> <dt> <dd>㈎<dt> <dd>㈏<dt> <dd>㈐<dt> <dd>㈑<dt> <dd>㈒<dt> <dd>㈓<dt> <dt> <dd>㈔<dt> <dd>㈕<dt> <dd>㈖<dt> <dd>㈗<dt> <dd>㈘<dt> <dd>㈙</dl></div>
+<div><dl><dd>㈚<dt> <dt> <dd>㈛<dt> <dd>㈜<dt> <dd>㈠<dt> <dd>㈡<dt> <dd>㈢<dt> <dd>㈣<dt> <dt> <dd>㈤<dt> <dd>㈥<dt> <dd>㈦<dt> <dd>㈧<dt> <dd>㈨<dt> <dd>㈩</dl></div>
+<div><dl><dd>㈪<dt> <dt> <dd>㈫<dt> <dd>㈬<dt> <dd>㈭<dt> <dd>㈮<dt> <dd>㈯<dt> <dd>㈰<dt> <dt> <dd>㈱<dt> <dd>㈲<dt> <dd>㈳<dt> <dd>㈴<dt> <dd>㈵<dt> <dd>㈶</dl></div>
+<div><dl><dd>㈷<dt> <dt> <dd>㈸<dt> <dd>㈹<dt> <dd>㈺<dt> <dd>㈻<dt> <dd>㈼<dt> <dd>㈽<dt> <dt> <dd>㈾<dt> <dd>㈿<dt> <dd>㉀<dt> <dd>㉁<dt> <dd>㉂<dt> <dd>㉃</dl></div>
+<div><dl><dd>㉠<dt> <dt> <dd>㉡<dt> <dd>㉢<dt> <dd>㉣<dt> <dd>㉤<dt> <dd>㉥<dt> <dd>㉦<dt> <dt> <dd>㉧<dt> <dd>㉨<dt> <dd>㉩<dt> <dd>㉪<dt> <dd>㉫<dt> <dd>㉬</dl></div>
+<div><dl><dd>㉭<dt> <dt> <dd>㉮<dt> <dd>㉯<dt> <dd>㉰<dt> <dd>㉱<dt> <dd>㉲<dt> <dd>㉳<dt> <dt> <dd>㉴<dt> <dd>㉵<dt> <dd>㉶<dt> <dd>㉷<dt> <dd>㉸<dt> <dd>㉹</dl></div>
+<div><dl><dd>㉺<dt> <dt> <dd>㉻<dt> <dd>㉿<dt> <dd>㊀<dt> <dd>㊁<dt> <dd>㊂<dt> <dd>㊃<dt> <dt> <dd>㊄<dt> <dd>㊅<dt> <dd>㊆<dt> <dd>㊇<dt> <dd>㊈<dt> <dd>㊉</dl></div>
+<div><dl><dd>㊊<dt> <dt> <dd>㊋<dt> <dd>㊌<dt> <dd>㊍<dt> <dd>㊎<dt> <dd>㊏<dt> <dd>㊐<dt> <dt> <dd>㊑<dt> <dd>㊒<dt> <dd>㊓<dt> <dd>㊔<dt> <dd>㊕<dt> <dd>㊖</dl></div>
+<div><dl><dd>㊗<dt> <dd>㊘<dt> <dd>㊙<dt> <dd>㊚<dt> <dd>㊛<dt> <dd>㊜<dt> <dd>㊝<dt> <dd>㊞<dt> <dd>㊟<dt> <dd>㊠<dt> <dd>㊡<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark53><a  href='#toc53'><dl><dt>C<dt>J<dt>K<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y</dl></a></div>
+<div><dl><dd>㌀<dt> <dt> <dd>㌁<dt> <dd>㌂<dt> <dd>㌃<dt> <dd>㌄<dt> <dd>㌅<dt> <dd>㌆<dt> <dt> <dd>㌇<dt> <dd>㌈<dt> <dd>㌉<dt> <dd>㌊<dt> <dd>㌋<dt> <dd>㌌</dl></div>
+<div><dl><dd>㌍<dt> <dt> <dd>㌎<dt> <dd>㌏<dt> <dd>㌐<dt> <dd>㌑<dt> <dd>㌒<dt> <dd>㌓<dt> <dt> <dd>㌔<dt> <dd>㌕<dt> <dd>㌖<dt> <dd>㌗<dt> <dd>㌘<dt> <dd>㌙</dl></div>
+<div><dl><dd>㌚<dt> <dt> <dd>㌛<dt> <dd>㌜<dt> <dd>㌝<dt> <dd>㌞<dt> <dd>㌟<dt> <dd>㌠<dt> <dt> <dd>㌡<dt> <dd>㌢<dt> <dd>㌣<dt> <dd>㌤<dt> <dd>㌥<dt> <dd>㌦</dl></div>
+<div><dl><dd>㌧<dt> <dt> <dd>㌨<dt> <dd>㌩<dt> <dd>㌪<dt> <dd>㌫<dt> <dd>㌬<dt> <dd>㌭<dt> <dt> <dd>㌮<dt> <dd>㌯<dt> <dd>㌰<dt> <dd>㌱<dt> <dd>㌲<dt> <dd>㌳</dl></div>
+<div><dl><dd>㌴<dt> <dt> <dd>㌵<dt> <dd>㌶<dt> <dd>㌷<dt> <dd>㌸<dt> <dd>㌹<dt> <dd>㌺<dt> <dt> <dd>㌻<dt> <dd>㌼<dt> <dd>㌽<dt> <dd>㌾<dt> <dd>㌿<dt> <dd>㍀</dl></div>
+<div><dl><dd>㍁<dt> <dt> <dd>㍂<dt> <dd>㍃<dt> <dd>㍄<dt> <dd>㍅<dt> <dd>㍆<dt> <dd>㍇<dt> <dt> <dd>㍈<dt> <dd>㍉<dt> <dd>㍊<dt> <dd>㍋<dt> <dd>㍌<dt> <dd>㍍</dl></div>
+<div><dl><dd>㍎<dt> <dt> <dd>㍏<dt> <dd>㍐<dt> <dd>㍑<dt> <dd>㍒<dt> <dd>㍓<dt> <dd>㍔<dt> <dt> <dd>㍕<dt> <dd>㍖<dt> <dd>㍗<dt> <dd>㍘<dt> <dd>㍙<dt> <dd>㍚</dl></div>
+<div><dl><dd>㍛<dt> <dt> <dd>㍜<dt> <dd>㍝<dt> <dd>㍞<dt> <dd>㍟<dt> <dd>㍠<dt> <dd>㍡<dt> <dt> <dd>㍢<dt> <dd>㍣<dt> <dd>㍤<dt> <dd>㍥<dt> <dd>㍦<dt> <dd>㍧</dl></div>
+<div><dl><dd>㍨<dt> <dt> <dd>㍩<dt> <dd>㍪<dt> <dd>㍫<dt> <dd>㍬<dt> <dd>㍭<dt> <dd>㍮<dt> <dt> <dd>㍯<dt> <dd>㍰<dt> <dd>㍱<dt> <dd>㍲<dt> <dd>㍳<dt> <dd>㍴</dl></div>
+<div><dl><dd>㍵<dt> <dd>㍶<dt> <dd>㍻<dt> <dd>㍼<dt> <dd>㍽<dt> <dd>㍾<dt> <dd>㍿<dt> <dd>㎀<dt> <dd>㎁<dt> <dd>㎂<dt> <dd>㎃<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark54><a  href='#toc54'><dl><dt>C<dt>J<dt>K<dt> <dt>U<dt>n<dt>i<dt>f<dt>i<dt>e<dt>d<dt> <dt>I<dt>d<dt>e<dt>o<dt>g<dt>r<dt>a<dt>p<dt>h<dt>s</dl></a></div>
+<div><dl><dd>一<dt> <dt> <dd>丁<dt> <dd>丂<dt> <dd>七<dt> <dd>丄<dt> <dd>丅<dt> <dd>丆<dt> <dt> <dd>万<dt> <dd>丈<dt> <dd>三<dt> <dd>上<dt> <dd>下<dt> <dd>丌</dl></div>
+<div><dl><dd>不<dt> <dt> <dd>与<dt> <dd>丏<dt> <dd>丐<dt> <dd>丑<dt> <dd>丒<dt> <dd>专<dt> <dt> <dd>且<dt> <dd>丕<dt> <dd>世<dt> <dd>丗<dt> <dd>丘<dt> <dd>丙</dl></div>
+<div><dl><dd>业<dt> <dt> <dd>丛<dt> <dd>东<dt> <dd>丝<dt> <dd>丞<dt> <dd>丟<dt> <dd>丠<dt> <dt> <dd>両<dt> <dd>丢<dt> <dd>丣<dt> <dd>两<dt> <dd>严<dt> <dd>並</dl></div>
+<div><dl><dd>丧<dt> <dt> <dd>丨<dt> <dd>丩<dt> <dd>个<dt> <dd>丫<dt> <dd>丬<dt> <dd>中<dt> <dt> <dd>丮<dt> <dd>丯<dt> <dd>丰<dt> <dd>丱<dt> <dd>串<dt> <dd>丳</dl></div>
+<div><dl><dd>临<dt> <dt> <dd>丵<dt> <dd>丶<dt> <dd>丷<dt> <dd>丸<dt> <dd>丹<dt> <dd>为<dt> <dt> <dd>主<dt> <dd>丼<dt> <dd>丽<dt> <dd>举<dt> <dd>丿<dt> <dd>乀</dl></div>
+<div><dl><dd>乁<dt> <dt> <dd>乂<dt> <dd>乃<dt> <dd>乄<dt> <dd>久<dt> <dd>乆<dt> <dd>乇<dt> <dt> <dd>么<dt> <dd>义<dt> <dd>乊<dt> <dd>之<dt> <dd>乌<dt> <dd>乍</dl></div>
+<div><dl><dd>乎<dt> <dt> <dd>乏<dt> <dd>乐<dt> <dd>乑<dt> <dd>乒<dt> <dd>乓<dt> <dd>乔<dt> <dt> <dd>乕<dt> <dd>乖<dt> <dd>乗<dt> <dd>乘<dt> <dd>乙<dt> <dd>乚</dl></div>
+<div><dl><dd>乛<dt> <dt> <dd>乜<dt> <dd>九<dt> <dd>乞<dt> <dd>也<dt> <dd>习<dt> <dd>乡<dt> <dt> <dd>乢<dt> <dd>乣<dt> <dd>乤<dt> <dd>乥<dt> <dd>书<dt> <dd>乧</dl></div>
+<div><dl><dd>乨<dt> <dt> <dd>乩<dt> <dd>乪<dt> <dd>乫<dt> <dd>乬<dt> <dd>乭<dt> <dd>乮<dt> <dt> <dd>乯<dt> <dd>买<dt> <dd>乱<dt> <dd>乲<dt> <dd>乳<dt> <dd>乴</dl></div>
+<div><dl><dd>乵<dt> <dd>乶<dt> <dd>乷<dt> <dd>乸<dt> <dd>乹<dt> <dd>乺<dt> <dd>乻<dt> <dd>乼<dt> <dd>乽<dt> <dd>乾<dt> <dd>乿<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark55><a  href='#toc55'><dl><dt>H<dt>a<dt>n<dt>g<dt>u<dt>l<dt> <dt>S<dt>y<dt>l<dt>l<dt>a<dt>b<dt>l<dt>e<dt>s</dl></a></div>
+<div><dl><dd>가<dt> <dt> <dd>각<dt> <dd>갂<dt> <dd>갃<dt> <dd>간<dt> <dd>갅<dt> <dd>갆<dt> <dt> <dd>갇<dt> <dd>갈<dt> <dd>갉<dt> <dd>갊<dt> <dd>갋<dt> <dd>갌</dl></div>
+<div><dl><dd>갍<dt> <dt> <dd>갎<dt> <dd>갏<dt> <dd>감<dt> <dd>갑<dt> <dd>값<dt> <dd>갓<dt> <dt> <dd>갔<dt> <dd>강<dt> <dd>갖<dt> <dd>갗<dt> <dd>갘<dt> <dd>같</dl></div>
+<div><dl><dd>갚<dt> <dt> <dd>갛<dt> <dd>개<dt> <dd>객<dt> <dd>갞<dt> <dd>갟<dt> <dd>갠<dt> <dt> <dd>갡<dt> <dd>갢<dt> <dd>갣<dt> <dd>갤<dt> <dd>갥<dt> <dd>갦</dl></div>
+<div><dl><dd>갧<dt> <dt> <dd>갨<dt> <dd>갩<dt> <dd>갪<dt> <dd>갫<dt> <dd>갬<dt> <dd>갭<dt> <dt> <dd>갮<dt> <dd>갯<dt> <dd>갰<dt> <dd>갱<dt> <dd>갲<dt> <dd>갳</dl></div>
+<div><dl><dd>갴<dt> <dt> <dd>갵<dt> <dd>갶<dt> <dd>갷<dt> <dd>갸<dt> <dd>갹<dt> <dd>갺<dt> <dt> <dd>갻<dt> <dd>갼<dt> <dd>갽<dt> <dd>갾<dt> <dd>갿<dt> <dd>걀</dl></div>
+<div><dl><dd>걁<dt> <dt> <dd>걂<dt> <dd>걃<dt> <dd>걄<dt> <dd>걅<dt> <dd>걆<dt> <dd>걇<dt> <dt> <dd>걈<dt> <dd>걉<dt> <dd>걊<dt> <dd>걋<dt> <dd>걌<dt> <dd>걍</dl></div>
+<div><dl><dd>걎<dt> <dt> <dd>걏<dt> <dd>걐<dt> <dd>걑<dt> <dd>걒<dt> <dd>걓<dt> <dd>걔<dt> <dt> <dd>걕<dt> <dd>걖<dt> <dd>걗<dt> <dd>걘<dt> <dd>걙<dt> <dd>걚</dl></div>
+<div><dl><dd>걛<dt> <dt> <dd>걜<dt> <dd>걝<dt> <dd>걞<dt> <dd>걟<dt> <dd>걠<dt> <dd>걡<dt> <dt> <dd>걢<dt> <dd>걣<dt> <dd>걤<dt> <dd>걥<dt> <dd>걦<dt> <dd>걧</dl></div>
+<div><dl><dd>걨<dt> <dt> <dd>걩<dt> <dd>걪<dt> <dd>걫<dt> <dd>걬<dt> <dd>걭<dt> <dd>걮<dt> <dt> <dd>걯<dt> <dd>거<dt> <dd>걱<dt> <dd>걲<dt> <dd>걳<dt> <dd>건</dl></div>
+<div><dl><dd>걵<dt> <dd>걶<dt> <dd>걷<dt> <dd>걸<dt> <dd>걹<dt> <dd>걺<dt> <dd>걻<dt> <dd>걼<dt> <dd>걽<dt> <dd>걾<dt> <dd>걿<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark56><a  href='#toc56'><dl><dt>P<dt>r<dt>i<dt>v<dt>a<dt>t<dt>e<dt> <dt>U<dt>s<dt>e</dl></a></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd></dl></div>
+<div><dl><dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dd><dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark57><a  href='#toc57'><dl><dt>C<dt>J<dt>K<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y<dt> <dt>I<dt>d<dt>e<dt>o<dt>g<dt>r<dt>a<dt>p<dt>h<dt>s</dl></a></div>
+<div><dl><dd>豈<dt> <dt> <dd>更<dt> <dd>車<dt> <dd>賈<dt> <dd>滑<dt> <dd>串<dt> <dd>句<dt> <dt> <dd>龜<dt> <dd>龜<dt> <dd>契<dt> <dd>金<dt> <dd>喇<dt> <dd>奈</dl></div>
+<div><dl><dd>懶<dt> <dt> <dd>癩<dt> <dd>羅<dt> <dd>蘿<dt> <dd>螺<dt> <dd>裸<dt> <dd>邏<dt> <dt> <dd>樂<dt> <dd>洛<dt> <dd>烙<dt> <dd>珞<dt> <dd>落<dt> <dd>酪</dl></div>
+<div><dl><dd>駱<dt> <dt> <dd>亂<dt> <dd>卵<dt> <dd>欄<dt> <dd>爛<dt> <dd>蘭<dt> <dd>鸞<dt> <dt> <dd>嵐<dt> <dd>濫<dt> <dd>藍<dt> <dd>襤<dt> <dd>拉<dt> <dd>臘</dl></div>
+<div><dl><dd>蠟<dt> <dt> <dd>廊<dt> <dd>朗<dt> <dd>浪<dt> <dd>狼<dt> <dd>郎<dt> <dd>來<dt> <dt> <dd>冷<dt> <dd>勞<dt> <dd>擄<dt> <dd>櫓<dt> <dd>爐<dt> <dd>盧</dl></div>
+<div><dl><dd>老<dt> <dt> <dd>蘆<dt> <dd>虜<dt> <dd>路<dt> <dd>露<dt> <dd>魯<dt> <dd>鷺<dt> <dt> <dd>碌<dt> <dd>祿<dt> <dd>綠<dt> <dd>菉<dt> <dd>錄<dt> <dd>鹿</dl></div>
+<div><dl><dd>論<dt> <dt> <dd>壟<dt> <dd>弄<dt> <dd>籠<dt> <dd>聾<dt> <dd>牢<dt> <dd>磊<dt> <dt> <dd>賂<dt> <dd>雷<dt> <dd>壘<dt> <dd>屢<dt> <dd>樓<dt> <dd>淚</dl></div>
+<div><dl><dd>漏<dt> <dt> <dd>累<dt> <dd>縷<dt> <dd>陋<dt> <dd>勒<dt> <dd>肋<dt> <dd>凜<dt> <dt> <dd>凌<dt> <dd>稜<dt> <dd>綾<dt> <dd>菱<dt> <dd>陵<dt> <dd>讀</dl></div>
+<div><dl><dd>拏<dt> <dt> <dd>樂<dt> <dd>諾<dt> <dd>丹<dt> <dd>寧<dt> <dd>怒<dt> <dd>率<dt> <dt> <dd>異<dt> <dd>北<dt> <dd>磻<dt> <dd>便<dt> <dd>復<dt> <dd>不</dl></div>
+<div><dl><dd>泌<dt> <dt> <dd>數<dt> <dd>索<dt> <dd>參<dt> <dd>塞<dt> <dd>省<dt> <dd>葉<dt> <dt> <dd>說<dt> <dd>殺<dt> <dd>辰<dt> <dd>沈<dt> <dd>拾<dt> <dd>若</dl></div>
+<div><dl><dd>掠<dt> <dd>略<dt> <dd>亮<dt> <dd>兩<dt> <dd>凉<dt> <dd>梁<dt> <dd>糧<dt> <dd>良<dt> <dd>諒<dt> <dd>量<dt> <dd>勵<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark58><a  href='#toc58'><dl><dt>A<dt>l<dt>p<dt>h<dt>a<dt>b<dt>e<dt>t<dt>i<dt>c<dt> <dt>P<dt>r<dt>e<dt>s<dt>e<dt>n<dt>t<dt>a<dt>t<dt>i<dt>o<dt>n<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div><dl><dd>ﬀ<dt> <dt> <dd>ﬁ<dt> <dd>ﬂ<dt> <dd>ﬃ<dt> <dd>ﬄ<dt> <dd>ﬅ<dt> <dd>ﬆ<dt> <dt> <dd>ﬓ<dt> <dd>ﬔ<dt> <dd>ﬕ<dt> <dd>ﬖ<dt> <dd>ﬗ<dt> <dd>ﬞ</dl></div>
+<div><dl><dd>ײַ<dt> <dt> <dd>ﬠ<dt> <dd>ﬡ<dt> <dd>ﬢ<dt> <dd>ﬣ<dt> <dd>ﬤ<dt> <dd>ﬥ<dt> <dt> <dd>ﬦ<dt> <dd>ﬧ<dt> <dd>ﬨ<dt> <dd>﬩<dt> <dd>שׁ<dt> <dd>שׂ</dl></div>
+<div><dl><dd>שּׁ<dt> <dt> <dd>שּׂ<dt> <dd>אַ<dt> <dd>אָ<dt> <dd>אּ<dt> <dd>בּ<dt> <dd>גּ<dt> <dt> <dd>דּ<dt> <dd>הּ<dt> <dd>וּ<dt> <dd>זּ<dt> <dd>טּ<dt> <dd>יּ</dl></div>
+<div><dl><dd>ךּ<dt> <dt> <dd>כּ<dt> <dd>לּ<dt> <dd>מּ<dt> <dd>נּ<dt> <dd>סּ<dt> <dd>ףּ<dt> <dt> <dd>פּ<dt> <dd>צּ<dt> <dd>קּ<dt> <dd>רּ<dt> <dd>שּ<dt> <dd>תּ</dl></div>
+<div><dl><dd>וֹ<dt> <dd>בֿ<dt> <dd>כֿ<dt> <dd>פֿ<dt> <dd>ﭏ</dl></div>
+<div class=_mark id=mark59><a  href='#toc59'><dl><dt>A<dt>r<dt>a<dt>b<dt>i<dt>c<dt> <dt>P<dt>r<dt>e<dt>s<dt>e<dt>n<dt>t<dt>a<dt>t<dt>i<dt>o<dt>n<dt> <dt>F<dt>o<dt>r<dt>m<dt>s<dt>-<dt>A</dl></a></div>
+<div><dl><dd>ﭐ<dt> <dt> <dd>ﭑ<dt> <dd>ﭒ<dt> <dd>ﭓ<dt> <dd>ﭔ<dt> <dd>ﭕ<dt> <dd>ﭖ<dt> <dt> <dd>ﭗ<dt> <dd>ﭘ<dt> <dd>ﭙ<dt> <dd>ﭚ<dt> <dd>ﭛ<dt> <dd>ﭜ</dl></div>
+<div><dl><dd>ﭝ<dt> <dt> <dd>ﭞ<dt> <dd>ﭟ<dt> <dd>ﭠ<dt> <dd>ﭡ<dt> <dd>ﭢ<dt> <dd>ﭣ<dt> <dt> <dd>ﭤ<dt> <dd>ﭥ<dt> <dd>ﭦ<dt> <dd>ﭧ<dt> <dd>ﭨ<dt> <dd>ﭩ</dl></div>
+<div><dl><dd>ﭪ<dt> <dt> <dd>ﭫ<dt> <dd>ﭬ<dt> <dd>ﭭ<dt> <dd>ﭮ<dt> <dd>ﭯ<dt> <dd>ﭰ<dt> <dt> <dd>ﭱ<dt> <dd>ﭲ<dt> <dd>ﭳ<dt> <dd>ﭴ<dt> <dd>ﭵ<dt> <dd>ﭶ</dl></div>
+<div><dl><dd>ﭷ<dt> <dt> <dd>ﭸ<dt> <dd>ﭹ<dt> <dd>ﭺ<dt> <dd>ﭻ<dt> <dd>ﭼ<dt> <dd>ﭽ<dt> <dt> <dd>ﭾ<dt> <dd>ﭿ<dt> <dd>ﮀ<dt> <dd>ﮁ<dt> <dd>ﮂ<dt> <dd>ﮃ</dl></div>
+<div><dl><dd>ﮄ<dt> <dt> <dd>ﮅ<dt> <dd>ﮆ<dt> <dd>ﮇ<dt> <dd>ﮈ<dt> <dd>ﮉ<dt> <dd>ﮊ<dt> <dt> <dd>ﮋ<dt> <dd>ﮌ<dt> <dd>ﮍ<dt> <dd>ﮎ<dt> <dd>ﮏ<dt> <dd>ﮐ</dl></div>
+<div><dl><dd>ﮑ<dt> <dt> <dd>ﮒ<dt> <dd>ﮓ<dt> <dd>ﮔ<dt> <dd>ﮕ<dt> <dd>ﮖ<dt> <dd>ﮗ<dt> <dt> <dd>ﮘ<dt> <dd>ﮙ<dt> <dd>ﮚ<dt> <dd>ﮛ<dt> <dd>ﮜ<dt> <dd>ﮝ</dl></div>
+<div><dl><dd>ﮞ<dt> <dt> <dd>ﮟ<dt> <dd>ﮠ<dt> <dd>ﮡ<dt> <dd>ﮢ<dt> <dd>ﮣ<dt> <dd>ﮤ<dt> <dt> <dd>ﮥ<dt> <dd>ﮦ<dt> <dd>ﮧ<dt> <dd>ﮨ<dt> <dd>ﮩ<dt> <dd>ﮪ</dl></div>
+<div><dl><dd>ﮫ<dt> <dt> <dd>ﮬ<dt> <dd>ﮭ<dt> <dd>ﮮ<dt> <dd>ﮯ<dt> <dd>ﮰ<dt> <dd>ﮱ<dt> <dt> <dd>ﯓ<dt> <dd>ﯔ<dt> <dd>ﯕ<dt> <dd>ﯖ<dt> <dd>ﯗ<dt> <dd>ﯘ</dl></div>
+<div><dl><dd>ﯙ<dt> <dt> <dd>ﯚ<dt> <dd>ﯛ<dt> <dd>ﯜ<dt> <dd>ﯝ<dt> <dd>ﯞ<dt> <dd>ﯟ<dt> <dt> <dd>ﯠ<dt> <dd>ﯡ<dt> <dd>ﯢ<dt> <dd>ﯣ<dt> <dd>ﯤ<dt> <dd>ﯥ</dl></div>
+<div><dl><dd>ﯦ<dt> <dd>ﯧ<dt> <dd>ﯨ<dt> <dd>ﯩ<dt> <dd>ﯪ<dt> <dd>ﯫ<dt> <dd>ﯬ<dt> <dd>ﯭ<dt> <dd>ﯮ<dt> <dd>ﯯ<dt> <dd>ﯰ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark60><a  href='#toc60'><dl><dt>C<dt>o<dt>m<dt>b<dt>i<dt>n<dt>i<dt>n<dt>g<dt> <dt>H<dt>a<dt>l<dt>f<dt> <dt>M<dt>a<dt>r<dt>k<dt>s</dl></a></div>
+<div><dl><dd>︠<dt> <dd>︡<dt> <dd>︢<dt> <dd>︣</dl></div>
+<div class=_mark id=mark61><a  href='#toc61'><dl><dt>C<dt>J<dt>K<dt> <dt>C<dt>o<dt>m<dt>p<dt>a<dt>t<dt>i<dt>b<dt>i<dt>l<dt>i<dt>t<dt>y<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div><dl><dd>︰<dt> <dt> <dd>︱<dt> <dd>︲<dt> <dd>︳<dt> <dd>︴<dt> <dd>︵<dt> <dd>︶<dt> <dt> <dd>︷<dt> <dd>︸<dt> <dd>︹<dt> <dd>︺<dt> <dd>︻<dt> <dd>︼</dl></div>
+<div><dl><dd>︽<dt> <dt> <dd>︾<dt> <dd>︿<dt> <dd>﹀<dt> <dd>﹁<dt> <dd>﹂<dt> <dd>﹃<dt> <dt> <dd>﹄<dt> <dd>﹉<dt> <dd>﹊<dt> <dd>﹋<dt> <dd>﹌<dt> <dd>﹍</dl></div>
+<div><dl><dd>﹎<dt> <dd>﹏</dl></div>
+<div class=_mark id=mark62><a  href='#toc62'><dl><dt>S<dt>m<dt>a<dt>l<dt>l<dt> <dt>F<dt>o<dt>r<dt>m<dt> <dt>V<dt>a<dt>r<dt>i<dt>a<dt>n<dt>t<dt>s</dl></a></div>
+<div><dl><dd>﹐<dt> <dt> <dd>﹑<dt> <dd>﹒<dt> <dd>﹔<dt> <dd>﹕<dt> <dd>﹖<dt> <dd>﹗<dt> <dt> <dd>﹘<dt> <dd>﹙<dt> <dd>﹚<dt> <dd>﹛<dt> <dd>﹜<dt> <dd>﹝</dl></div>
+<div><dl><dd>﹞<dt> <dd>﹟<dt> <dd>﹠<dt> <dd>﹡<dt> <dd>﹢<dt> <dd>﹣<dt> <dd>﹤<dt> <dd>﹥<dt> <dd>﹦<dt> <dd>﹨<dt> <dd>﹩<dt> <dd>﹪<dt> <dd>﹫</dl></div>
+<div class=_mark id=mark63><a  href='#toc63'><dl><dt>A<dt>r<dt>a<dt>b<dt>i<dt>c<dt> <dt>P<dt>r<dt>e<dt>s<dt>e<dt>n<dt>t<dt>a<dt>t<dt>i<dt>o<dt>n<dt> <dt>F<dt>o<dt>r<dt>m<dt>s<dt>-<dt>B</dl></a></div>
+<div><dl><dd>ﹰ<dt> <dt> <dd>ﹱ<dt> <dd>ﹲ<dt> <dd>ﹴ<dt> <dd>ﹶ<dt> <dd>ﹷ<dt> <dd>ﹸ<dt> <dt> <dd>ﹹ<dt> <dd>ﹺ<dt> <dd>ﹻ<dt> <dd>ﹼ<dt> <dd>ﹽ<dt> <dd>ﹾ</dl></div>
+<div><dl><dd>ﹿ<dt> <dt> <dd>ﺀ<dt> <dd>ﺁ<dt> <dd>ﺂ<dt> <dd>ﺃ<dt> <dd>ﺄ<dt> <dd>ﺅ<dt> <dt> <dd>ﺆ<dt> <dd>ﺇ<dt> <dd>ﺈ<dt> <dd>ﺉ<dt> <dd>ﺊ<dt> <dd>ﺋ</dl></div>
+<div><dl><dd>ﺌ<dt> <dt> <dd>ﺍ<dt> <dd>ﺎ<dt> <dd>ﺏ<dt> <dd>ﺐ<dt> <dd>ﺑ<dt> <dd>ﺒ<dt> <dt> <dd>ﺓ<dt> <dd>ﺔ<dt> <dd>ﺕ<dt> <dd>ﺖ<dt> <dd>ﺗ<dt> <dd>ﺘ</dl></div>
+<div><dl><dd>ﺙ<dt> <dt> <dd>ﺚ<dt> <dd>ﺛ<dt> <dd>ﺜ<dt> <dd>ﺝ<dt> <dd>ﺞ<dt> <dd>ﺟ<dt> <dt> <dd>ﺠ<dt> <dd>ﺡ<dt> <dd>ﺢ<dt> <dd>ﺣ<dt> <dd>ﺤ<dt> <dd>ﺥ</dl></div>
+<div><dl><dd>ﺦ<dt> <dt> <dd>ﺧ<dt> <dd>ﺨ<dt> <dd>ﺩ<dt> <dd>ﺪ<dt> <dd>ﺫ<dt> <dd>ﺬ<dt> <dt> <dd>ﺭ<dt> <dd>ﺮ<dt> <dd>ﺯ<dt> <dd>ﺰ<dt> <dd>ﺱ<dt> <dd>ﺲ</dl></div>
+<div><dl><dd>ﺳ<dt> <dt> <dd>ﺴ<dt> <dd>ﺵ<dt> <dd>ﺶ<dt> <dd>ﺷ<dt> <dd>ﺸ<dt> <dd>ﺹ<dt> <dt> <dd>ﺺ<dt> <dd>ﺻ<dt> <dd>ﺼ<dt> <dd>ﺽ<dt> <dd>ﺾ<dt> <dd>ﺿ</dl></div>
+<div><dl><dd>ﻀ<dt> <dt> <dd>ﻁ<dt> <dd>ﻂ<dt> <dd>ﻃ<dt> <dd>ﻄ<dt> <dd>ﻅ<dt> <dd>ﻆ<dt> <dt> <dd>ﻇ<dt> <dd>ﻈ<dt> <dd>ﻉ<dt> <dd>ﻊ<dt> <dd>ﻋ<dt> <dd>ﻌ</dl></div>
+<div><dl><dd>ﻍ<dt> <dt> <dd>ﻎ<dt> <dd>ﻏ<dt> <dd>ﻐ<dt> <dd>ﻑ<dt> <dd>ﻒ<dt> <dd>ﻓ<dt> <dt> <dd>ﻔ<dt> <dd>ﻕ<dt> <dd>ﻖ<dt> <dd>ﻗ<dt> <dd>ﻘ<dt> <dd>ﻙ</dl></div>
+<div><dl><dd>ﻚ<dt> <dt> <dd>ﻛ<dt> <dd>ﻜ<dt> <dd>ﻝ<dt> <dd>ﻞ<dt> <dd>ﻟ<dt> <dd>ﻠ<dt> <dt> <dd>ﻡ<dt> <dd>ﻢ<dt> <dd>ﻣ<dt> <dd>ﻤ<dt> <dd>ﻥ<dt> <dd>ﻦ</dl></div>
+<div><dl><dd>ﻧ<dt> <dd>ﻨ<dt> <dd>ﻩ<dt> <dd>ﻪ<dt> <dd>ﻫ<dt> <dd>ﻬ<dt> <dd>ﻭ<dt> <dd>ﻮ<dt> <dd>ﻯ<dt> <dd>ﻰ<dt> <dd>ﻱ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark64><a  href='#toc64'><dl><dt>H<dt>a<dt>l<dt>f<dt>w<dt>i<dt>d<dt>t<dt>h<dt> <dt>a<dt>n<dt>d<dt> <dt>F<dt>u<dt>l<dt>l<dt>w<dt>i<dt>d<dt>t<dt>h<dt> <dt>F<dt>o<dt>r<dt>m<dt>s</dl></a></div>
+<div><dl><dd>！<dt> <dt> <dd>＂<dt> <dd>＃<dt> <dd>＄<dt> <dd>％<dt> <dd>＆<dt> <dd>＇<dt> <dt> <dd>（<dt> <dd>）<dt> <dd>＊<dt> <dd>＋<dt> <dd>，<dt> <dd>－</dl></div>
+<div><dl><dd>．<dt> <dt> <dd>／<dt> <dd>０<dt> <dd>１<dt> <dd>２<dt> <dd>３<dt> <dd>４<dt> <dt> <dd>５<dt> <dd>６<dt> <dd>７<dt> <dd>８<dt> <dd>９<dt> <dd>：</dl></div>
+<div><dl><dd>；<dt> <dt> <dd>＜<dt> <dd>＝<dt> <dd>＞<dt> <dd>？<dt> <dd>＠<dt> <dd>Ａ<dt> <dt> <dd>Ｂ<dt> <dd>Ｃ<dt> <dd>Ｄ<dt> <dd>Ｅ<dt> <dd>Ｆ<dt> <dd>Ｇ</dl></div>
+<div><dl><dd>Ｈ<dt> <dt> <dd>Ｉ<dt> <dd>Ｊ<dt> <dd>Ｋ<dt> <dd>Ｌ<dt> <dd>Ｍ<dt> <dd>Ｎ<dt> <dt> <dd>Ｏ<dt> <dd>Ｐ<dt> <dd>Ｑ<dt> <dd>Ｒ<dt> <dd>Ｓ<dt> <dd>Ｔ</dl></div>
+<div><dl><dd>Ｕ<dt> <dt> <dd>Ｖ<dt> <dd>Ｗ<dt> <dd>Ｘ<dt> <dd>Ｙ<dt> <dd>Ｚ<dt> <dd>［<dt> <dt> <dd>＼<dt> <dd>］<dt> <dd>＾<dt> <dd>＿<dt> <dd>｀<dt> <dd>ａ</dl></div>
+<div><dl><dd>ｂ<dt> <dt> <dd>ｃ<dt> <dd>ｄ<dt> <dd>ｅ<dt> <dd>ｆ<dt> <dd>ｇ<dt> <dd>ｈ<dt> <dt> <dd>ｉ<dt> <dd>ｊ<dt> <dd>ｋ<dt> <dd>ｌ<dt> <dd>ｍ<dt> <dd>ｎ</dl></div>
+<div><dl><dd>ｏ<dt> <dt> <dd>ｐ<dt> <dd>ｑ<dt> <dd>ｒ<dt> <dd>ｓ<dt> <dd>ｔ<dt> <dd>ｕ<dt> <dt> <dd>ｖ<dt> <dd>ｗ<dt> <dd>ｘ<dt> <dd>ｙ<dt> <dd>ｚ<dt> <dd>｛</dl></div>
+<div><dl><dd>｜<dt> <dt> <dd>｝<dt> <dd>～<dt> <dd>｡<dt> <dd>｢<dt> <dd>｣<dt> <dd>､<dt> <dt> <dd>･<dt> <dd>ｦ<dt> <dd>ｧ<dt> <dd>ｨ<dt> <dd>ｩ<dt> <dd>ｪ</dl></div>
+<div><dl><dd>ｫ<dt> <dt> <dd>ｬ<dt> <dd>ｭ<dt> <dd>ｮ<dt> <dd>ｯ<dt> <dd>ｰ<dt> <dd>ｱ<dt> <dt> <dd>ｲ<dt> <dd>ｳ<dt> <dd>ｴ<dt> <dd>ｵ<dt> <dd>ｶ<dt> <dd>ｷ</dl></div>
+<div><dl><dd>ｸ<dt> <dd>ｹ<dt> <dd>ｺ<dt> <dd>ｻ<dt> <dd>ｼ<dt> <dd>ｽ<dt> <dd>ｾ<dt> <dd>ｿ<dt> <dd>ﾀ<dt> <dd>ﾁ<dt> <dd>ﾂ<dt> <dt>.<dt>.<dt>.</dl></div>
+<div class=_mark id=mark65><a  href='#toc65'><dl><dt>S<dt>p<dt>e<dt>c<dt>i<dt>a<dt>l<dt>s</dl></a></div>
+<div><dl><dd>﻿</dl></div>
+<div class=_mark id=mark66><a  href='#toc66'><dl><dt>S<dt>p<dt>e<dt>c<dt>i<dt>a<dt>l<dt>s</dl></a></div>
+<div><dl><dd>�</dl></div><hr><div><dl><dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt>c<dt>o<dt>y<dt>o<dt>v<dt>e<dt> <dt>w<dt>i<dt>t<dt>h<dt> <dt>g<dt>o<dt>8<dt>0<dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> <dt> </dl></div>
+</div>
+</html>
