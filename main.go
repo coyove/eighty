@@ -51,10 +51,8 @@ func (opt *renderOptions) getTitleBar() string {
 	bar := "<div>"
 	pre := "../../"
 	switch opt.pageType {
-	case "index":
+	case "index", "about":
 		pre = "./"
-	case "about":
-		pre = "../"
 	}
 	switch opt.column {
 	case 40:
@@ -263,7 +261,7 @@ func main() {
 		return []PrefixCallback{
 			PrefixCallback{
 				prefix: "????", callback: func(in words_t) words_t {
-					url := reflect.ValueOf(files[filecount]).FieldByName(field).String()[4:]
+					url := reflect.ValueOf(files[filecount]).FieldByName(field).String()[5:]
 					for i, word := range in {
 						if i > 0 {
 							word.url = url
