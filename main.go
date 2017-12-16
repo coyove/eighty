@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -100,7 +101,7 @@ func renderContent(tmpl *template.Template, path string, opt *renderOptions) err
 		opt.fontSize,
 		w,
 		w * 2,
-		opt.column*w + 2,
+		opt.column*w + 1,
 	})
 }
 
@@ -250,46 +251,57 @@ func main() {
 		}
 	}
 
-	fo := FormatOptions{width: 80,
-		pc: []PrefixCallback{
+	gen := func(field string) []PrefixCallback {
+		return []PrefixCallback{
 			PrefixCallback{
 				prefix: "????", callback: func(in words_t) words_t {
-
+					url := reflect.ValueOf(files[filecount]).FieldByName(field).String()[4:]
 					for i, word := range in {
 						if i > 0 {
-							word.url = files[filecount].full[4:]
+							word.url = url
 						}
 					}
-					filecount++
+
+					if in[0].len > 4 {
+						x := *(in[0])
+						x.value = x.value[4:]
+						x.url = url
+
+						x.len -= 4
+						in[0].len = 4
+
+						tmp := in[:1].dup()
+						in = append(append(tmp, &x), in[1:]...)
+					}
 
 					in[0].value = []rune("    ")
 					in[0].ty = runeSpace
+					filecount++
 					return in
 				},
 			},
-		}}
+		}
+	}
 
 	o := &renderOptions{
 		title:    *cmdTitle,
 		github:   *cmdGithub,
 		footer:   *cmdFooter,
 		index:    true,
-		content:  Format80(index.Bytes(), fo),
+		content:  Format80(index.Bytes(), FormatOptions{width: 80, pc: gen("full")}),
 		column:   80,
 		fontSize: *cmdFontsize,
 	}
 	renderContent(tmpl, "blog/index.html", o)
 
 	o.column = 40
-	fo.width = 40
 	filecount = 0
-	o.content = Format80(indexm.Bytes(), fo)
+	o.content = Format80(indexm.Bytes(), FormatOptions{width: 40, pc: gen("mobile")})
 	renderContent(tmpl, "blog/index.m.html", o)
 
 	o.column = 120
-	fo.width = 120
 	filecount = 0
-	o.content = Format80(indexw.Bytes(), fo)
+	o.content = Format80(indexw.Bytes(), FormatOptions{width: 120, pc: gen("wide")})
 	renderContent(tmpl, "blog/index.w.html", o)
 
 	log.Println("finished generating", filecount, "files in", time.Now().Sub(sp).Seconds(), "sec")

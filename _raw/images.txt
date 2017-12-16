@@ -1,0 +1,18 @@
+## go80代码的一些更新
+
+图片插入测试
+http://i0.kym-cdn.com/photos/images/newsfeed/001/295/524/cda.jpg
+
+使用标签强制排版的一大坏处就是生成的文件体积实在太大。就算用的标签都可以unclosed，代码膨胀的速度还是非常惊人的。比如：
+“hello”一共5个窄字符，生成结果是：<dl><dt>h<dt>e<dt>l<dt>l<dt>o</dl>，35字节
+“你好”一共2个宽字符（6字节），生成结果是：<dl><dd>你<dd>好</dl>，23字节
+综合平均下来，排版后内容大概是原内容的3至4倍大小。
+
+另一个问题是，大量的标签对浏览器的渲染也是一大考验。你们可以试着打开レクイエム这篇，IE低版本直接会崩溃。（当然用IE789X的人会来这里吗。。。）
+
+test: ThisIsAVeryLongSentenceWithoutAnyPunctuationsAimedToTestTheAbilityOfGo80OfSplittingSuchALongSentenceIntoMultipleLinesBeforeDueToTheBugInMyAlgorithmAnySentenceLongerThanTheCurrentColumnsWillBeCutOffAtTheEdgeAndUsersWontBeAbleToSeeThemBadNowEverythingWorksCheers
+测试：这是一段没有标点符号的中文长句旨在测试算法的正确性在以前没有分段的时候任何长于八十列的句子并不会自动换行而是被截断用户就看不到尾部的信息了中英混排并没有这样的问题因为它们本来就会被拆开
+https://i0.hdslb.com/bfs/archive/8a7745bf492ba4565c139909be8d7e9529c07e4a.png
+
+超长URL
+https://www.google.com/search?ei=_OIzWqPUN5a4jwPLp7TYAg&q=https%3A%2F%2Ftieba.baidu.com%2Ff%3Fie%3Dutf-8%26kw%3D%25E8%25B0%2590%25E6%2595%2599%26fr%3Dsearch&oq=https%3A%2F%2Ftieba.baidu.com%2Ff%3Fie%3Dutf-8%26kw%3D%25E8%25B0%2590%25E6%2595%2599%26fr%3Dsearch&gs_l=psy-ab.3...604.604.0.1236.1.1.0.0.0.0.318.318.3-1.1.0....0...1c.2.64.psy-ab..0.0.0....0.pT53HbjS0Dc

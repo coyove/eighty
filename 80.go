@@ -23,6 +23,40 @@ func (w *word_t) dup() *word_t {
 	return &w2
 }
 
+func (w *word_t) split(width1, width2 int) words_t {
+	if w.len <= width1 || w.len <= width2 {
+		return nil
+	}
+
+	words := make(words_t, 0, 2)
+
+	var w2 *word_t
+	width := width1
+	for w.len > width {
+		w2 = w.dup()
+		var r rune
+		var i, ln int
+		for i, r = range w.value {
+			if ln += runeWidth(r); ln > width {
+				break
+			}
+		}
+
+		w2.value = w.value[i:]
+		w2.len = stringWidth(w2.value)
+
+		w.value = w.value[:i]
+		w.len = stringWidth(w.value)
+
+		words = append(words, w)
+		w = w2
+		width = width2
+	}
+
+	words = append(words, w2)
+	return words
+}
+
 func (w *word_t) isCJK() bool {
 	if w.len == 0 || w.value == nil {
 		return false
@@ -217,9 +251,9 @@ func (w *words_t) updateURL() {
 	}
 }
 
-func (w *words_t) dup() words_t {
-	w2 := make(words_t, len(*w))
-	for i, word := range *w {
+func (w words_t) dup() words_t {
+	w2 := make(words_t, len(w))
+	for i, word := range w {
 		w2[i] = word.dup()
 	}
 
@@ -269,6 +303,15 @@ func (w *words_t) join(opt FormatOptions) *bytes.Buffer {
 	for i := 0; i < len(words); i++ {
 		word := words[i]
 		if word.url != "" {
+			if word.ty == runeImage {
+				buf.WriteString("<img class='_image' src='")
+				buf.WriteString(word.url)
+				buf.WriteString("' alt='")
+				buf.WriteString(word.url)
+				buf.WriteString("'>")
+				break
+			}
+
 			if i == 0 || (words[i-1].url != word.url) {
 				buf.WriteString("<a ")
 				if word.url[0] != '#' {
@@ -439,19 +482,29 @@ func Format80(buf []byte, opt FormatOptions) string {
 	line, lines, length := words_t{}, []words_t{}, 0
 
 	for t := ws.nextWord(); t != nil; t = ws.nextWord() {
-		if length+t.len > opt.width {
-			length = 0
-			lines = append(lines, line)
-			line = words_t{}
+		read := func(t *word_t) {
+			if length+t.len > opt.width {
+				length = 0
+				lines = append(lines, line)
+				line = words_t{}
+			}
+
+			length += t.len
+			line = append(line, t)
+
+			if t.ty == runeNewline {
+				length = 0
+				lines = append(lines, line)
+				line = words_t{}
+			}
 		}
 
-		length += t.len
-		line = append(line, t)
-
-		if t.ty == runeNewline {
-			length = 0
-			lines = append(lines, line)
-			line = words_t{}
+		if words := t.split(opt.width-length, opt.width); words == nil {
+			read(t)
+		} else {
+			for _, w := range words {
+				read(w)
+			}
 		}
 	}
 
@@ -503,6 +556,30 @@ NEXT_LINE:
 
 	if inURLSpace {
 		urlWordList.updateURL()
+	}
+
+	lastURL := ""
+	for i := 0; i < len(lines); {
+		line := lines[i]
+		if len(line) == 0 {
+			i++
+			continue
+		}
+
+		if url := line[0].url; url != "" &&
+			(strings.HasSuffix(url, ".jpg") || strings.HasSuffix(url, ".png") ||
+				strings.HasSuffix(url, ".gif") || strings.HasSuffix(url, ".webp")) {
+			if url == lastURL {
+				lines = append(lines[:i], lines[i+1:]...)
+				continue
+			}
+
+			lines[i] = line[:1]
+			line[0].ty = runeImage
+			lastURL = url
+		}
+
+		i++
 	}
 
 	if tocnum := len(toc); tocnum > 0 && !opt.skipTOC {
