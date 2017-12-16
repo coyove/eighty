@@ -19,7 +19,6 @@ import (
 )
 
 var cmdListen = flag.String("listen", "", "dummy HTTP server")
-var cmdHost = flag.String("host", "http://127.0.0.1:8080/", "full URL including http:// (or https://) and trailing slash")
 var cmdGithub = flag.String("github", "https://github.com/coyove", "your github link")
 var cmdFooter = flag.String("footer", "coyove with go80", "footer text, keep it under 80 chars")
 var cmdTitle = flag.String("title", "coyove blog", "title text, keep it under 80 chars")
@@ -31,11 +30,10 @@ type renderOptions struct {
 	column   int
 	content  string
 	fontSize int
-	css      string
 	titleBar string
 	github   string
 	footer   string
-	index    bool
+	pageType string
 }
 
 func (opt *renderOptions) makeA(text, target, href string) string {
@@ -51,16 +49,25 @@ func (opt *renderOptions) getTitleBar() string {
 	const delim = "<dl><dt> <dt>|<dt> </dl>"
 
 	bar := "<div>"
+	pre := "../../"
+	switch opt.pageType {
+	case "index":
+		pre = "./"
+	case "about":
+		pre = "../"
+	}
 	switch opt.column {
 	case 40:
-		bar += opt.makeA("home", "", *cmdHost+"index.m.html")
+		bar += opt.makeA("home", "", pre+"index.m.html")
+		bar += delim + opt.makeA("about", "", pre+"about.m.html")
 	case 80:
-		bar += opt.makeA("home", "", *cmdHost)
+		bar += opt.makeA("home", "", pre)
+		bar += delim + opt.makeA("about", "", pre+"about.html")
 	case 120:
-		bar += opt.makeA("home", "", *cmdHost+"index.w.html")
+		bar += opt.makeA("home", "", pre+"index.w.html")
+		bar += delim + opt.makeA("about", "", pre+"about.w.html")
 	}
-	bar += delim + opt.makeA("github", "target='_blank'", opt.github)
-	bar += delim + opt.makeA("about", "", *cmdHost+"about.html") + "</div><hr>"
+	bar += delim + opt.makeA("github", "target='_blank'", opt.github) + "</div><hr>"
 
 	return bar
 }
@@ -72,7 +79,7 @@ func (opt *renderOptions) getFooter() string {
 func (opt *renderOptions) getHeader() string {
 	titleInContent := Format80(opt.padToCenter(opt.title), FormatOptions{width: opt.column})
 	dateInContent := Format80(opt.padToCenter(opt.date.Format(time.RFC3339)), FormatOptions{width: opt.column})
-	if opt.index {
+	if opt.pageType == "index" {
 		dateInContent = ""
 	}
 
@@ -94,7 +101,7 @@ func renderContent(tmpl *template.Template, path string, opt *renderOptions) err
 		WideFontWidth int
 		Width         int
 	}{
-		opt.index,
+		opt.pageType == "index",
 		opt.title,
 		opt.getTitleBar() + opt.getHeader() + "<div></div>" + opt.content + "<hr>" + opt.getFooter(),
 		opt.column,
@@ -187,6 +194,7 @@ func main() {
 				dir := fmt.Sprintf("blog/%d/%d/", y, m)
 				if fn == "about" {
 					dir = "blog/"
+					o.pageType = "about"
 				} else {
 					os.MkdirAll(dir, 0755)
 				}
@@ -287,7 +295,7 @@ func main() {
 		title:    *cmdTitle,
 		github:   *cmdGithub,
 		footer:   *cmdFooter,
-		index:    true,
+		pageType: "index",
 		content:  Format80(index.Bytes(), FormatOptions{width: 80, pc: gen("full")}),
 		column:   80,
 		fontSize: *cmdFontsize,
