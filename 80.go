@@ -161,7 +161,8 @@ func (w *words_t) adjustableJoin(opt FormatOptions) *bytes.Buffer {
 	length := 0
 	naturalEnd := words[len(words)-1].ty == runeNewline || words[len(words)-1].ty == runeEndOfBuffer
 	wp := make(words_t, 0, len(words))
-	wh := make(words_t, 0, len(words)/2)
+	wd, wl := make(words_t, 0, len(words)/2), make(words_t, 0, len(words)/2)
+	var exEnding *word_t
 
 	for i, word := range words {
 		if !naturalEnd {
@@ -182,8 +183,18 @@ func (w *words_t) adjustableJoin(opt FormatOptions) *bytes.Buffer {
 		}
 
 		if word.len > 0 {
-			if word.url == "" && (word.ty == runeDelim || word.ty == runeLatin) {
-				wh = append(wh, word)
+			if word.ty == runeSpecial {
+				exEnding = word
+				continue
+			}
+
+			if word.url == "" && i < len(words)-1 {
+				if word.ty == runeDelim {
+					wd = append(wd, word)
+				}
+				if word.ty == runeLatin {
+					wl = append(wl, word)
+				}
 			}
 
 			length += word.len
@@ -191,10 +202,18 @@ func (w *words_t) adjustableJoin(opt FormatOptions) *bytes.Buffer {
 		}
 	}
 
+	wd = append(wd, wl...)
 	// adjust
 	gap, fillstart := opt.width-length, 0
+	if len(wp) <= 1 {
+		return wp.join(opt)
+	}
 
-	if naturalEnd || len(wp) <= 1 || gap == 0 {
+	if !naturalEnd && wp[len(wp)-1].isInMap(extendablePunc) {
+		gap++
+	}
+
+	if naturalEnd || gap == 0 {
 		return wp.join(opt)
 	}
 
@@ -203,23 +222,27 @@ func (w *words_t) adjustableJoin(opt FormatOptions) *bytes.Buffer {
 	}
 
 	ln := len(wp) - 1 - fillstart
-	lnh := len(wh)
+	lnh := len(wd)
 	if ln == 0 {
 		return wp.join(opt)
 	}
 
 	if lnh >= gap {
-		// we have enough delimeters / latin chacaters, append spaces to them
-		dk := lnh / gap
-		for i := 0; i < len(wh); i += dk {
-			wh[i].value = append(wh[i].value, ' ')
-			if gap--; gap <= 0 {
-				break
+		// we have enough delimeters / latin characters, append spaces to them
+		if gap == 1 {
+			wd[lnh/2].value = append(wd[lnh/2].value, ' ')
+		} else {
+			dk := lnh / gap
+			for i := 0; i < len(wd); i += dk {
+				wd[i].value = append(wd[i].value, ' ')
+				if gap--; gap <= 0 {
+					break
+				}
 			}
 		}
-	} else if gap <= ln {
-		dk := ln / gap
-		for i := fillstart; i < len(wp); i += dk {
+	} else if gap+1 <= ln {
+		dk := ln / (gap + 1)
+		for i := fillstart + dk; i < len(wp); i += dk {
 			wp[i].value = append(wp[i].value, ' ')
 			if gap--; gap <= 0 {
 				break
@@ -241,6 +264,9 @@ func (w *words_t) adjustableJoin(opt FormatOptions) *bytes.Buffer {
 		}
 	}
 
+	if exEnding != nil {
+		wp = append(wp, exEnding)
+	}
 	return wp.join(opt)
 }
 
@@ -407,13 +433,17 @@ func (s *stream_t) nextWord() *word_t {
 	}
 
 	icspace := func(r rune) string {
-		if r == '\t' {
+		switch r {
+		case '\t':
 			if tabWidth < 16 {
 				return "                "[:tabWidth]
 			}
 			return strings.Repeat(" ", tabWidth)
+		case fullSpace:
+			return "  "
+		default:
+			return string(r)
 		}
-		return string(r)
 	}
 
 	ret := &word_t{ty: t}
@@ -480,13 +510,35 @@ type FormatOptions struct {
 func Format80(buf []byte, opt FormatOptions) string {
 	ws := stream_t{buf: buf}
 	line, lines, length := words_t{}, []words_t{}, 0
+	appendReset := func() {
+		lines = append(lines, line)
+		line = words_t{}
+	}
 
 	for t := ws.nextWord(); t != nil; t = ws.nextWord() {
 		read := func(t *word_t) {
+			adjusted := false
+		AGAIN:
 			if length+t.len > opt.width {
 				length = 0
-				lines = append(lines, line)
-				line = words_t{}
+				if t.isInMap(canStayAtEnd) {
+					t.ty = runeSpecial
+					line = append(line, t)
+					appendReset()
+					return
+				}
+
+				if !adjusted && len(line) > 0 && line[len(line)-1].isInMap(cannotStayAtEnd) {
+					last := line[len(line)-1]
+					line = line[:len(line)-1]
+					appendReset()
+					length = last.len
+					line = append(line, last)
+					adjusted = true
+					goto AGAIN
+				}
+
+				appendReset()
 			}
 
 			length += t.len

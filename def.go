@@ -28,6 +28,23 @@ var uriSchemes = map[string]bool{
 	"go": true, "mupdate": true, "sms": true, "xmpp": true,
 }
 
+var canStayAtEnd = map[string]bool{
+	".": true, ",": true, ":": true, ")": true, "]": true, "}": true,
+	"。": true, "，": true, "：": true, "．": true, "、": true,
+	"”": true, "〉": true, "》": true, "」": true, "』": true,
+	"】": true, "〕": true, "〗": true, "〙": true, "〛": true,
+}
+
+var cannotStayAtEnd = map[string]bool{
+	"(": true, "[": true, "{": true, "\"": true,
+	"“": true, "〈": true, "《": true, "「": true, "『": true,
+	"【": true, "〔": true, "〖": true, "〘": true, "〚": true,
+}
+
+var extendablePunc = map[string]bool{
+	"。": true, "，": true, "：": true, "．": true, "、": true,
+}
+
 var validURIChars = map[string]bool{
 	"A": true, "B": true, "C": true, "D": true, "E": true, "F": true, "G": true, "H": true, "I": true, "J": true, "K": true, "L": true, "M": true,
 	"N": true, "O": true, "P": true, "Q": true, "R": true, "S": true, "T": true, "U": true, "V": true, "W": true, "X": true, "Y": true, "Z": true,
@@ -41,13 +58,15 @@ var validURIChars = map[string]bool{
 var doubleBytes = regexp.MustCompile(`[^\x00-\xff]`)
 
 const (
-	tabWidth = 4
+	tabWidth  = 4
+	fullSpace = '　'
 )
 
 const (
 	runeUnknown = iota
 
 	runeDelim
+	runeSpecial
 	runeSpace
 	runeNewline
 	runeLatin
@@ -59,7 +78,7 @@ const (
 )
 
 func runeType(r rune) byte {
-	if r == ' ' || r == '\t' {
+	if r == ' ' || r == '\t' || r == fullSpace {
 		return runeSpace
 	} else if r == '\n' {
 		return runeNewline

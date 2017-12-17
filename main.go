@@ -23,6 +23,7 @@ var cmdGithub = flag.String("github", "https://github.com/coyove", "your github 
 var cmdFooter = flag.String("footer", "coyove with go80", "footer text, keep it under 80 chars")
 var cmdTitle = flag.String("title", "coyove blog", "title text, keep it under 80 chars")
 var cmdFontsize = flag.Int("fontsize", 14, "font size in px")
+var cmdTest = flag.String("f", "", "single file only")
 
 type renderOptions struct {
 	title    string
@@ -141,6 +142,12 @@ func main() {
 			wg.Add(1)
 			throt++
 			go func() {
+				defer wg.Done()
+
+				if *cmdTest != "" && *cmdTest != info.Name() {
+					return
+				}
+
 				now := time.Now()
 				buf, _ := ioutil.ReadFile(path)
 				fn := filepath.Base(path)
@@ -224,7 +231,6 @@ func main() {
 
 				log.Printf("[%.3fs] %s, title: %s, write (normal) %d kb / (narrow) %d kb / (wide) %d kb",
 					time.Now().Sub(now).Seconds(), path, o.title, len1/1024, len2/1024, len3/1024)
-				wg.Done()
 			}()
 		}
 
