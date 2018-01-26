@@ -22,7 +22,7 @@
 
 <script type="text/javascript">
     var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    var name = location.href.match(/\/([^\/]+?)(\.w|\.m)?\.html/)[1];
+    var name = (location.href.match(/\/([^\/]+?)(\.w|\.m)?\.html/) || [])[1];
     var pre = [
         name + ".m.html",
         name + ".html"  ,
