@@ -13,9 +13,9 @@ type word_t struct {
 	value []rune
 	ty    byte
 	len   int
-	url   string
 	toc   int16
 	mark  int16
+	url   string
 }
 
 func (w *word_t) dup() *word_t {
@@ -166,9 +166,9 @@ func (w *words_t) adjustableJoin(opt FormatOptions) *bytes.Buffer {
 
 	for i, word := range words {
 		if !naturalEnd {
-			// the leading spaces of 4, 8, 16 ... will be preserved, others will be discarded
+			// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
 			if word.len > 0 && i == 0 {
-				if l, _ := word.surroundingSpaces(); l%4 != 0 {
+				if l, _ := word.surroundingSpaces(); l == 2 || l%4 != 0 {
 					word.value = word.value[l:]
 					word.len -= l
 				}
@@ -214,6 +214,9 @@ func (w *words_t) adjustableJoin(opt FormatOptions) *bytes.Buffer {
 	}
 
 	if naturalEnd || gap == 0 {
+		if exEnding != nil {
+			wp = append(wp, exEnding)
+		}
 		return wp.join(opt)
 	}
 
@@ -362,6 +365,11 @@ func (w *words_t) join(opt FormatOptions) *bytes.Buffer {
 		}
 
 		buf.WriteString(CalcTag(word.value))
+		if word.ty == runeSpecial && word.value[0] == '\\' {
+			buf.Truncate(buf.Len() - 2)
+			buf.WriteString(" class=conj>&#x21B2")
+		}
+
 		buf.WriteString("</dl>")
 
 		if word.url != "" {
@@ -509,17 +517,43 @@ type FormatOptions struct {
 
 func Format80(buf []byte, opt FormatOptions) string {
 	ws := stream_t{buf: buf}
-	line, lines, length := words_t{}, []words_t{}, 0
+	line, lines, length := make(words_t, 0, 10), []words_t{}, 0
+	nobrk := false
+
 	appendReset := func() {
 		lines = append(lines, line)
-		line = words_t{}
+		line = make(words_t, 0, 10)
 	}
 
 	for t := ws.nextWord(); t != nil; t = ws.nextWord() {
+		if t.len >= 3 && t.value[0] == '`' && t.value[0] == '`' && t.value[0] == '`' {
+			nobrk = !nobrk
+			continue
+		}
+
 		read := func(t *word_t) {
 			adjusted := false
+
 		AGAIN:
 			if length+t.len > opt.width {
+				if nobrk {
+					len1 := opt.width - length
+					if len1 > 0 {
+						t2 := t.dup()
+						t2.value = make([]rune, len1)
+						copy(t2.value, t.value)
+						t2.len = len1
+						line = append(line, t2, &word_t{
+							ty:    runeSpecial,
+							value: []rune{'\\'},
+							len:   1,
+						})
+						appendReset()
+						t.value = t.value[len1:]
+						t.len = t.len - len1
+					}
+				}
+
 				length = 0
 				if t.isInMap(canStayAtEnd) {
 					t.ty = runeSpecial
@@ -580,7 +614,7 @@ NEXT_LINE:
 				}
 			}
 
-			if line[0].startsWith("--") && len(line) > 1 {
+			if line[0].startsWith("??") && len(line) > 1 {
 				line = line[1:]
 				toc = append(toc, line)
 				lines[i] = line
