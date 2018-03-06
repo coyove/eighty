@@ -2,7 +2,7 @@
 #> 2018-01-26T17:27:00+08:00
 
 自用的一个rrdtool流量监控配色方案。
-
+```
 df=$(df -h | grep "/" -m1 | awk '{print $3"/"$4}')
 
 rrdtool create eth0.rrd -s 120 DS:RX:COUNTER:240:U:U DS:TX:COUNTER:240:U:U RRA:AVERAGE:0.5:30:48 RRA:AVERAGE:0.5:2:720
@@ -54,3 +54,4 @@ rrdtool graph ./eth0.png -X 0 --end now --start end-43200s --width 500 --height 
         COMMENT:" \l" \
         COMMENT:"  Disk Usage\:" COMMENT:"$df\l" \
         COMMENT:"$now\r"
+```

@@ -72,12 +72,12 @@ func (opt *renderOptions) getTitleBar() string {
 }
 
 func (opt *renderOptions) getFooter() string {
-	return Format80(opt.padToCenter(opt.footer), FormatOptions{width: opt.column})
+	return Format80(opt.padToCenter(opt.footer), &FormatOptions{width: opt.column})
 }
 
 func (opt *renderOptions) getHeader() string {
-	titleInContent := Format80(opt.padToCenter(opt.title), FormatOptions{width: opt.column})
-	dateInContent := Format80(opt.padToCenter(opt.date.Format(time.RFC3339)), FormatOptions{width: opt.column})
+	titleInContent := Format80(opt.padToCenter(opt.title), &FormatOptions{width: opt.column})
+	dateInContent := Format80(opt.padToCenter(opt.date.Format(time.RFC3339)), &FormatOptions{width: opt.column})
 	if opt.pageType == "index" {
 		dateInContent = ""
 	}
@@ -160,7 +160,7 @@ func main() {
 				o.title = "<Untitled>"
 				o.date = info.ModTime()
 
-				fo := FormatOptions{linkTarget: "target='_blank'", pc: []PrefixCallback{
+				fo := &FormatOptions{linkTarget: "target='_blank'", pc: []PrefixCallback{
 					PrefixCallback{
 						prefix: "##", callback: func(in words_t) words_t {
 							o.title = strings.TrimSpace(in.rawJoin()[2:])
@@ -300,7 +300,7 @@ func main() {
 		github:   *cmdGithub,
 		footer:   *cmdFooter,
 		pageType: "index",
-		content:  Format80(index.Bytes(), FormatOptions{width: 80, pc: gen("full")}),
+		content:  Format80(index.Bytes(), &FormatOptions{width: 80, pc: gen("full")}),
 		column:   80,
 		fontSize: *cmdFontsize,
 	}
@@ -308,12 +308,12 @@ func main() {
 
 	o.column = 40
 	filecount = 0
-	o.content = Format80(indexm.Bytes(), FormatOptions{width: 40, pc: gen("mobile")})
+	o.content = Format80(indexm.Bytes(), &FormatOptions{width: 40, pc: gen("mobile")})
 	renderContent(tmpl, "blog/index.m.html", o)
 
 	o.column = 120
 	filecount = 0
-	o.content = Format80(indexw.Bytes(), FormatOptions{width: 120, pc: gen("wide")})
+	o.content = Format80(indexw.Bytes(), &FormatOptions{width: 120, pc: gen("wide")})
 	renderContent(tmpl, "blog/index.w.html", o)
 
 	log.Println("finished generating", filecount, "files in", time.Now().Sub(sp).Seconds(), "sec")
