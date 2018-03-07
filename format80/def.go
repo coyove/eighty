@@ -58,6 +58,8 @@ var (
 	}
 
 	doubleBytes = regexp.MustCompile(`[^\x00-\xff]`)
+
+	oneRune = []rune{'\\'}
 )
 
 const (

@@ -5,19 +5,21 @@ import (
 )
 
 type word_t struct {
-	value []rune
-	ty    byte
-	len   int
-	toc   int16
-	mark  int16
-	url   *string
+	value []rune  // word content
+	ty    byte    // word type
+	len   int     // word length
+	toc   int16   // ToC number
+	url   *string // url that referred
 }
 
+// dup is a shallow dup, "value" points to the same position
 func (w *word_t) dup() *word_t {
 	w2 := *w
 	return &w2
 }
 
+// split splits the word into multiple parts or nil:
+// first part (if exists) is "width1" long and rest parts (if exist) are all "width2" long
 func (w *word_t) split(width1, width2 int) words_t {
 	if w.len <= width1 || w.len <= width2 {
 		return nil
