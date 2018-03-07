@@ -1,23 +1,47 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"net/http"
+	"strconv"
 	"time"
 
 	"./kkformat"
 )
 
-var cmdListen = flag.String("listen", "", "dummy HTTP server")
-var cmdGithub = flag.String("github", "https://github.com/coyove", "your github link")
-var cmdFooter = flag.String("footer", "coyove with go80", "footer text, keep it under 80 chars")
-var cmdTitle = flag.String("title", "coyove blog", "title text, keep it under 80 chars")
-var cmdFontsize = flag.Int("fontsize", 14, "font size in px")
-var cmdTest = flag.String("f", "", "single file only")
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte(`<!DOCTYPE HTML>
+		<form method=POST action=/post>
+		<textarea name=content rows=10></textarea>
+		<input type=submit value=submit>
+		</form>
+		`))
+}
 
-const CSS = `<div id="content-%d">
+func servePOST(w http.ResponseWriter, r *http.Request) {
+	content := r.FormValue("content")
+	if len(content) > 1024*1024 {
+		content = content[:1024*1024]
+	}
+
+	fo := &kkformat.Formatter{Source: []byte(content)}
+	fmt.Println(fo.Source)
+
+	columns, _ := strconv.Atoi(r.FormValue("columns"))
+	if columns < 40 || columns > 200 {
+		columns = 80
+	}
+	fo.Columns = uint32(columns)
+
+	fontsize, _ := strconv.Atoi(r.FormValue("fontsize"))
+	if fontsize <= 0 {
+		fontsize = 14
+	}
+
+	now := time.Now().UnixNano()
+	fo.ID = now
+
+	const CSS = `<div id="content-%d">
 <style>
 #content-%d div{padding:1px 0;min-height:1em;margin:0;max-height:280px;width:100%%;}
 #content-%d dl,
@@ -34,24 +58,23 @@ const CSS = `<div id="content-%d">
 </style>
 `
 
-func main() {
-	flag.Parse()
+	halfwidth, fullwidth := fontsize/2+1, fontsize+2
 
-	buf, _ := ioutil.ReadFile("_raw/rekuiemu.txt")
-	fo := &kkformat.Formatter{LinkTarget: "target='_blank'", Source: buf}
-	fo.Columns = 80
-
-	now := time.Now().UnixNano()
-	fo.ID = now
-	f, _ := os.Create("index.html")
-	f.WriteString(fmt.Sprintf(CSS, []interface{}{
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	w.Write([]byte(fmt.Sprintf(CSS, []interface{}{
 		now, now, now, now, now, now, now, now, now,
 		now, now,
-		now, *cmdFontsize/2 + 1,
-		now, *cmdFontsize + 2,
-		now, (*cmdFontsize/2+1)*int(fo.Columns) + 1, *cmdFontsize,
-	}...))
-	fo.WriteTo(f)
-	f.WriteString("</div>")
-	fmt.Println((time.Now().UnixNano() - now) / 1e6)
+		now, halfwidth,
+		now, fullwidth,
+		now, halfwidth*columns + 1, fontsize,
+	}...)))
+	fo.WriteTo(w)
+	w.Write([]byte("</div>"))
+}
+
+func main() {
+	http.HandleFunc("/", serveIndex)
+	http.HandleFunc("/post", servePOST)
+	fmt.Println("serve")
+	http.ListenAndServe(":8102", nil)
 }
