@@ -2,11 +2,16 @@ package kkformat
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"encoding/binary"
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"github.com/boltdb/bolt"
 	"io"
 	"log"
+	"math/rand"
+	"net/http"
 	"os"
 	"strconv"
 	"sync"
@@ -19,6 +24,7 @@ type Snippet struct {
 	Time  int64
 	Views int64
 	Dead  bool
+	GUID  [20]byte
 
 	// settable
 	Short  string
@@ -32,9 +38,9 @@ type Snippet struct {
 }
 
 var (
-	ErrDupShortName   = errors.New("")
+	ErrDupShortName   = errors.New("Duplicated shortcut")
 	ErrMissingBucket  = errors.New("")
-	ErrInvalidSnippet = errors.New("")
+	ErrInvalidSnippet = errors.New("Invalid snippet")
 
 	bSnippets = []byte("snippets")
 	bShortid  = []byte("shortid")
@@ -78,12 +84,21 @@ func (b *Backend) Init(path string) {
 	}()
 }
 
+func OwnSnippet(r *http.Request, s *Snippet) bool {
+	name := "s" + strconv.FormatUint(s.ID, 10)
+	if c, err := r.Cookie(name); err != nil || c.Value != fmt.Sprintf("%x", s.GUID) {
+		return false
+	}
+	return true
+}
+
 func (b *Backend) AddSnippet(s *Snippet) error {
 	return b.db.Update(func(tx *bolt.Tx) error {
 		sn := tx.Bucket(bSnippets)
 		si := tx.Bucket(bShortid)
 
 		shortcut := []byte(s.Short)
+		//log.Println(s.Short)
 		if len(shortcut) > 0 {
 			if len(si.Get(shortcut)) > 0 {
 				return ErrDupShortName
@@ -92,7 +107,13 @@ func (b *Backend) AddSnippet(s *Snippet) error {
 
 		s.ID, _ = sn.NextSequence()
 		s.Time = time.Now().UnixNano()
+
+		sum := make([]byte, 256)
 		key := itosb(s.ID)
+
+		copy(sum, s.P80)
+		binary.BigEndian.PutUint64(sum[248-rand.Intn(248):], uint64(s.Time))
+		s.GUID = sha1.Sum(sum)
 
 		if len(shortcut) == 0 {
 			s.Short = string(key)
@@ -178,9 +199,6 @@ func (b *Backend) GetSnippetsLite(start, end uint64) []*Snippet {
 func (b *Backend) DeleteSnippet(s *Snippet) error {
 	return b.db.Update(func(tx *bolt.Tx) error {
 		sn := tx.Bucket([]byte("snippets"))
-		if sn == nil {
-			panic("?")
-		}
 
 		if bytes.HasPrefix(s.P40, []byte("ex:")) {
 			os.RemoveAll(string(s.P40[3:]))
@@ -191,6 +209,18 @@ func (b *Backend) DeleteSnippet(s *Snippet) error {
 		}
 
 		return sn.Delete(itosb(s.ID))
+	})
+}
+
+func (b *Backend) DeleteSnippets(ids ...uint64) error {
+	return b.db.Update(func(tx *bolt.Tx) error {
+		sn := tx.Bucket([]byte("snippets"))
+
+		for _, id := range ids {
+			sn.Delete(itosb(id))
+		}
+
+		return nil
 	})
 }
 

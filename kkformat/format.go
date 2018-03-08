@@ -327,12 +327,12 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 				toclines[i] = append(toclines[i], newLine)
 			}
 
-			o.urls = append(o.urls, "#toc-f-"+id[:19]+"-"+num)
+			o.urls = append(o.urls, "#toc-f-"+id+"-"+num)
 			for _, w := range toclines[i] {
 				w.setURL(uint16(len(o.urls)))
 			}
 
-			o.urls = append(o.urls, "#toc-r-"+id[:19]+"-"+num)
+			o.urls = append(o.urls, "#toc-r-"+id+"-"+num)
 			for _, w := range t {
 				w.setURL(uint16(len(o.urls)))
 			}

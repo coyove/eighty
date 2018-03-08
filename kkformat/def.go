@@ -3,8 +3,11 @@ package kkformat
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"regexp"
 	"strings"
+	"text/template"
+	"time"
 	"unicode"
 )
 
@@ -110,6 +113,28 @@ var spacesRune = []rune{
 	' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 	' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 	' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+}
+
+var Helpers = template.FuncMap{
+	"size": func(in int64) string {
+		return fmt.Sprintf("%.2fKB", float64(in)/1024)
+	},
+
+	"expire": func(in, ttl int64) string {
+		if ttl == 0 {
+			return "--:--:--"
+		}
+		rem := in + ttl*1e9 - time.Now().UnixNano()
+		rem = rem / 1e9
+		h := rem / 3600
+		m := rem/60 - h*60
+		s := rem - h*3600 - m*60
+		return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
+	},
+
+	"date": func(in int64) string {
+		return time.Unix(0, in).Format(time.RFC3339)
+	},
 }
 
 func appendSpacesRune(runes []rune, count uint32, forceAtRight bool) []rune {

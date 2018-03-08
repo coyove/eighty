@@ -2,3 +2,5 @@ ss
 old
 .DS_Store
 larges
+main.db
+main.db.lock
