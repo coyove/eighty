@@ -44,6 +44,8 @@ func (s *stream_t) nextWord() *word_t {
 		//panic()
 	}
 
+	ret := (&word_t{}).setType(t)
+
 	icspace := func(r rune) string {
 		switch r {
 		case '\t':
@@ -58,46 +60,62 @@ func (s *stream_t) nextWord() *word_t {
 		}
 	}
 
-	ret := (&word_t{}).setType(t)
+	continue_next := func() {
+		for s.idx < len(s.buf) {
+			r, w := s.nextRune()
 
+			if runeType(r) == t {
+				ret.value = append(ret.value, r)
+				ret.len += runeWidth(r)
+			} else {
+				break
+			}
+
+			s.idx += w
+		}
+	}
+
+	// switch t {
+	// case runeNewline:
+	// 	return ret // len = 0
+	// case runeSpace, runeHalfDelim:
+	// 	sp := icspace(r)
+	// 	ret.value = []rune(sp)
+	// 	ret.len = stringWidth(sp)
+	// 	continue_next()
+	// case runeLatin:
+	// 	ret.value = []rune{r}
+	// 	ret.len = runeWidth(r)
+
+	// 	// continue to find latin characters
+	// 	for s.idx < len(s.buf) {
+	// 		r, w := s.nextRune()
+
+	// 		if runeType(r) == runeLatin {
+	// 			ret.value = append(ret.value, r)
+	// 			ret.setLen(ret.getLen() + runeWidth(r))
+	// 		} else {
+	// 			break
+	// 		}
+
+	// 		s.idx += w
+	// 	}
+	// default:
+	// 	ret.value = []rune{r}
+	// 	ret.setLen(runeWidth(r))
+	// }
 	switch t {
 	case runeNewline:
 		return ret // len = 0
-	case runeSpace, runeDelim:
+	case runeSpace:
 		sp := icspace(r)
 		ret.value = []rune(sp)
-		ret.setLen(stringWidth(sp))
-
-		// continue to find delimeters and spaces
-		for s.idx < len(s.buf) {
-			r, w := s.nextRune()
-
-			if t := runeType(r); t == runeDelim || t == runeSpace {
-				ret.value = append(ret.value, []rune(icspace(r))...)
-				ret.setLen(ret.getLen() + runeWidth(r))
-			} else {
-				break
-			}
-
-			s.idx += w
-		}
-	case runeLatin:
+		ret.len = stringWidth(sp)
+		continue_next()
+	case runeHalfDelim, runeLatin:
 		ret.value = []rune{r}
-		ret.setLen(runeWidth(r))
-
-		// continue to find latin characters
-		for s.idx < len(s.buf) {
-			r, w := s.nextRune()
-
-			if runeType(r) == runeLatin {
-				ret.value = append(ret.value, r)
-				ret.setLen(ret.getLen() + runeWidth(r))
-			} else {
-				break
-			}
-
-			s.idx += w
-		}
+		ret.len = runeWidth(r)
+		continue_next()
 	default:
 		ret.value = []rune{r}
 		ret.setLen(runeWidth(r))
@@ -187,7 +205,7 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 					goto AGAIN
 				}
 
-				if t.isInMap(canStayAtEnd) {
+				if t.isInMap(canStayAtEnd) && t.len <= 3 {
 					t.setType(runeExtraAtEnd)
 					line = append(line, t)
 					appendReset()
@@ -301,7 +319,7 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 			num := strconv.Itoa(i + 1)
 			toclines[i] = make(words_t, 3, 10)
 			toclines[i][0] = (&word_t{}).setType(runeLatin).setLen(uint32(len(num))).setValue([]rune(num))
-			toclines[i][1] = (&word_t{}).setType(runeDelim).setLen(1).setValue([]rune{'.'})
+			toclines[i][1] = (&word_t{}).setType(runeHalfDelim).setLen(1).setValue([]rune{'.'})
 			toclines[i][2] = (&word_t{}).setType(runeSpace).setLen(1).setValue([]rune{' '})
 			toclines[i] = append(toclines[i], t.dup()...) // TODO: bad
 

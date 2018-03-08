@@ -23,7 +23,7 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 		if !naturalEnd {
 			// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
 			if word.len > 0 && i == 0 {
-				if l, _ := word.surroundingSpaces(); l == 2 || l%4 != 0 {
+				if l, _ := word.surroundingSpaces(); l != 2 && l%4 != 0 {
 					word.value = word.value[l:]
 					word.incLen(-l)
 				}
@@ -37,6 +37,7 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 			}
 		}
 
+		// fmt.Println(string(word.value), word.len, word.getType())
 		if word.getLen() > 0 {
 			if word.getType() == runeExtraAtEnd || word.getType() == runeContinues {
 				exEnding = word
@@ -44,7 +45,7 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 			}
 
 			if word.getURL(opt.urls) == "" && i < len(words)-1 {
-				if word.getType() == runeDelim {
+				if t := word.getType(); t == runeFullDelim || t == runeHalfDelim {
 					opt.wd = append(opt.wd, word)
 				}
 				if word.getType() == runeLatin {

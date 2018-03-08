@@ -2,78 +2,34 @@ package kkformat
 
 import (
 	"bytes"
+	"encoding/binary"
 	"regexp"
+	"strings"
 	"unicode"
 )
 
 var (
-	uriSchemes = map[string]bool{
-		"zzz": true, "gopher": true, "news": true, "snmp": true,
-		"aaa": true, "h323": true, "nfs": true, "stun": true,
-		"aaas": true, "http": true, "ni": true, "stuns": true,
-		"about": true, "https": true, "nih": true, "tag": true,
-		"acap": true, "iax": true, "nntp": true, "tel": true,
-		"acct": true, "icap": true, "opaquelocktoken": true, "telnet": true,
-		"cap": true, "im": true, "pkcs11": true, "tftp": true,
-		"cid": true, "imap": true, "pop": true, "thismessage": true,
-		"coap": true, "info": true, "pres": true, "tip": true,
-		"coaps": true, "ipp": true, "reload": true, "tn3270": true,
-		"crid": true, "ipps": true, "rtsp": true, "turn": true,
-		"data": true, "iris": true, "rtsps": true, "turns": true,
-		"dav": true, "jabber": true, "rtspu": true, "tv": true,
-		"dict": true, "ldap": true, "service": true, "urn": true,
-		"dns": true, "mailto": true, "session": true, "vemmi": true,
-		"example": true, "mid": true, "shttp": true, "vnc": true,
-		"file": true, "msrp": true, "sieve": true, "ws": true,
-		"ftp": true, "msrps": true, "sip": true, "wss": true,
-		"geo": true, "mtqp": true, "sips": true, "xcon": true,
-		"go": true, "mupdate": true, "sms": true, "xmpp": true,
-	}
-
-	canStayAtEnd = map[string]bool{
-		".": true, ",": true, ":": true, ")": true, "）": true, "]": true, "}": true,
-		"。": true, "，": true, "：": true, "．": true, "、": true,
-		"”": true, "〉": true, "》": true, "」": true, "』": true,
-		"】": true, "〕": true, "〗": true, "〙": true, "〛": true,
-	}
-
-	cannotStayAtEnd = map[string]bool{
-		"(": true, "（": true, "[": true, "{": true, "\"": true,
-		"“": true, "〈": true, "《": true, "「": true, "『": true,
-		"【": true, "〔": true, "〖": true, "〘": true, "〚": true,
-	}
-
-	extendablePunc = map[string]bool{
-		"。": true, "，": true, "：": true, "．": true, "、": true,
-	}
-
-	validURIChars = map[string]bool{
-		"A": true, "B": true, "C": true, "D": true, "E": true, "F": true, "G": true, "H": true, "I": true, "J": true, "K": true, "L": true, "M": true,
-		"N": true, "O": true, "P": true, "Q": true, "R": true, "S": true, "T": true, "U": true, "V": true, "W": true, "X": true, "Y": true, "Z": true,
-		"a": true, "b": true, "c": true, "d": true, "e": true, "f": true, "g": true, "h": true, "i": true, "j": true, "k": true, "l": true, "m": true,
-		"n": true, "o": true, "p": true, "q": true, "r": true, "s": true, "t": true, "u": true, "v": true, "w": true, "x": true, "y": true, "z": true,
-		"0": true, "1": true, "2": true, "3": true, "4": true, "5": true, "6": true, "7": true, "8": true, "9": true, "-": true,
-		".": true, "_": true, "~": true, ":": true, "/": true, "?": true, "#": true, "[": true, "]": true, "@": true, "!": true,
-		"$": true, "&": true, "'": true, "(": true, ")": true, "*": true, "+": true, ",": true, ";": true, "=": true, "`": true, "%": true,
-	}
-
-	doubleBytes = regexp.MustCompile(`[^\x00-\xff]`)
-
-	lineContinues = (&word_t{}).setType(runeContinues).setLen(1).setValue([]rune{'\\'})
-
-	newLine = (&word_t{}).setType(runeNewline)
+	uriSchemes      = regexp.MustCompile(`(zzz|gopher|news|snmp|aaa|h323|nfs|stun|aaas|http|ni|stuns|about|https|nih|tag|acap|iax|nntp|tel|acct|icap|opaquelocktoken|telnet|cap|im|pkcs11|tftp|cid|imap|pop|thismessage|coap|info|pres|tip|coaps|ipp|reload|tn3270|crid|ipps|rtsp|turn|data|iris|rtsps|turns|dav|jabber|rtspu|tv|dict|ldap|service|urn|dns|mailto|session|vemmi|example|mid|shttp|vnc|file|msrp|sieve|ws|ftp|msrps|sip|wss|geo|mtqp|sips|xcon|go|mupdate|sms|xmpp)`)
+	canStayAtEnd    = regexp.MustCompile(`^[\.\,\:\)\]\}。，：．、”）〉》」』】〕〗〙〛]+$`)
+	cannotStayAtEnd = regexp.MustCompile(`^[\(（\[\{\"“〈《「『【〔〖〘〚]+$`)
+	extendablePunc  = regexp.MustCompile(`^[。，：．、]+$`)
+	validURIChars   = regexp.MustCompile(`^[A-Za-z0-9\-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%]+$`)
+	doubleBytes     = regexp.MustCompile(`[^\x00-\xff]`)
+	spaces          = strings.Repeat(" ", 80)
+	lineContinues   = (&word_t{}).setType(runeContinues).setLen(1).setValue([]rune{'\\'})
+	newLine         = (&word_t{}).setType(runeNewline)
 )
 
 const (
 	tabWidth  = 4
-	fullSpace = '　'
-	spaces    = "                                                                                " // 80 spaces
+	fullSpace = '　' // it is NOT a ' '
 )
 
 const (
 	runeUnknown = iota
 
-	runeDelim
+	runeHalfDelim
+	runeFullDelim
 	runeSpace
 	runeNewline
 	runeLatin
@@ -91,8 +47,12 @@ func runeType(r rune) uint16 {
 		return runeSpace
 	} else if r == '\n' {
 		return runeNewline
-	} else if (unicode.IsPunct(r) || unicode.IsSymbol(r)) && runeWidth(r) == 1 {
-		return runeDelim
+	} else if unicode.IsPunct(r) || unicode.IsSymbol(r) {
+		if runeWidth(r) == 1 {
+			return runeHalfDelim
+		} else {
+			return runeFullDelim
+		}
 	} else if runeWidth(r) == 2 {
 		return runeFull
 	} else if unicode.IsDigit(r) || unicode.IsLetter(r) {
@@ -183,4 +143,10 @@ func calcTag(value []rune) string {
 	}
 
 	return whole.String()
+}
+
+func itob(id uint64) []byte {
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, id)
+	return buf
 }

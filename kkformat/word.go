@@ -1,8 +1,12 @@
 package kkformat
 
 import (
+	"fmt"
+	"regexp"
 	"unicode"
 )
+
+var _fmt_print_ = fmt.Println
 
 type word_t struct {
 	value []rune // word content
@@ -120,7 +124,7 @@ func (w *word_t) isSpacesOnly() bool {
 	return true
 }
 
-func (w *word_t) isInMap(m map[string]bool) bool {
+func (w *word_t) isInMap(re *regexp.Regexp) bool {
 	if w.len == 0 || w.value == nil {
 		return false
 	}
@@ -130,17 +134,10 @@ func (w *word_t) isInMap(m map[string]bool) bool {
 		return false
 	}
 
-	if m[string(w.value[l:uint32(len(w.value))-r])] {
-		return true
-	}
-
-	for i := 0; i < len(w.value); i++ {
-		if !m[string(w.value[i])] {
-			return false
-		}
-	}
-
-	return true
+	s := string(w.value[l : uint32(len(w.value))-r])
+	// fmt.Println(s, re.FindAllStringIndex(s, -1))
+	// panic(1)
+	return len(re.FindAllStringIndex(s, -1)) > 0
 }
 
 func (w *word_t) surroundingSpaces() (l uint32, r uint32) {
