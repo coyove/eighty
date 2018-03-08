@@ -66,7 +66,7 @@ func (s *stream_t) nextWord() *word_t {
 
 			if runeType(r) == t {
 				ret.value = append(ret.value, r)
-				ret.len += runeWidth(r)
+				ret.len += RuneWidth(r)
 			} else {
 				break
 			}
@@ -81,11 +81,11 @@ func (s *stream_t) nextWord() *word_t {
 	// case runeSpace, runeHalfDelim:
 	// 	sp := icspace(r)
 	// 	ret.value = []rune(sp)
-	// 	ret.len = stringWidth(sp)
+	// 	ret.len = StringWidth(sp)
 	// 	continue_next()
 	// case runeLatin:
 	// 	ret.value = []rune{r}
-	// 	ret.len = runeWidth(r)
+	// 	ret.len = RuneWidth(r)
 
 	// 	// continue to find latin characters
 	// 	for s.idx < len(s.buf) {
@@ -93,7 +93,7 @@ func (s *stream_t) nextWord() *word_t {
 
 	// 		if runeType(r) == runeLatin {
 	// 			ret.value = append(ret.value, r)
-	// 			ret.setLen(ret.getLen() + runeWidth(r))
+	// 			ret.setLen(ret.getLen() + RuneWidth(r))
 	// 		} else {
 	// 			break
 	// 		}
@@ -102,7 +102,7 @@ func (s *stream_t) nextWord() *word_t {
 	// 	}
 	// default:
 	// 	ret.value = []rune{r}
-	// 	ret.setLen(runeWidth(r))
+	// 	ret.setLen(RuneWidth(r))
 	// }
 	switch t {
 	case runeNewline:
@@ -110,15 +110,15 @@ func (s *stream_t) nextWord() *word_t {
 	case runeSpace:
 		sp := icspace(r)
 		ret.value = []rune(sp)
-		ret.len = stringWidth(sp)
+		ret.len = StringWidth(sp)
 		continue_next()
 	case runeHalfDelim, runeLatin:
 		ret.value = []rune{r}
-		ret.len = runeWidth(r)
+		ret.len = RuneWidth(r)
 		continue_next()
 	default:
 		ret.value = []rune{r}
-		ret.setLen(runeWidth(r))
+		ret.setLen(RuneWidth(r))
 	}
 
 	return ret

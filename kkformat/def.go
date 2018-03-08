@@ -3,11 +3,8 @@ package kkformat
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"regexp"
 	"strings"
-	"text/template"
-	"time"
 	"unicode"
 )
 
@@ -51,12 +48,12 @@ func runeType(r rune) uint16 {
 	} else if r == '\n' {
 		return runeNewline
 	} else if unicode.IsPunct(r) || unicode.IsSymbol(r) {
-		if runeWidth(r) == 1 {
+		if RuneWidth(r) == 1 {
 			return runeHalfDelim
 		} else {
 			return runeFullDelim
 		}
-	} else if runeWidth(r) == 2 {
+	} else if RuneWidth(r) == 2 {
 		return runeFull
 	} else if unicode.IsDigit(r) || unicode.IsLetter(r) {
 		return runeLatin
@@ -65,7 +62,7 @@ func runeType(r rune) uint16 {
 	return runeUnknown
 }
 
-func runeWidth(r rune) uint32 {
+func RuneWidth(r rune) uint32 {
 	if r == '\t' {
 		return tabWidth
 	}
@@ -78,20 +75,38 @@ func runeWidth(r rune) uint32 {
 	return 1
 }
 
-func stringWidth(s interface{}) uint32 {
+func StringWidth(s interface{}) uint32 {
 	i := uint32(0)
 	switch s.(type) {
 	case string:
 		for _, r := range s.(string) {
-			i += runeWidth(r)
+			i += RuneWidth(r)
 		}
 	case []rune:
 		for _, r := range s.([]rune) {
-			i += runeWidth(r)
+			i += RuneWidth(r)
 		}
 	}
 
 	return i
+}
+
+func Trunc(s string, w uint32) string {
+	if StringWidth(s) <= w {
+		return s
+	}
+
+	ret := make([]rune, 0, w)
+	for _, r := range s {
+		rw := RuneWidth(r)
+		if w < rw {
+			break
+		}
+
+		w -= rw
+		ret = append(ret, r)
+	}
+	return string(ret)
 }
 
 func appendSpaces(text string, count int, forceAtRight bool) string {
@@ -113,28 +128,6 @@ var spacesRune = []rune{
 	' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 	' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 	' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-}
-
-var Helpers = template.FuncMap{
-	"size": func(in int64) string {
-		return fmt.Sprintf("%.2fKB", float64(in)/1024)
-	},
-
-	"expire": func(in, ttl int64) string {
-		if ttl == 0 {
-			return "--:--:--"
-		}
-		rem := in + ttl*1e9 - time.Now().UnixNano()
-		rem = rem / 1e9
-		h := rem / 3600
-		m := rem/60 - h*60
-		s := rem - h*3600 - m*60
-		return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
-	},
-
-	"date": func(in int64) string {
-		return time.Unix(0, in).Format(time.RFC3339)
-	},
 }
 
 func appendSpacesRune(runes []rune, count uint32, forceAtRight bool) []rune {
@@ -159,7 +152,7 @@ func calcTag(value []rune) string {
 	whole := &bytes.Buffer{}
 
 	for _, r := range value {
-		if runeWidth(r) == 1 {
+		if RuneWidth(r) == 1 {
 			whole.WriteString("<dt>")
 		} else {
 			whole.WriteString("<dd>")

@@ -7,7 +7,6 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
-	"github.com/boltdb/bolt"
 	"io"
 	"log"
 	"math/rand"
@@ -16,6 +15,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/boltdb/bolt"
 )
 
 type Snippet struct {
@@ -42,8 +43,9 @@ var (
 	ErrMissingBucket  = errors.New("")
 	ErrInvalidSnippet = errors.New("Invalid snippet")
 
-	bSnippets = []byte("snippets")
-	bShortid  = []byte("shortid")
+	bSnippets     = []byte("snippets")
+	bShortid      = []byte("shortid")
+	LargeP80Magic = []byte("exP80zzz:")
 )
 
 type viewCount struct {
@@ -167,11 +169,15 @@ func (b *Backend) GetSnippet(shortcut string) (s *Snippet, err error) {
 }
 
 func (b *Backend) GetSnippetsLite(start, end uint64) []*Snippet {
+	if end < start {
+		return []*Snippet{}
+	}
+
 	ss := make([]*Snippet, 0, end-start)
 	b.db.View(func(tx *bolt.Tx) error {
 		sn := tx.Bucket(bSnippets)
 		max := sn.Sequence()
-		log.Println(max, start, end)
+
 		for i := start; i < end; i++ {
 			buf := sn.Get(itosb(max - i))
 			s := &Snippet{}
@@ -196,16 +202,21 @@ func (b *Backend) GetSnippetsLite(start, end uint64) []*Snippet {
 	return ss
 }
 
+func (b *Backend) TotalSnippets() (max uint64) {
+	b.db.View(func(tx *bolt.Tx) error {
+		sn := tx.Bucket(bSnippets)
+		max = sn.Sequence()
+		return nil
+	})
+	return
+}
+
 func (b *Backend) DeleteSnippet(s *Snippet) error {
 	return b.db.Update(func(tx *bolt.Tx) error {
 		sn := tx.Bucket([]byte("snippets"))
 
-		if bytes.HasPrefix(s.P40, []byte("ex:")) {
-			os.RemoveAll(string(s.P40[3:]))
-		}
-
-		if bytes.HasPrefix(s.P80, []byte("ex:")) {
-			os.RemoveAll(string(s.P80[3:]))
+		if bytes.HasPrefix(s.P80, []byte(LargeP80Magic)) {
+			os.RemoveAll(string(s.P80[len(LargeP80Magic):]))
 		}
 
 		return sn.Delete(itosb(s.ID))
@@ -217,7 +228,16 @@ func (b *Backend) DeleteSnippets(ids ...uint64) error {
 		sn := tx.Bucket([]byte("snippets"))
 
 		for _, id := range ids {
-			sn.Delete(itosb(id))
+			key := itosb(id)
+			buf := sn.Get(key)
+			if bytes.Contains(buf, LargeP80Magic) {
+				s := &Snippet{}
+				gob.NewDecoder(bytes.NewReader(buf)).Decode(s)
+				if bytes.HasPrefix(s.P80, LargeP80Magic) {
+					os.RemoveAll(string(s.P80[len(LargeP80Magic):]))
+				}
+			}
+			sn.Delete(key)
 		}
 
 		return nil
@@ -232,8 +252,8 @@ func (s *Snippet) WriteTo(w io.Writer, narrow bool) {
 		b = s.P80
 	}
 
-	if bytes.HasPrefix(b, []byte("ex:")) {
-		fi, err := os.Open(string(b[3:]))
+	if bytes.HasPrefix(b, []byte(LargeP80Magic)) {
+		fi, err := os.Open(string(b[len(LargeP80Magic):]))
 		if err != nil {
 			log.Println("WriteTo:", err)
 			return
@@ -280,7 +300,7 @@ func (b *Backend) actualIncrSnippetViews() {
 			buf := &bytes.Buffer{}
 			gob.NewEncoder(buf).Encode(s)
 
-			if err := sn.Put([]byte(d.Shortcut), buf.Bytes()); err != nil {
+			if err := sn.Put(itosb(s.ID), buf.Bytes()); err != nil {
 				continue
 			}
 		}

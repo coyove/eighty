@@ -79,16 +79,16 @@ func (w *word_t) split(width1, width2 uint32) words_t {
 		var ln uint32
 
 		for i, r = range w.value {
-			if ln += runeWidth(r); ln > width {
+			if ln += RuneWidth(r); ln > width {
 				break
 			}
 		}
 
 		w2.value = w.value[i:]
-		w2.setLen(stringWidth(w2.value))
+		w2.setLen(StringWidth(w2.value))
 
 		w.value = w.value[:i]
-		w.setLen(stringWidth(w.value))
+		w.setLen(StringWidth(w.value))
 
 		words = append(words, w)
 		w = w2
