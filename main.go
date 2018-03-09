@@ -8,12 +8,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"./kkformat"
+	"./static"
 )
 
 var adminpassword = flag.String("p", "123456", "password")
@@ -24,85 +24,74 @@ func serveHeader(w http.ResponseWriter, title string) {
 	<title>` + title + `</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
 	<meta charset="utf-8">
-	<style>
-	*{box-sizing:border-box;margin:0}
-	body{font-size:14px;font-family:Arial,Helvetica,sans-serif}
-	#content-0 div{padding:1px 0;min-height:1em;margin:0;max-height:280px;width:100%;line-height:1.5}
-	#content-0 dl,
-	#content-0 dt,
-	#content-0 dd{display:inline-block;zoom:1;*display:inline;white-space:pre;padding:0;margin:0;font-family:consolas,monospace;text-align:center;text-decoration:none}
-	#content-0 a{border-bottom: solid 1px;cursor:pointer;text-decoration:none}
-	#content-0 a:hover{background-color:#ffa}
-	#content-0 dt.conj{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;color:#ccc}
-	#content-0 ._image{width:auto;max-width:100%;max-height:280px}
-	#content-0 .cls-toc-r-0 *{color:black}
-	#content-0 dt{width:8px}
-	#content-0 dd,#content-0 input.del{width:16px}
-	#content-0,.header,.footer{margin:0 auto;width:642px}
-	#post-form td{padding:2px;}
-	#post-form, #post-form .ctrl{resize:vertical;width:100%;max-width:100%;min-width:100%}
-	#post-form .title{white-space:no-wrap;width:1px;text-align:right;vertical-align:top}
-	.header a,.footer a{color:white;text-decoration:none;display:inline-block;zoom:1;*display:inline;padding:0 2px}
-	.header a:hover,.footer a:hover{text-decoration:underline}
-	.header,.footer{background:#667;padding:4px;color:white}
-	</style>
+	` + static.CSS + `
 	<div class=header>
-	<a href=/>new</a> |
+	<a href=/>new snippet</a> <span class=sep>|</span>
 	<a href=/list>all snippets</a>
 	</div><div id=content-0>`
 	w.Write([]byte(templ))
 }
 
 func serveFooter(w http.ResponseWriter) {
-	w.Write([]byte("</div><div class=footer>zzz.gl</div>"))
+	w.Write([]byte("</div><div class=footer><span>zzz.gl</span> <span class=sep>|</span> <span>" +
+		strconv.FormatUint(bk.TotalSnippets(), 10) + " snippets</span></div>"))
 }
 
-func serve404(w http.ResponseWriter) {
-	serveHeader(w, "404")
-	w.Write([]byte("Not Found"))
+func serveError(w http.ResponseWriter, r *http.Request, info string) {
+	serveHeader(w, "Error")
+	rf := r.Referer()
+	if rf == "" {
+		rf = "/"
+	}
+
+	w.Write([]byte("<div><dl class=err>"))
+	write(w, info)
+	w.Write([]byte("</dl></div><div><a href='" + rf + "'><dl>"))
+	write(w, "back")
+	w.Write([]byte("</dl></a></div>"))
 	serveFooter(w)
 }
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	if len(r.RequestURI) > 1 {
-		shortcut := r.RequestURI[1:]
-		s, err := bk.GetSnippet(shortcut)
+		uri := r.RequestURI[1:]
+		qm := strings.Index(uri, "?")
+		if qm > -1 {
+			uri = uri[:qm]
+		}
+
+		id, _ := strconv.ParseUint(uri, 16, 64)
+		if id == 0 {
+			w.WriteHeader(404)
+			serveError(w, r, "Invalid Snippet ID")
+			return
+		}
+
+		s, err := bk.GetSnippet((id))
 		if err != nil {
-			serve404(w)
+			w.WriteHeader(404)
+			serveError(w, r, "Snippet Not Found")
+			return
+		}
+
+		if r.FormValue("raw") == "1" {
+			w.Header().Add("Content-Type", "text/plain; charset=utf8")
+			w.Write([]byte(s.Raw))
 			return
 		}
 
 		serveHeader(w, s.Title)
 		w.Write([]byte("<h2>" + s.Title + "</h2>"))
 		if kkformat.OwnSnippet(r, s) || isAdmin(r) {
-			w.Write([]byte(fmt.Sprintf("<a href='/delete?ui=%s'>delete</a>", s.Short)))
+			w.Write([]byte(fmt.Sprintf("<div><a href='/delete?id=%x'><dl><dt>d<dt>e<dt>l<dt>e<dt>t<dt>e</dl></a></div>", s.ID)))
 		}
 		writeInfo(w, s, 0)
+		w.Write([]byte("<hr>"))
 		s.WriteTo(w, false)
-		bk.IncrSnippetViews(s.Short)
+		bk.IncrSnippetViews(s.ID)
 	} else {
-		serveHeader(w, "Index")
-		w.Write([]byte(`<form method=POST action=/post><table id=post-form>
-		<tr>
-			<td class=title>Title:</td><td><input class=ctrl name=title></td>
-			<td class=title>Author:</td><td><input class=ctrl name=author></td>
-		</tr>
-		<tr><td colspan=4><textarea class=ctrl name=content rows=10></textarea></td></tr>
-		<tr><td colspan=4>
-		Link https://host/
-		<input name=short width=60 value=` + strconv.FormatUint(bk.TotalSnippets()+1, 16) + `>
-		expires in: <select name=ttl>
-			<option value="60">60s</option>
-			<option value="3600">1h</option>
-			<option value="86400">1d</option>
-			<option value="2592000">30d</option>
-			<option value="0" selected>never</option>
-		</select> 
-		<input type=submit value=submit style="float:right">
-		</td></tr>
-		</table>
-		</form>
-		`))
+		serveHeader(w, "New Snippet")
+		w.Write([]byte(static.NewSnippet))
 	}
 	serveFooter(w)
 }
@@ -117,28 +106,30 @@ func isAdmin(r *http.Request) bool {
 func serveDelete(w http.ResponseWriter, r *http.Request) {
 	var s *kkformat.Snippet
 	var err error
-
-	short := r.FormValue("ui")
+	start := time.Now()
+	id, _ := strconv.ParseUint(r.FormValue("id"), 16, 64)
 	admin := isAdmin(r)
 
-	if short == "" {
+	if id == 0 {
 		goto ADMIN
 	}
 
-	s, err = bk.GetSnippet(short)
+	s, err = bk.GetSnippet(id)
 	if err != nil || s == nil {
 		w.WriteHeader(403)
+		serveError(w, r, "You don't have the permission to delete this snippet")
 		return
 	}
 
 	if !kkformat.OwnSnippet(r, s) && !admin {
 		w.WriteHeader(403)
+		serveError(w, r, "You don't have the permission to delete this snippet")
 		return
 	}
 
 	bk.DeleteSnippet(s)
-	w.Header().Add("Location", "/"+s.Short)
-	w.WriteHeader(301)
+	http.Redirect(w, r, "/"+strconv.FormatUint(id, 16), 301)
+	log.Println("delete:", time.Now().Sub(start).Nanoseconds()/1e6, "ms")
 	return
 ADMIN:
 	if !admin {
@@ -150,7 +141,7 @@ ADMIN:
 	ids := make([]uint64, 0, 10)
 	for k := range r.PostForm {
 		if strings.HasPrefix(k, "s") {
-			id, _ := strconv.ParseUint(k[1:], 10, 64)
+			id, _ := strconv.ParseUint(k[1:], 16, 64)
 			if id > 0 {
 				ids = append(ids, id)
 			}
@@ -203,6 +194,11 @@ func writeInfo(w http.ResponseWriter, s *kkformat.Snippet, leftPadding uint32) {
 
 	author := "@" + kkformat.Trunc(s.Author, 10)
 	gap := 80 - kkformat.StringWidth(info) - kkformat.StringWidth(author) - leftPadding
+	rawButton := leftPadding == 0
+	if rawButton {
+		gap -= 6
+	}
+
 	if gap > 80 {
 		gap = 0
 	}
@@ -217,7 +213,11 @@ func writeInfo(w http.ResponseWriter, s *kkformat.Snippet, leftPadding uint32) {
 	for i := uint32(0); i < gap; i++ {
 		w.Write([]byte("<dt> "))
 	}
-	w.Write([]byte("</dl><dl>"))
+	w.Write([]byte("</dl>"))
+	if rawButton {
+		w.Write([]byte("<a href='?raw=1'><dl><dt>R<dt>A<dt>W</dl></a><dl><dt> <dt>·<dt> </dl>"))
+	}
+	w.Write([]byte("<dl>"))
 	write(w, info)
 	w.Write([]byte("</dl></div>"))
 }
@@ -228,20 +228,22 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 	end := start + 25
 	ss := bk.GetSnippetsLite(uint64(start), uint64(end))
 
-	serveHeader(w, "List")
-	// templ.Execute(w, pl)
+	serveHeader(w, "All Snippets")
 	w.Write([]byte(`<form method=POST action=/delete>`))
 	for _, s := range ss {
+		id := strconv.FormatUint(s.ID, 16)
+		w.Write([]byte(`<!-- ` + id + ` -->`))
+
 		if s.ID == 0 {
 			continue
 		}
 
-		w.Write([]byte("<div><input type=checkbox class=del name=s" + strconv.FormatUint(s.ID, 10) + ">"))
+		w.Write([]byte("<div><input type=checkbox class=del name=s" + id + ">"))
 		title := kkformat.Trunc(s.Title, 71)
 
 		w.Write([]byte("<dl>"))
-		write(w, fmt.Sprintf("%06d ", s.ID))
-		w.Write([]byte("</dl><a target=_blank href='/" + s.Short + "'><dl>"))
+		write(w, fmt.Sprintf("%06x ", s.ID))
+		w.Write([]byte("</dl><a target=_blank href='/" + id + "'><dl>"))
 		write(w, title)
 		w.Write([]byte("</dl></a>"))
 		w.Write([]byte("</div>"))
@@ -275,44 +277,16 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 	serveFooter(w)
 }
 
-var reTrunc = regexp.MustCompile(`([^A-Za-z0-9\-\_]*)`)
-
 func trunc(in string, strict bool) string {
-	var buf []rune
-	if len(in) > 64 {
-		buf = []rune(in)[:64]
-		if !strict {
-			return string(buf)
-		}
-	} else {
-		if !strict {
-			return in
-		}
-		buf = []rune(in)
+	if len(in) > 32 {
+		return string([]rune(in)[:32])
 	}
-
-	for i, r := range buf {
-		if (r >= 'a' && r <= 'z') ||
-			(r >= 'A' && r <= 'Z') ||
-			(r >= '0' && r <= '9') ||
-			r == '-' || r == '_' || r == '@' {
-
-		} else {
-			buf[i] = '_'
-		}
-	}
-
-	return string(buf)
+	return in
 }
 
 func servePost(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	s := &kkformat.Snippet{}
-	s.Short = trunc(r.FormValue("short"), true)
-	switch s.Short {
-	case "post", "about", "help", "list", "delete", "edit":
-		w.Write([]byte("invalid shortcut"))
-		return
-	}
 
 	s.Title = trunc(r.FormValue("title"), false)
 	if s.Title == "" {
@@ -332,20 +306,20 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	if len(s.Raw) > 1024*1024 {
 		s.Raw = s.Raw[:1024*1024]
 	} else if len(s.Raw) == 0 {
+		w.WriteHeader(400)
+		serveError(w, r, "Empty Content")
 		return
 	}
 
 	largeContent := len(s.Raw) > 102400
 
-	fo := &kkformat.Formatter{Source: []byte(s.Raw)}
+	fo := &kkformat.Formatter{Source: []byte(s.Raw), ID: 0, Columns: 80}
 
 	fontsize, _ := strconv.Atoi(r.FormValue("fontsize"))
 	if fontsize <= 0 {
 		fontsize = 14
 	}
 
-	// now := time.Now().UnixNano()
-	fo.ID = 0
 	var output io.Writer
 	var err error
 	if largeContent {
@@ -361,25 +335,26 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		output = &bytes.Buffer{}
 	}
 
-	fo.Columns = 80
 	s.Size, _ = fo.WriteTo(output)
-
 	if !largeContent {
 		s.P80 = output.(*bytes.Buffer).Bytes()
 	}
 
 	if err := bk.AddSnippet(s); err != nil {
 		log.Println(err)
+		w.WriteHeader(400)
+		serveError(w, r, "Internal Error")
 		return
 	}
 
 	cookie := http.Cookie{
-		Name:    fmt.Sprintf("s%d", s.ID),
+		Name:    fmt.Sprintf("s%x", s.ID),
 		Value:   fmt.Sprintf("%x", s.GUID),
 		Expires: time.Now().Add(365 * 24 * time.Hour),
 	}
 	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/"+s.Short, 301)
+	http.Redirect(w, r, "/"+strconv.FormatUint(s.ID, 16), 301)
+	log.Println("post:", time.Now().Sub(start).Nanoseconds()/1e6, "ms")
 }
 
 var bk *kkformat.Backend

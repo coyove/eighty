@@ -28,7 +28,6 @@ type Snippet struct {
 	GUID  [20]byte
 
 	// settable
-	Short  string
 	Title  string
 	TTL    int64
 	Author string
@@ -44,25 +43,27 @@ var (
 	ErrInvalidSnippet = errors.New("Invalid snippet")
 
 	bSnippets     = []byte("snippets")
-	bShortid      = []byte("shortid")
+	bSOccupy      = []byte("snippetsoccupy")
 	LargeP80Magic = []byte("exP80zzz:")
 )
 
 type viewCount struct {
-	Shortcut string
-	Count    int64
+	ID    uint64
+	Count int64
 }
 
 type Backend struct {
 	db    *bolt.DB
 	views struct {
-		counter map[string]*viewCount
+		counter map[uint64]*viewCount
 		sync.Mutex
 	}
 }
 
-func itosb(i uint64) []byte {
-	return []byte(strconv.FormatUint(i, 16))
+func itob(id uint64) []byte {
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, id)
+	return buf
 }
 
 func (b *Backend) Init(path string) {
@@ -74,11 +75,15 @@ func (b *Backend) Init(path string) {
 
 	b.db.Update(func(tx *bolt.Tx) error {
 		tx.CreateBucketIfNotExists(bSnippets)
-		tx.CreateBucketIfNotExists(bShortid)
+		o, _ := tx.CreateBucketIfNotExists(bSOccupy)
+		if len(o.Get(itob(0))) == 0 {
+			var b block
+			o.Put(itob(0), b[:])
+		}
 		return nil
 	})
 
-	b.views.counter = make(map[string]*viewCount)
+	b.views.counter = make(map[uint64]*viewCount)
 	go func() {
 		for range time.Tick(1 * time.Second) {
 			b.actualIncrSnippetViews()
@@ -87,55 +92,106 @@ func (b *Backend) Init(path string) {
 }
 
 func OwnSnippet(r *http.Request, s *Snippet) bool {
-	name := "s" + strconv.FormatUint(s.ID, 10)
+	name := "s" + strconv.FormatUint(s.ID, 16)
 	if c, err := r.Cookie(name); err != nil || c.Value != fmt.Sprintf("%x", s.GUID) {
 		return false
 	}
 	return true
 }
 
+func nextID(sc *bolt.Bucket) uint64 {
+	impl := func() uint64 {
+		currentO := sc.Sequence()
+		curKey := itob(currentO)
+		var b block
+		copy(b[:], sc.Get(curKey))
+
+		mark := b.getFirstUnmarked()
+		if mark == -1 {
+			// we don't have any space in the current block
+			// let's randomly pick some other blocks to see if there are spaces for us
+			if n := int(currentO) - 1; n > 0 {
+				os := rand.Perm(n)
+				if len(os) > 8 {
+					os = os[:8]
+				}
+
+				key := make([]byte, 8)
+				for _, o := range os {
+					binary.BigEndian.PutUint64(key, uint64(o))
+					copy(b[:], sc.Get(key))
+					if m := b.getFirstUnmarked(); m != -1 {
+						b.mark(m)
+						sc.Put(key, b[:])
+						return uint64(m + o*4096)
+					}
+				}
+			}
+
+			// nop, we can't find a free block, so create a new block
+			b.clear()
+			nextO, _ := sc.NextSequence()
+			m := b.getFirstUnmarked()
+			b.mark(m)
+			sc.Put(itob(nextO), b[:])
+			return uint64(m)
+		}
+
+		b.mark(mark)
+		sc.Put(curKey, b[:])
+		return uint64(mark) + currentO*4096
+	}
+
+	x := impl() + 1
+	return x
+}
+
+func deleteID(sc *bolt.Bucket, id uint64) {
+	if id == 0 {
+		return
+	}
+
+	id--
+	kid := id / 4096
+	mid := id - kid*4096
+	key := itob(kid)
+
+	kblock := sc.Get(key)
+	if len(kblock) != 520 {
+		return
+	}
+
+	var b block
+	copy(b[:], kblock)
+	b.unmark(int(mid))
+	sc.Put(key, b[:])
+}
+
 func (b *Backend) AddSnippet(s *Snippet) error {
 	return b.db.Update(func(tx *bolt.Tx) error {
 		sn := tx.Bucket(bSnippets)
-		si := tx.Bucket(bShortid)
+		sc := tx.Bucket(bSOccupy)
 
-		shortcut := []byte(s.Short)
-		//log.Println(s.Short)
-		if len(shortcut) > 0 {
-			if len(si.Get(shortcut)) > 0 {
-				return ErrDupShortName
-			}
+		s.ID = nextID(sc)
+		maxID := sn.Sequence()
+		if s.ID > maxID {
+			sn.SetSequence(s.ID)
 		}
-
-		s.ID, _ = sn.NextSequence()
 		s.Time = time.Now().UnixNano()
 
 		sum := make([]byte, 256)
-		key := itosb(s.ID)
-
 		copy(sum, s.P80)
 		binary.BigEndian.PutUint64(sum[248-rand.Intn(248):], uint64(s.Time))
 		s.GUID = sha1.Sum(sum)
 
-		if len(shortcut) == 0 {
-			s.Short = string(key)
-			shortcut = []byte(s.Short)
-		}
-
-		si.Put(shortcut, key)
 		buf := &bytes.Buffer{}
 		gob.NewEncoder(buf).Encode(s)
-		return sn.Put(key, buf.Bytes())
+		return sn.Put(itob(s.ID), buf.Bytes())
 	})
 }
 
-func getSnippetImpl(sn, si *bolt.Bucket, shortcut []byte) (*Snippet, error) {
-	key := si.Get(shortcut)
-	if len(key) == 0 {
-		return nil, ErrInvalidSnippet
-	}
-
-	buf := sn.Get(key)
+func getSnippetImpl(sn *bolt.Bucket, id uint64) (*Snippet, error) {
+	buf := sn.Get(itob(id))
 	if len(buf) == 0 {
 		return nil, ErrInvalidSnippet
 	}
@@ -147,10 +203,10 @@ func getSnippetImpl(sn, si *bolt.Bucket, shortcut []byte) (*Snippet, error) {
 	return s, nil
 }
 
-func (b *Backend) GetSnippet(shortcut string) (s *Snippet, err error) {
+func (b *Backend) GetSnippet(id uint64) (s *Snippet, err error) {
 	dead := false
 	err = b.db.View(func(tx *bolt.Tx) error {
-		s, err = getSnippetImpl(tx.Bucket(bSnippets), tx.Bucket(bShortid), []byte(shortcut))
+		s, err = getSnippetImpl(tx.Bucket(bSnippets), id)
 		if s != nil {
 			if s.TTL > 0 && time.Now().UnixNano()-s.Time > s.TTL*1e9 {
 				dead = true
@@ -179,7 +235,7 @@ func (b *Backend) GetSnippetsLite(start, end uint64) []*Snippet {
 		max := sn.Sequence()
 
 		for i := start; i < end; i++ {
-			buf := sn.Get(itosb(max - i))
+			buf := sn.Get(itob(max - i))
 			s := &Snippet{}
 
 			if len(buf) == 0 {
@@ -213,23 +269,27 @@ func (b *Backend) TotalSnippets() (max uint64) {
 
 func (b *Backend) DeleteSnippet(s *Snippet) error {
 	return b.db.Update(func(tx *bolt.Tx) error {
-		sn := tx.Bucket([]byte("snippets"))
+		sn := tx.Bucket(bSnippets)
+		sc := tx.Bucket(bSOccupy)
 
 		if bytes.HasPrefix(s.P80, []byte(LargeP80Magic)) {
 			os.RemoveAll(string(s.P80[len(LargeP80Magic):]))
 		}
 
-		return sn.Delete(itosb(s.ID))
+		deleteID(sc, s.ID)
+		return sn.Delete(itob(s.ID))
 	})
 }
 
 func (b *Backend) DeleteSnippets(ids ...uint64) error {
 	return b.db.Update(func(tx *bolt.Tx) error {
-		sn := tx.Bucket([]byte("snippets"))
+		sn := tx.Bucket(bSnippets)
+		sc := tx.Bucket(bSOccupy)
 
 		for _, id := range ids {
-			key := itosb(id)
+			key := itob(id)
 			buf := sn.Get(key)
+
 			if bytes.Contains(buf, LargeP80Magic) {
 				s := &Snippet{}
 				gob.NewDecoder(bytes.NewReader(buf)).Decode(s)
@@ -237,6 +297,8 @@ func (b *Backend) DeleteSnippets(ids ...uint64) error {
 					os.RemoveAll(string(s.P80[len(LargeP80Magic):]))
 				}
 			}
+
+			deleteID(sc, id)
 			sn.Delete(key)
 		}
 
@@ -266,16 +328,16 @@ func (s *Snippet) WriteTo(w io.Writer, narrow bool) {
 	}
 }
 
-func (b *Backend) IncrSnippetViews(shortcut string) {
+func (b *Backend) IncrSnippetViews(id uint64) {
 	b.views.Lock()
 
 	var c *viewCount
-	if c = b.views.counter[shortcut]; c == nil {
-		c = &viewCount{Shortcut: shortcut}
+	if c = b.views.counter[id]; c == nil {
+		c = &viewCount{ID: id}
 	}
 
 	c.Count++
-	b.views.counter[shortcut] = c
+	b.views.counter[id] = c
 	b.views.Unlock()
 }
 
@@ -288,10 +350,10 @@ func (b *Backend) actualIncrSnippetViews() {
 			return nil
 		}
 
-		sn, si := tx.Bucket(bSnippets), tx.Bucket(bShortid)
+		sn := tx.Bucket(bSnippets)
 
 		for _, d := range b.views.counter {
-			s, err := getSnippetImpl(sn, si, []byte(d.Shortcut))
+			s, err := getSnippetImpl(sn, d.ID)
 			if err != nil {
 				continue
 			}
@@ -300,12 +362,12 @@ func (b *Backend) actualIncrSnippetViews() {
 			buf := &bytes.Buffer{}
 			gob.NewEncoder(buf).Encode(s)
 
-			if err := sn.Put(itosb(s.ID), buf.Bytes()); err != nil {
+			if err := sn.Put(itob(s.ID), buf.Bytes()); err != nil {
 				continue
 			}
 		}
 
-		b.views.counter = make(map[string]*viewCount)
+		b.views.counter = make(map[uint64]*viewCount)
 		b.views.Unlock()
 		return nil
 	})

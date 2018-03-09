@@ -2,12 +2,15 @@ package kkformat
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 )
 
 type words_t []*word_t
 
 func (w *words_t) adjustableJoin(opt *Formatter) {
+	_ = fmt.Sprintf
+
 	words := *w
 	if len(words) == 0 {
 		return
@@ -19,26 +22,29 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 	opt.resetPDL()
 	var exEnding *word_t
 
-	for i, word := range words {
-		if !naturalEnd {
-			// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
-			if word.len > 0 && i == 0 {
-				if l, _ := word.surroundingSpaces(); l != 2 && l%4 != 0 {
-					word.value = word.value[l:]
-					word.incLen(-l)
-				}
-			}
-
-			// the trailing spaces will always be discarded
-			if word.len > 0 && i == len(words)-1 {
-				_, r := word.surroundingSpaces()
-				word.value = word.value[:uint32(len(word.value))-r]
-				word.incLen(-r)
+	if !naturalEnd && len(words) > 0 {
+		// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
+		if l, _ := words[0].surroundingSpaces(); l != 2 && l%4 != 0 {
+			words[0].value = words[0].value[l:]
+			if words[0].len -= l; words[0].len == 0 {
+				words = words[1:]
 			}
 		}
+	}
 
+	if !naturalEnd && len(words) > 0 {
+		word := words.last()
+		// the trailing spaces will always be discarded
+		_, r := word.surroundingSpaces()
+		word.value = word.value[:uint32(len(word.value))-r]
+		if word.len -= r; word.len == 0 {
+			words = words[:len(words)-1]
+		}
+	}
+
+	for i, word := range words {
 		// fmt.Println(string(word.value), word.len, word.getType())
-		if word.getLen() > 0 {
+		if word.len > 0 {
 			if word.getType() == runeExtraAtEnd || word.getType() == runeContinues {
 				exEnding = word
 				continue
@@ -53,13 +59,12 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 				}
 			}
 
-			length += word.getLen()
+			length += word.len
 			opt.wp = append(opt.wp, word)
 		}
 	}
 
 	opt.wd = append(opt.wd, opt.wl...)
-
 	// adjust
 	gap, fillstart := opt.Columns-length, uint32(0)
 	if len(opt.wp) <= 1 {
@@ -94,6 +99,8 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 		opt.wp.join(opt)
 		return
 	}
+
+	// log.Println(lnh, gap)
 
 	if lnh >= gap {
 		// we have enough delimeters / latin characters, append spaces to them

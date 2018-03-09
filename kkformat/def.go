@@ -2,7 +2,6 @@ package kkformat
 
 import (
 	"bytes"
-	"encoding/binary"
 	"regexp"
 	"strings"
 	"unicode"
@@ -161,10 +160,4 @@ func calcTag(value []rune) string {
 	}
 
 	return whole.String()
-}
-
-func itob(id uint64) []byte {
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, id)
-	return buf
 }

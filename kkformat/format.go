@@ -160,6 +160,20 @@ func (o *Formatter) flush() {
 	o.tmp.Reset()
 }
 
+func IsImageURL(url string) bool {
+	if len(url) < 11 {
+		return false
+	}
+
+	qm := strings.Index(url, "?")
+	if qm > -1 {
+		url = url[:qm]
+	}
+
+	return strings.HasSuffix(url, ".jpg") || strings.HasSuffix(url, ".png") ||
+		strings.HasSuffix(url, ".gif") || strings.HasSuffix(url, ".webp")
+}
+
 // WriteTo renders the content to "w"
 func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 	o.w = w
@@ -295,9 +309,7 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 			continue
 		}
 
-		if url := line[0].getURL(o.urls); url != "" &&
-			(strings.HasSuffix(url, ".jpg") || strings.HasSuffix(url, ".png") ||
-				strings.HasSuffix(url, ".gif") || strings.HasSuffix(url, ".webp")) {
+		if url := line[0].getURL(o.urls); IsImageURL(url) {
 			if url == lastURL {
 				lines = append(lines[:i], lines[i+1:]...)
 				continue
