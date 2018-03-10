@@ -17,28 +17,42 @@ import (
 )
 
 var adminpassword = flag.String("p", "123456", "password")
+var sitename = flag.String("n", "zzz.gl", "site name")
+var truereferer = flag.String("r", "http://127.0.0.1:8102", "referer")
+var listen = flag.String("l", ":8102", "listen address")
+
+func checkReferer(r *http.Request) bool {
+	return strings.HasPrefix(r.Referer(), *truereferer)
+}
 
 func serveHeader(w http.ResponseWriter, title string) {
 	w.Header().Add("Content-Type", "text/html")
 	var templ = `<!DOCTYPE html><html>
-	<title>` + title + `</title>
+	<title>` + title + ` - ` + *sitename + `</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
 	<meta charset="utf-8">
 	` + static.CSS + `
 	<div class=header>
-	<a href=/>new snippet</a> <span class=sep>|</span>
-	<a href=/list>all snippets</a>
+	<a href=/>` + static.NewSnippet + `</a> <span class=sep>|</span>
+	<a href=/list>` + static.AllSnippets + `</a>
 	</div><div id=content-0>`
 	w.Write([]byte(templ))
 }
 
 func serveFooter(w http.ResponseWriter) {
-	w.Write([]byte("</div><div class=footer><span>zzz.gl</span> <span class=sep>|</span> <span>" +
-		strconv.FormatUint(bk.TotalSnippets(), 10) + " snippets</span></div>"))
+	s, b := bk.TotalSnippets()
+	w.Write([]byte(fmt.Sprintf(`</div>
+		<div class=footer>
+		<span>%s</span> <span class=sep>|</span> 
+		<span>%d snippets</span> <span class=sep>|</span> 
+		<span>%d blocks</span> <span class=sep>|</span> 
+		<span>%0.2f%% cap</span>
+		</div>`, *sitename, s, b, bk.Capacity*100)))
 }
 
-func serveError(w http.ResponseWriter, r *http.Request, info string) {
-	serveHeader(w, "Error")
+func serveError(w http.ResponseWriter, r *http.Request, code int, info string) {
+	w.WriteHeader(code)
+	serveHeader(w, static.Error)
 	rf := r.Referer()
 	if rf == "" {
 		rf = "/"
@@ -47,7 +61,7 @@ func serveError(w http.ResponseWriter, r *http.Request, info string) {
 	w.Write([]byte("<div><dl class=err>"))
 	write(w, info)
 	w.Write([]byte("</dl></div><div><a href='" + rf + "'><dl>"))
-	write(w, "back")
+	write(w, static.Back)
 	w.Write([]byte("</dl></a></div>"))
 	serveFooter(w)
 }
@@ -62,15 +76,13 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 
 		id, _ := strconv.ParseUint(uri, 16, 64)
 		if id == 0 {
-			w.WriteHeader(404)
-			serveError(w, r, "Invalid Snippet ID")
+			serveError(w, r, 403, static.InternalError)
 			return
 		}
 
 		s, err := bk.GetSnippet((id))
 		if err != nil {
-			w.WriteHeader(404)
-			serveError(w, r, "Snippet Not Found")
+			serveError(w, r, 404, static.SnippetNotFound)
 			return
 		}
 
@@ -81,17 +93,21 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 		}
 
 		serveHeader(w, s.Title)
-		w.Write([]byte("<h2>" + s.Title + "</h2>"))
+		w.Write([]byte("<h2>" + strings.Replace(s.Title, "<", "&lt;", -1) + "</h2>"))
 		if kkformat.OwnSnippet(r, s) || isAdmin(r) {
-			w.Write([]byte(fmt.Sprintf("<div><a href='/delete?id=%x'><dl><dt>d<dt>e<dt>l<dt>e<dt>t<dt>e</dl></a></div>", s.ID)))
+			w.Write([]byte(fmt.Sprintf("<div><a href='/delete?id=%x&ts=%d'><dl>", s.ID, time.Now().UnixNano())))
+			write(w, static.Delete)
+			w.Write([]byte("</dl></a><dl>"))
+			write(w, " > "+s.Token())
+			w.Write([]byte("</dl></div>"))
 		}
 		writeInfo(w, s, 0)
 		w.Write([]byte("<hr>"))
 		s.WriteTo(w, false)
 		bk.IncrSnippetViews(s.ID)
 	} else {
-		serveHeader(w, "New Snippet")
-		w.Write([]byte(static.NewSnippet))
+		serveHeader(w, static.NewSnippet)
+		w.Write([]byte(static.NewSnippetForm))
 	}
 	serveFooter(w)
 }
@@ -104,6 +120,11 @@ func isAdmin(r *http.Request) bool {
 }
 
 func serveDelete(w http.ResponseWriter, r *http.Request) {
+	if !checkReferer(r) {
+		w.WriteHeader(403)
+		return
+	}
+
 	var s *kkformat.Snippet
 	var err error
 	start := time.Now()
@@ -116,18 +137,17 @@ func serveDelete(w http.ResponseWriter, r *http.Request) {
 
 	s, err = bk.GetSnippet(id)
 	if err != nil || s == nil {
-		w.WriteHeader(403)
-		serveError(w, r, "You don't have the permission to delete this snippet")
+		serveError(w, r, 403, static.InternalError)
 		return
 	}
 
 	if !kkformat.OwnSnippet(r, s) && !admin {
-		w.WriteHeader(403)
-		serveError(w, r, "You don't have the permission to delete this snippet")
+		serveError(w, r, 403, static.NoPermission)
 		return
 	}
 
 	bk.DeleteSnippet(s)
+	http.SetCookie(w, &http.Cookie{Name: fmt.Sprintf("s%x", s.ID), Expires: time.Now()})
 	http.Redirect(w, r, "/"+strconv.FormatUint(id, 16), 301)
 	log.Println("delete:", time.Now().Sub(start).Nanoseconds()/1e6, "ms")
 	return
@@ -143,6 +163,7 @@ ADMIN:
 		if strings.HasPrefix(k, "s") {
 			id, _ := strconv.ParseUint(k[1:], 16, 64)
 			if id > 0 {
+				log.Println("admin deletes:", id)
 				ids = append(ids, id)
 			}
 		}
@@ -228,7 +249,7 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 	end := start + 25
 	ss := bk.GetSnippetsLite(uint64(start), uint64(end))
 
-	serveHeader(w, "All Snippets")
+	serveHeader(w, static.AllSnippets)
 	w.Write([]byte(`<form method=POST action=/delete>`))
 	for _, s := range ss {
 		id := strconv.FormatUint(s.ID, 16)
@@ -239,12 +260,10 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Write([]byte("<div><input type=checkbox class=del name=s" + id + ">"))
-		title := kkformat.Trunc(s.Title, 71)
-
 		w.Write([]byte("<dl>"))
 		write(w, fmt.Sprintf("%06x ", s.ID))
 		w.Write([]byte("</dl><a target=_blank href='/" + id + "'><dl>"))
-		write(w, title)
+		write(w, kkformat.Trunc(s.Title, 71))
 		w.Write([]byte("</dl></a>"))
 		w.Write([]byte("</div>"))
 
@@ -277,23 +296,29 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 	serveFooter(w)
 }
 
-func trunc(in string, strict bool) string {
-	if len(in) > 32 {
-		return string([]rune(in)[:32])
+func trunc(in string) string {
+	r := []rune(in)
+	if len(r) > 32 {
+		return string(r[:32])
 	}
 	return in
 }
 
 func servePost(w http.ResponseWriter, r *http.Request) {
+	if !checkReferer(r) {
+		w.WriteHeader(400)
+		return
+	}
+
 	start := time.Now()
 	s := &kkformat.Snippet{}
 
-	s.Title = trunc(r.FormValue("title"), false)
+	s.Title = trunc(r.FormValue("title"))
 	if s.Title == "" {
-		s.Title = "Untitled"
+		s.Title = static.UntitledSnippet
 	}
 
-	s.Author = trunc(r.FormValue("author"), false)
+	s.Author = trunc(r.FormValue("author"))
 	if s.Author == "" {
 		s.Author = "N/A"
 	}
@@ -306,8 +331,7 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	if len(s.Raw) > 1024*1024 {
 		s.Raw = s.Raw[:1024*1024]
 	} else if len(s.Raw) == 0 {
-		w.WriteHeader(400)
-		serveError(w, r, "Empty Content")
+		serveError(w, r, 400, static.EmptyContent)
 		return
 	}
 
@@ -338,18 +362,19 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	s.Size, _ = fo.WriteTo(output)
 	if !largeContent {
 		s.P80 = output.(*bytes.Buffer).Bytes()
+	} else {
+		output.(*os.File).Close()
 	}
 
 	if err := bk.AddSnippet(s); err != nil {
 		log.Println(err)
-		w.WriteHeader(400)
-		serveError(w, r, "Internal Error")
+		serveError(w, r, 403, static.InternalError)
 		return
 	}
 
 	cookie := http.Cookie{
 		Name:    fmt.Sprintf("s%x", s.ID),
-		Value:   fmt.Sprintf("%x", s.GUID),
+		Value:   s.Token(),
 		Expires: time.Now().Add(365 * 24 * time.Hour),
 	}
 	http.SetCookie(w, &cookie)
@@ -371,6 +396,6 @@ func main() {
 	http.HandleFunc("/post", servePost)
 	http.HandleFunc("/delete", serveDelete)
 
-	fmt.Println("serve")
-	http.ListenAndServe(":8102", nil)
+	log.Println("server started on", *listen)
+	http.ListenAndServe(*listen, nil)
 }

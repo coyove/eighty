@@ -19,6 +19,24 @@ func (s *stream_t) nextRune() (rune, int) {
 	return utf8.DecodeRune(s.buf[s.idx:])
 }
 
+func (s *stream_t) nextRuneIsEndOfLine() (bool, int) {
+	idx := s.idx
+	if idx >= len(s.buf) {
+		return true, idx
+	}
+
+	r, w := utf8.DecodeRune(s.buf[idx:])
+	if r == '\n' {
+		return true, idx + w
+	} else if r == '\r' && idx+w < len(s.buf) {
+		idx += w
+		r, w = utf8.DecodeRune(s.buf[idx:])
+		return r == '\n', idx + w
+	}
+
+	return false, idx
+}
+
 func (s *stream_t) nextWord() *word_t {
 	if s.beforeEnd {
 		return nil
@@ -65,8 +83,14 @@ func (s *stream_t) nextWord() *word_t {
 			r, w := s.nextRune()
 
 			if runeType(r) == t {
-				ret.value = append(ret.value, r)
-				ret.len += RuneWidth(r)
+				if t == runeSpace {
+					sp := icspace(r)
+					ret.value = append(ret.value, []rune(sp)...)
+					ret.len += StringWidth(sp)
+				} else {
+					ret.value = append(ret.value, r)
+					ret.len += RuneWidth(r)
+				}
 			} else {
 				break
 			}
@@ -75,35 +99,6 @@ func (s *stream_t) nextWord() *word_t {
 		}
 	}
 
-	// switch t {
-	// case runeNewline:
-	// 	return ret // len = 0
-	// case runeSpace, runeHalfDelim:
-	// 	sp := icspace(r)
-	// 	ret.value = []rune(sp)
-	// 	ret.len = StringWidth(sp)
-	// 	continue_next()
-	// case runeLatin:
-	// 	ret.value = []rune{r}
-	// 	ret.len = RuneWidth(r)
-
-	// 	// continue to find latin characters
-	// 	for s.idx < len(s.buf) {
-	// 		r, w := s.nextRune()
-
-	// 		if runeType(r) == runeLatin {
-	// 			ret.value = append(ret.value, r)
-	// 			ret.setLen(ret.getLen() + RuneWidth(r))
-	// 		} else {
-	// 			break
-	// 		}
-
-	// 		s.idx += w
-	// 	}
-	// default:
-	// 	ret.value = []rune{r}
-	// 	ret.setLen(RuneWidth(r))
-	// }
 	switch t {
 	case runeNewline:
 		return ret // len = 0
@@ -183,6 +178,7 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 
 	line, lines, length := make(words_t, 0, 10), []words_t{}, uint32(0)
 	nobrk := false
+	nextWordIsNaturalStart := true
 
 	appendReset := func() {
 		lines = append(lines, line)
@@ -223,6 +219,10 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 					t.setType(runeExtraAtEnd)
 					line = append(line, t)
 					appendReset()
+
+					if y, ni := ws.nextRuneIsEndOfLine(); y {
+						ws.idx = ni
+					}
 					return
 				}
 
@@ -247,18 +247,22 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 
 			if t.getType() == runeNewline {
 				length = 0
-				lines = append(lines, line)
-				line = words_t{}
+				appendReset()
+				nextWordIsNaturalStart = true
 			}
 		}
 
 		if words := t.split(o.Columns-length, o.Columns); words == nil {
 			read(t, false)
+			if nextWordIsNaturalStart {
+				t.setIsNaturalStart()
+			}
 		} else {
 			for _, w := range words {
 				read(w, true)
 			}
 		}
+		nextWordIsNaturalStart = false
 	}
 
 	if len(line) > 0 {

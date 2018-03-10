@@ -13,10 +13,11 @@ body{font-size:14px;font-family:Arial,Helvetica,sans-serif}
 #content-0 a:hover{background-color:#ffa}
 #content-0 dt.conj{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;color:#ccc}
 #content-0 ._image{width:auto;max-width:100%;max-height:280px}
-#content-0 .cls-toc-r-0 *{color:black}
+#content-0 .cls-toc-r *{color:black}
 #content-0 dt{width:8px}
 #content-0 dd,#content-0 input.del{width:16px}
 #content-0,.header,.footer{margin:0 auto;width:642px}
+#post-form{margin:4px 0}
 #post-form td{padding:2px;}
 #post-form, #post-form .ctrl{resize:vertical;width:100%;max-width:100%;min-width:100%}
 #post-form .title{white-space:nowrap;width:1px;text-align:right}
@@ -29,32 +30,45 @@ body{font-size:14px;font-family:Arial,Helvetica,sans-serif}
 .header,.footer{background:#667;padding:4px;color:white}
 </style>`
 
-const NewSnippet = `<form method=POST action=/post><table id=post-form>
+const UntitledSnippet = "无标题"
+
+const NewSnippet = "新片段"
+
+const AllSnippets = "浏览"
+
+const NoPermission = "无权限删除改片段"
+
+const SnippetNotFound = "未找到该片段，其可能已被删除或失效"
+
+const InternalError = "内部错误"
+
+const EmptyContent = "无法提交空内容"
+
+const Back = "后退"
+
+const Delete = "删除"
+
+const Error = "错误"
+
+const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 <tr>
-	<td class=title>Title:</td><td><input class=ctrl name=title placeholder="Untitled"></td>
-	<td class=title>Your Name:</td><td><input class=ctrl name=author placeholder="N/A"></td>
+	<td class=title>标题:</td><td><input class=ctrl name=title placeholder="` + UntitledSnippet + `"></td>
+	<td class=title>发布者:</td><td><input class=ctrl name=author placeholder="N/A"></td>
+	<td class=title>有效期:</td><td class=title><select name=ttl>
+		<option value="3600">1小时</option>
+		<option value="86400">1天</option>
+		<option value="2592000">30天</option>
+		<option value="0" selected>永久</option>
+	</select></td>	
 </tr>
-<tr><td colspan=4><textarea class=ctrl name=content rows=10></textarea></td></tr>
-<tr><td colspan=4>
-Expires in: <select name=ttl>
-	<option value="3600">1 hr</option>
-	<option value="86400">1 day</option>
-	<option value="2592000">30 days</option>
-	<option value="0" selected>never</option>
-</select> 
-<input type=submit value=Post style="float:right">
-</td></tr>
+<tr><td colspan=6><textarea class=ctrl name=content rows=10></textarea></td></tr>
+<tr><td colspan=6 style="text-align:center"><input type=submit value="发布"></td></tr>
 </table>
 </form>
-
-<hr>
-
-<div style="margin:4px 0">
+<div style="margin:4px 0;font-size:0.9em">
 <ol>
-<li>Spaces will be inserted (if needed) into the content to make it fit 80 columns perfectly;
-<li>If you don't want spaces messing with your code, use ` + "```" + ` &lt;your code...&gt; ` + "```" + ` to quote them (three backticks); 
-<li>URLs automatically become links, image links will be displayed as images (.jpg, .png, .gif and .webp);
-<li>Don't post large snippets (though we support size up to 1MB), it will be rendered into tons of HTML elements (~100000) and crash browsers on low-end computers;
-<li>You get one cookie after each post, allowing you to delete the snippet in the future;
+<li>每行文本可能会被插入多个空格以保证与80列对齐，若不想被空格破坏格式（如代码），请使用一对三反引号包起：` + "```" + ` &lt;your code...&gt; ` + "```" + `；
+<li>段落标题以4个井号（####）开头，发布后自动生成目录，4个等号（====）单独一行转换为分割线；
+<li>请不要发布过长的文本（虽然最高允许1MB），其渲染结果可能包含数十万个HTML标签，导致老旧的浏览器直接崩溃；
 </ol>
 </div>`

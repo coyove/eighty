@@ -57,6 +57,19 @@ func firstZero64(v uint64) int {
 	return 56 - int(bits) + int(firstZeroLookup[h])
 }
 
+func capacity64(v uint64) float64 {
+	if v == uint64Max {
+		return 1
+	}
+
+	bits := [2]int{}
+	for b := uint64(0); b < uint64(64); b++ {
+		bits[v<<b>>63]++
+	}
+
+	return float64(bits[1]) / 64.0
+}
+
 func setBit64(v uint64, bit int, value int) uint64 {
 	if value == 0 {
 		return v & bitManipulationClear[bit]
@@ -106,10 +119,7 @@ func (b *block) unmark(index int) {
 
 	v = setBit64(v, s, 0)
 	binary.BigEndian.PutUint64(b[m*8:], v)
-
-	if v == 0 {
-		b.setMaster(m, 0)
-	}
+	b.setMaster(m, 0)
 }
 
 func (b *block) getFirstUnmarked() int {
@@ -122,6 +132,20 @@ func (b *block) getFirstUnmarked() int {
 	v := binary.BigEndian.Uint64(b[m*8:])
 	s := firstZero64(v)
 	return m*64 + s
+}
+
+func (b *block) capacity() float64 {
+	master := binary.BigEndian.Uint64(b[512:])
+	if master == uint64Max {
+		return 1.0
+	}
+
+	c := 0.0
+	for m := 0; m < 64; m++ {
+		v := binary.BigEndian.Uint64(b[m*8:])
+		c += capacity64(v)
+	}
+	return c / 64.0
 }
 
 func (b *block) clear() {

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -17,12 +16,14 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
+	"github.com/coyove/goflyway/pkg/rand"
 )
 
 type Snippet struct {
 	// should be read-only
 	ID    uint64
 	Time  int64
+	Last  int64
 	Views int64
 	Dead  bool
 	GUID  [20]byte
@@ -48,13 +49,15 @@ var (
 )
 
 type viewCount struct {
-	ID    uint64
+	Last  int64
 	Count int64
 }
 
 type Backend struct {
-	db    *bolt.DB
-	views struct {
+	Capacity float64
+	db       *bolt.DB
+	rd       *rand.Rand
+	views    struct {
 		counter map[uint64]*viewCount
 		sync.Mutex
 	}
@@ -76,6 +79,7 @@ func (b *Backend) Init(path string) {
 	b.db.Update(func(tx *bolt.Tx) error {
 		tx.CreateBucketIfNotExists(bSnippets)
 		o, _ := tx.CreateBucketIfNotExists(bSOccupy)
+		// o.SetSequence(1)
 		if len(o.Get(itob(0))) == 0 {
 			var b block
 			o.Put(itob(0), b[:])
@@ -84,8 +88,9 @@ func (b *Backend) Init(path string) {
 	})
 
 	b.views.counter = make(map[uint64]*viewCount)
+	b.rd = rand.New()
 	go func() {
-		for range time.Tick(1 * time.Second) {
+		for range time.Tick(5 * time.Second) {
 			b.actualIncrSnippetViews()
 		}
 	}()
@@ -93,7 +98,7 @@ func (b *Backend) Init(path string) {
 
 func OwnSnippet(r *http.Request, s *Snippet) bool {
 	name := "s" + strconv.FormatUint(s.ID, 16)
-	if c, err := r.Cookie(name); err != nil || c.Value != fmt.Sprintf("%x", s.GUID) {
+	if c, err := r.Cookie(name); err != nil || c.Value != s.Token() {
 		return false
 	}
 	return true
@@ -102,44 +107,33 @@ func OwnSnippet(r *http.Request, s *Snippet) bool {
 func nextID(sc *bolt.Bucket) uint64 {
 	impl := func() uint64 {
 		currentO := sc.Sequence()
-		curKey := itob(currentO)
+		key := make([]byte, 8)
+		i := 0
 		var b block
-		copy(b[:], sc.Get(curKey))
 
-		mark := b.getFirstUnmarked()
-		if mark == -1 {
-			// we don't have any space in the current block
-			// let's randomly pick some other blocks to see if there are spaces for us
-			if n := int(currentO) - 1; n > 0 {
-				os := rand.Perm(n)
-				if len(os) > 8 {
-					os = os[:8]
-				}
-
-				key := make([]byte, 8)
-				for _, o := range os {
-					binary.BigEndian.PutUint64(key, uint64(o))
-					copy(b[:], sc.Get(key))
-					if m := b.getFirstUnmarked(); m != -1 {
-						b.mark(m)
-						sc.Put(key, b[:])
-						return uint64(m + o*4096)
-					}
-				}
+		for o := currentO; o >= 0; o-- {
+			if i++; i > 8 {
+				// we have searched 8 blocks and found no free space, stop here
+				break
 			}
 
-			// nop, we can't find a free block, so create a new block
-			b.clear()
-			nextO, _ := sc.NextSequence()
-			m := b.getFirstUnmarked()
-			b.mark(m)
-			sc.Put(itob(nextO), b[:])
-			return uint64(m)
+			binary.BigEndian.PutUint64(key, o)
+			copy(b[:], sc.Get(key))
+			// log.Println(b.getFirstUnmarked())
+			if m := b.getFirstUnmarked(); m != -1 {
+				b.mark(m)
+				sc.Put(key, b[:])
+				return uint64(m) + o*4096
+			}
 		}
 
-		b.mark(mark)
-		sc.Put(curKey, b[:])
-		return uint64(mark) + currentO*4096
+		// we can't find a free block, so create a new one
+		b.clear()
+		nextO, _ := sc.NextSequence()
+		m := b.getFirstUnmarked()
+		b.mark(m)
+		sc.Put(itob(nextO), b[:])
+		return uint64(m) + nextO*4096
 	}
 
 	x := impl() + 1
@@ -179,10 +173,14 @@ func (b *Backend) AddSnippet(s *Snippet) error {
 		}
 		s.Time = time.Now().UnixNano()
 
-		sum := make([]byte, 256)
-		copy(sum, s.P80)
-		binary.BigEndian.PutUint64(sum[248-rand.Intn(248):], uint64(s.Time))
-		s.GUID = sha1.Sum(sum)
+		sumbuf := make([]byte, 256)
+		copy(sumbuf, s.Raw)
+		sum := sha1.Sum(sumbuf)
+		b.rd.Read(sumbuf[:sha1.Size])
+		for i := 0; i < sha1.Size; i++ {
+			sum[i] ^= sumbuf[i]
+		}
+		s.GUID = sha1.Sum(sum[:])
 
 		buf := &bytes.Buffer{}
 		gob.NewEncoder(buf).Encode(s)
@@ -258,10 +256,10 @@ func (b *Backend) GetSnippetsLite(start, end uint64) []*Snippet {
 	return ss
 }
 
-func (b *Backend) TotalSnippets() (max uint64) {
+func (b *Backend) TotalSnippets() (snippets uint64, blocks uint64) {
 	b.db.View(func(tx *bolt.Tx) error {
-		sn := tx.Bucket(bSnippets)
-		max = sn.Sequence()
+		blocks = tx.Bucket(bSOccupy).Sequence() + 1
+		snippets = tx.Bucket(bSnippets).Sequence()
 		return nil
 	})
 	return
@@ -328,21 +326,38 @@ func (s *Snippet) WriteTo(w io.Writer, narrow bool) {
 	}
 }
 
+func (s *Snippet) Token() string {
+	return fmt.Sprintf("s%x:%x", s.ID, s.GUID)
+}
+
 func (b *Backend) IncrSnippetViews(id uint64) {
 	b.views.Lock()
 
 	var c *viewCount
 	if c = b.views.counter[id]; c == nil {
-		c = &viewCount{ID: id}
+		c = &viewCount{}
 	}
 
 	c.Count++
+	c.Last = time.Now().UnixNano()
 	b.views.counter[id] = c
 	b.views.Unlock()
 }
 
 func (b *Backend) actualIncrSnippetViews() {
 	b.db.Update(func(tx *bolt.Tx) error {
+		var bk block
+		var c float64
+		sc := tx.Bucket(bSOccupy)
+		total := sc.Sequence() + 1
+		key := make([]byte, 8)
+		for i := uint64(0); i < total; i++ {
+			binary.BigEndian.PutUint64(key, i)
+			copy(bk[:], sc.Get(key))
+			c += bk.capacity()
+		}
+		b.Capacity = c / float64(total)
+
 		b.views.Lock()
 
 		if len(b.views.counter) == 0 {
@@ -352,13 +367,14 @@ func (b *Backend) actualIncrSnippetViews() {
 
 		sn := tx.Bucket(bSnippets)
 
-		for _, d := range b.views.counter {
-			s, err := getSnippetImpl(sn, d.ID)
+		for id, d := range b.views.counter {
+			s, err := getSnippetImpl(sn, id)
 			if err != nil {
 				continue
 			}
 
 			s.Views += d.Count
+			s.Last = d.Last
 			buf := &bytes.Buffer{}
 			gob.NewEncoder(buf).Encode(s)
 

@@ -22,9 +22,9 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 	opt.resetPDL()
 	var exEnding *word_t
 
-	if !naturalEnd && len(words) > 0 {
-		// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
-		if l, _ := words[0].surroundingSpaces(); l != 2 && l%4 != 0 {
+	// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
+	if l, _ := words[0].surroundingSpaces(); l != 2 && l%4 != 0 {
+		if !naturalEnd || !words[0].isNaturalStart() {
 			words[0].value = words[0].value[l:]
 			if words[0].len -= l; words[0].len == 0 {
 				words = words[1:]
@@ -64,6 +64,7 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 		}
 	}
 
+	// fmt.Println(length)
 	opt.wd = append(opt.wd, opt.wl...)
 	// adjust
 	gap, fillstart := opt.Columns-length, uint32(0)
@@ -100,7 +101,7 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 		return
 	}
 
-	// log.Println(lnh, gap)
+	// fmt.Println("===", lnh, gap)
 
 	if lnh >= gap {
 		// we have enough delimeters / latin characters, append spaces to them
@@ -168,11 +169,11 @@ func (w *words_t) join(opt *Formatter) {
 	if len(words) > 0 && words[0].getURL(opt.urls) != "" {
 		u := words[0].getURL(opt.urls)
 		if strings.HasPrefix(u, "#toc-f-") {
-			opt.write(" class=cls-", u[1:26], " id=toc-r-", u[7:])
+			opt.write(" class=cls-toc-f id=toc-r-", u[7:])
 		}
 
 		if strings.HasPrefix(u, "#toc-r-") {
-			opt.write(" class=cls-", u[1:26], " id=toc-f-", u[7:])
+			opt.write(" class=cls-toc-r id=toc-f-", u[7:])
 		}
 	}
 	opt.write(">")
