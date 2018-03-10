@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"./kkformat"
-	"./static"
+	"github.com/coyove/eighty/kkformat"
+	"github.com/coyove/eighty/static"
 )
 
 var adminpassword = flag.String("p", "123456", "password")
