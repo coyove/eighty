@@ -430,7 +430,10 @@ func main() {
 			Prompt:     autocert.AcceptTOS,
 			HostPolicy: autocert.HostWhitelist(*sitename),
 		}
-		go http.ListenAndServe(":http", m.HTTPHandler(nil))
+		if _, err := os.Stat("secret-dir"); os.IsNotExist(err) {
+			go http.ListenAndServe(":http", m.HTTPHandler(nil))
+		}
+
 		s := &http.Server{
 			Addr:      ":https",
 			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
