@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"io"
@@ -424,6 +425,16 @@ func main() {
 
 		*truereferer = "https://" + *sitename
 		log.Println("server started on https")
-		log.Fatalln(http.Serve(autocert.NewListener(*sitename), nil))
+		m := &autocert.Manager{
+			Cache:      autocert.DirCache("secret-dir"),
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(*sitename),
+		}
+		go http.ListenAndServe(":http", m.HTTPHandler(nil))
+		s := &http.Server{
+			Addr:      ":https",
+			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
+		}
+		log.Fatalln(s.ListenAndServeTLS("", ""))
 	}
 }
