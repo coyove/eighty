@@ -12,14 +12,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/coyove/eighty/kkformat"
 	"github.com/coyove/eighty/static"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 var adminpassword = flag.String("p", "123456", "password")
 var sitename = flag.String("n", "zzz.gl", "site name")
 var truereferer = flag.String("r", "http://127.0.0.1:8102", "referer")
 var listen = flag.String("l", ":8102", "listen address")
+var production = flag.Bool("pd", false, "go production")
 
 func checkReferer(r *http.Request) bool {
 	return strings.HasPrefix(r.Referer(), *truereferer)
@@ -67,26 +70,37 @@ func serveError(w http.ResponseWriter, r *http.Request, code int, info string) {
 }
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
-	if len(r.RequestURI) > 1 {
-		uri := r.RequestURI[1:]
-		qm := strings.Index(uri, "?")
-		if qm > -1 {
-			uri = uri[:qm]
+	if len(r.URL.Path) > 1 {
+		uri, raw := r.URL.Path[1:], strings.HasSuffix(r.URL.Path, ".txt")
+		if raw {
+			uri = uri[:len(uri)-4]
+		}
+
+		if strings.Contains(r.UserAgent(), "curl") {
+			raw = true
 		}
 
 		id, _ := strconv.ParseUint(uri, 16, 64)
 		if id == 0 {
-			serveError(w, r, 403, static.InternalError)
+			if raw {
+				w.WriteHeader(400)
+			} else {
+				serveError(w, r, 400, static.InternalError)
+			}
 			return
 		}
 
 		s, err := bk.GetSnippet((id))
 		if err != nil {
-			serveError(w, r, 404, static.SnippetNotFound)
+			if raw {
+				w.WriteHeader(404)
+			} else {
+				serveError(w, r, 404, static.SnippetNotFound)
+			}
 			return
 		}
 
-		if r.FormValue("raw") == "1" {
+		if raw {
 			w.Header().Add("Content-Type", "text/plain; charset=utf8")
 			w.Write([]byte(s.Raw))
 			return
@@ -236,7 +250,7 @@ func writeInfo(w http.ResponseWriter, s *kkformat.Snippet, leftPadding uint32) {
 	}
 	w.Write([]byte("</dl>"))
 	if rawButton {
-		w.Write([]byte("<a href='?raw=1'><dl><dt>R<dt>A<dt>W</dl></a><dl><dt> <dt>·<dt> </dl>"))
+		w.Write([]byte("<a href='/" + strconv.FormatUint(s.ID, 16) + ".txt'><dl><dt>R<dt>A<dt>W</dl></a><dl><dt> <dt>·<dt> </dl>"))
 	}
 	w.Write([]byte("<dl>"))
 	write(w, info)
@@ -391,11 +405,25 @@ func main() {
 	bk.Init("main.db")
 	os.MkdirAll("larges", 0777)
 
-	http.HandleFunc("/", serveIndex)
-	http.HandleFunc("/list", serveList)
-	http.HandleFunc("/post", servePost)
-	http.HandleFunc("/delete", serveDelete)
+	handlers := map[string]func(http.ResponseWriter, *http.Request){
+		"/":       serveIndex,
+		"/list":   serveList,
+		"/post":   servePost,
+		"/delete": serveDelete,
+	}
 
-	log.Println("server started on", *listen)
-	http.ListenAndServe(*listen, nil)
+	for p, h := range handlers {
+		http.Handle(p, gziphandler.GzipHandler(http.HandlerFunc(h)))
+	}
+
+	if !*production {
+		log.Println("server started on", *listen)
+		log.Fatalln(http.ListenAndServe(*listen, nil))
+	} else {
+		log.Println("go production")
+
+		*truereferer = "https://" + *sitename
+		log.Println("server started on https")
+		log.Fatalln(http.Serve(autocert.NewListener(*sitename), nil))
+	}
 }
