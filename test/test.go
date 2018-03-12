@@ -11,9 +11,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 
-	"../kkformat"
+	"github.com/coyove/eighty/kkformat"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 )
@@ -22,7 +21,7 @@ var (
 	dpi      = flag.Float64("dpi", 72, "screen resolution in Dots Per Inch")
 	fontfile = flag.String("fontfile", "simsun.ttc", "filename of the ttf font")
 	hinting  = flag.String("hinting", "none", "none | full")
-	size     = flag.Float64("size", 12, "font size in points")
+	size     = flag.Float64("size", 14, "font size in points")
 	spacing  = flag.Float64("spacing", 1.5, "line spacing (e.g. 2 means double spaced)")
 	wonb     = flag.Bool("whiteonblack", false, "white text on a black background")
 )
@@ -30,8 +29,8 @@ var (
 const title = "Jabberwocky"
 
 var text = []string{
-	"’Twas brillig, and the slithy toves",
-	"Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;",
+	"```Twas brillig, and the slithy toves",
+	"Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;Did gyre andgimbedwqdddjjnnfgdfgdfgfdgfdgwertretertertertle in the wabe;Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;",
 	"All mimsy were the borogoves,",
 	"And the mome raths outgrabe.",
 	"",
@@ -70,7 +69,7 @@ func main() {
 	flag.Parse()
 
 	// Read the font data.
-	fontBytes, err := ioutil.ReadFile("simsun.ttc")
+	fontBytes, err := ioutil.ReadFile("yc.ttf")
 	if err != nil {
 		log.Println(err)
 		return
@@ -86,8 +85,8 @@ func main() {
 	if *wonb {
 		fg, bg = image.White, image.Black
 	}
-	const imgW, imgH = 640, 480
-	rgba := image.NewRGBA(image.Rect(0, 0, imgW, imgH))
+	const imgW, imgH = 672, 14 * 50 * 6 / 5
+	rgba := image.NewGray(image.Rect(0, 0, imgW, imgH))
 	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 
 	d := &font.Drawer{
@@ -99,9 +98,9 @@ func main() {
 			Hinting: font.HintingNone,
 		}),
 	}
-	log.Println(1)
-	fulltext := strings.Join(text, "\n")
-	fo := &kkformat.Formatter{Source: []byte(fulltext), Img: d, FontSize: int(*size), DPI: int(*dpi), Columns: 80}
+
+	ibuf, _ := ioutil.ReadFile("../_raw/images.txt")
+	fo := &kkformat.Formatter{Source: ibuf, Img: d, FontSize: int(*size), DPI: int(*dpi), Columns: 80}
 	buf := &bytes.Buffer{}
 	fo.WriteTo(buf)
 
@@ -113,7 +112,11 @@ func main() {
 	}
 	defer outFile.Close()
 	b := bufio.NewWriter(outFile)
-	err = png.Encode(b, rgba)
+	height := fo.CurrentY
+	if height > imgH {
+		height = imgH
+	}
+	err = png.Encode(b, rgba.SubImage(image.Rect(0, 0, imgW, height)))
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)

@@ -2,12 +2,13 @@ package kkformat
 
 import (
 	"bytes"
-	"golang.org/x/image/font"
 	"io"
 	"strconv"
 	"strings"
 	"unicode/utf8"
 	"unsafe"
+
+	"golang.org/x/image/font"
 )
 
 type stream_t struct {
@@ -122,11 +123,10 @@ func (s *stream_t) nextWord() *word_t {
 
 // Formatter struct
 type Formatter struct {
-	Source     []byte // source buffer of the input
-	Columns    uint32 // columns of the output
-	LinkTarget string // link target, e.g.: target=_blank
-	SkipToC    bool   // skip the generation of ToC
-	ID         int64
+	Source  []byte // source buffer of the input
+	Columns uint32 // columns of the output
+	SkipToC bool   // skip the generation of ToC
+	Rows    int
 
 	Img      *font.Drawer
 	FontSize int
@@ -140,6 +140,10 @@ type Formatter struct {
 	wp   words_t // for a single line, wp holds the content whose spaces have been processed
 	wd   words_t // for a single line, wd holds the delimeters in it
 	wl   words_t // for a single line, wl holds the latin characters, it will be appended to wd eventually
+}
+
+func (o *Formatter) calcDy() int {
+	return o.FontSize * o.DPI * 6 / 5 / 72
 }
 
 func (o *Formatter) resetPDL() {
@@ -337,7 +341,6 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 
 	if tocnum := len(toc); tocnum > 0 && !o.SkipToC {
 		toclines := make([]words_t, tocnum+1)
-		id := strconv.FormatInt(o.ID, 10)
 
 		for i, t := range toc {
 			num := strconv.Itoa(i + 1)
@@ -351,12 +354,12 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 				toclines[i] = append(toclines[i], newLine)
 			}
 
-			o.urls = append(o.urls, "#toc-f-"+id+"-"+num)
+			o.urls = append(o.urls, "#toc-f-0-"+num)
 			for _, w := range toclines[i] {
 				w.setURL(uint16(len(o.urls)))
 			}
 
-			o.urls = append(o.urls, "#toc-r-"+id+"-"+num)
+			o.urls = append(o.urls, "#toc-r-0-"+num)
 			for _, w := range t {
 				w.setURL(uint16(len(o.urls)))
 			}
@@ -372,5 +375,6 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 		}
 	}
 
+	o.CurrentY += o.calcDy()
 	return o.len, nil
 }

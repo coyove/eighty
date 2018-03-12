@@ -3,11 +3,16 @@ package kkformat
 import (
 	"bytes"
 	"fmt"
-	"golang.org/x/image/math/fixed"
+	"image"
+	"image/color"
 	"strings"
+
+	"golang.org/x/image/math/fixed"
 )
 
 type words_t []*word_t
+
+var grayFG = image.NewUniform(color.RGBA{192, 192, 192, 255})
 
 func (w *words_t) adjustableJoin(opt *Formatter) {
 	_ = fmt.Sprintf
@@ -165,11 +170,13 @@ func (w words_t) dup() words_t {
 
 func (w *words_t) join(opt *Formatter) {
 	words := *w
+	opt.Rows++
 
 	var x, dx int
 	if opt.Img != nil {
-		opt.CurrentY += opt.FontSize * opt.DPI * 3 / 2 / 72
-		dx = int(opt.Img.MeasureString("a")) >> 6
+		opt.CurrentY += opt.calcDy()
+		dx = (int(opt.Img.MeasureString("a")) >> 6)
+		x = dx * 2
 	}
 
 	opt.write("<div")
@@ -199,7 +206,7 @@ func (w *words_t) join(opt *Formatter) {
 			if i == 0 || words[i-1].getURL(opt.urls) != u {
 				opt.write("<a ")
 				if u[0] != '#' {
-					opt.write(opt.LinkTarget)
+					opt.write("target=_blank")
 				}
 				opt.write(" href='", u, "'>")
 			}
@@ -233,21 +240,28 @@ func (w *words_t) join(opt *Formatter) {
 				}
 			}
 		} else {
-			opt.Img.Dot = fixed.P(x, opt.CurrentY)
-			for _, r := range word.value {
-				opt.Img.DrawString(string(r))
+			if word.getType() != runeContinues {
+				for _, r := range word.value {
+					if w := RuneWidth(r); w == 1 {
+						opt.Img.Dot = fixed.P(x, opt.CurrentY)
+						opt.Img.DrawString(string(r))
+						x += dx + 1
+					} else {
+						x++
+						opt.Img.Dot = fixed.P(x, opt.CurrentY)
+						opt.Img.DrawString(string(r))
+						x += dx*2 + 1
+					}
 
-				if w := RuneWidth(r); w == 1 {
-					x += dx
-				} else {
-					x += dx * 2
 				}
+			} else {
+				x++
+				opt.Img.Dot = fixed.P(x, opt.CurrentY)
+				opt.Img.Src = grayFG
+				opt.Img.DrawString("→")
+				opt.Img.Src = image.Black
+				x += dx*2 + 1
 			}
-
-			// if word.getType() == runeContinues {
-			// 	opt.tmp.Truncate(opt.tmp.Len() - 2)
-			// 	opt.write(" class=conj>&rarr;")
-			// }
 		}
 	}
 	opt.write("</div>")

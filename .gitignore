@@ -4,3 +4,6 @@ old
 larges
 main.db
 main.db.lock
+*.ttc
+*.ttf
+*.png
