@@ -375,6 +375,7 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.Size, _ = fo.WriteTo(output)
+
 	if !largeContent {
 		s.P80 = output.(*bytes.Buffer).Bytes()
 	} else {

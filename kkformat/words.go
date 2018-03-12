@@ -3,6 +3,7 @@ package kkformat
 import (
 	"bytes"
 	"fmt"
+	"golang.org/x/image/math/fixed"
 	"strings"
 )
 
@@ -165,6 +166,12 @@ func (w words_t) dup() words_t {
 func (w *words_t) join(opt *Formatter) {
 	words := *w
 
+	var x, dx int
+	if opt.Img != nil {
+		opt.CurrentY += opt.FontSize * opt.DPI * 3 / 2 / 72
+		dx = int(opt.Img.MeasureString("a")) >> 6
+	}
+
 	opt.write("<div")
 	if len(words) > 0 && words[0].getURL(opt.urls) != "" {
 		u := words[0].getURL(opt.urls)
@@ -185,6 +192,7 @@ func (w *words_t) join(opt *Formatter) {
 		if u != "" {
 			if word.getType() == runeImage {
 				opt.write("<img class='_image' src='", u, "' alt='", u, "'>")
+				// TODO: img to opt.Img
 				break
 			}
 
@@ -197,34 +205,51 @@ func (w *words_t) join(opt *Formatter) {
 			}
 		}
 
-		if i == 0 && len(word.value) >= 4 && word.startsWith("====") {
-			opt.tmp.Reset()
-			opt.write("<hr>")
-			opt.flush()
-			return
-		}
-
-		if bytes.HasSuffix(opt.tmp.Bytes(), []byte("</dl>")) {
-			opt.tmp.Truncate(opt.tmp.Len() - 5)
-		} else {
-			opt.write("<dl>")
-		}
-
-		opt.write(calcTag(word.value))
-		if word.getType() == runeContinues {
-			opt.tmp.Truncate(opt.tmp.Len() - 2)
-			opt.write(" class=conj>&rarr;")
-		}
-
-		opt.write("</dl>")
-
-		if u != "" {
-			if i == len(words)-1 || words[i+1].getURL(opt.urls) != u {
-				opt.write("</a>")
+		if opt.Img == nil {
+			if i == 0 && len(word.value) >= 4 && word.startsWith("====") {
+				opt.tmp.Reset()
+				opt.write("<hr>")
+				opt.flush()
+				return
 			}
+
+			if bytes.HasSuffix(opt.tmp.Bytes(), []byte("</dl>")) {
+				opt.tmp.Truncate(opt.tmp.Len() - 5)
+			} else {
+				opt.write("<dl>")
+			}
+
+			opt.write(calcTag(word.value))
+			if word.getType() == runeContinues {
+				opt.tmp.Truncate(opt.tmp.Len() - 2)
+				opt.write(" class=conj>&rarr;")
+			}
+
+			opt.write("</dl>")
+
+			if u != "" {
+				if i == len(words)-1 || words[i+1].getURL(opt.urls) != u {
+					opt.write("</a>")
+				}
+			}
+		} else {
+			opt.Img.Dot = fixed.P(x, opt.CurrentY)
+			for _, r := range word.value {
+				opt.Img.DrawString(string(r))
+
+				if w := RuneWidth(r); w == 1 {
+					x += dx
+				} else {
+					x += dx * 2
+				}
+			}
+
+			// if word.getType() == runeContinues {
+			// 	opt.tmp.Truncate(opt.tmp.Len() - 2)
+			// 	opt.write(" class=conj>&rarr;")
+			// }
 		}
 	}
-
 	opt.write("</div>")
 	opt.flush()
 }

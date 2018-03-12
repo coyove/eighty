@@ -2,6 +2,7 @@ package kkformat
 
 import (
 	"bytes"
+	"golang.org/x/image/font"
 	"io"
 	"strconv"
 	"strings"
@@ -127,6 +128,11 @@ type Formatter struct {
 	SkipToC    bool   // skip the generation of ToC
 	ID         int64
 
+	Img      *font.Drawer
+	FontSize int
+	DPI      int
+	CurrentY int
+
 	urls []string
 	tmp  *bytes.Buffer
 	len  int64
@@ -171,11 +177,13 @@ func IsImageURL(url string) bool {
 
 // WriteTo renders the content to "w"
 func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
+	// Init Formatter
 	o.w = w
 	o.tmp = &bytes.Buffer{}
 	o.wp, o.wd, o.wl = make(words_t, 0, 32), make(words_t, 0, 32), make(words_t, 0, 32)
 	ws := stream_t{buf: o.Source}
 
+	// Do the job
 	line, lines, length := make(words_t, 0, 10), []words_t{}, uint32(0)
 	nobrk := false
 	nextWordIsNaturalStart := true
