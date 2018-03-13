@@ -47,7 +47,7 @@ func (w *words_t) adjustableJoin(opt *Formatter) bool {
 
 	// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
 	if l, _ := words[0].surroundingSpaces(); l != 2 && l%4 != 0 {
-		if words.last().getType() == runeContToNext {
+		if words.last().getType() == runeContToNext || words[0].isCode() {
 			// ignore
 		} else if !naturalEnd || !words[0].isNaturalStart() {
 			words[0].value = words[0].value[l:]
