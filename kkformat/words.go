@@ -1,36 +1,55 @@
 package kkformat
 
 import (
-	"bytes"
 	"fmt"
 	"image"
 	"image/color"
-	"strings"
+	"strconv"
 
 	"golang.org/x/image/math/fixed"
 )
 
 type words_t []*word_t
 
-var grayFG = image.NewUniform(color.RGBA{192, 192, 192, 255})
+var (
+	grayFG = image.NewUniform(color.RGBA{0xcc, 0xcc, 0xcc, 255})
+)
 
-func (w *words_t) adjustableJoin(opt *Formatter) {
+func (w *words_t) adjustableJoin(opt *Formatter) bool {
 	_ = fmt.Sprintf
 
 	words := *w
 	if len(words) == 0 {
-		return
+		return true
 	}
 
 	length := uint32(0)
 	naturalEnd := words.last().getType() == runeNewline || words.last().getType() == runeEndOfBuffer
 
 	opt.resetPDL()
-	var exEnding *word_t
+	var exEnding, exBegining *word_t
+	setEx := func() {
+		if exBegining != nil {
+			opt.wp = append(opt.wp, nil)
+			copy(opt.wp[1:], opt.wp)
+			opt.wp[0] = exBegining
+		}
+
+		if exEnding != nil {
+			opt.wp = append(opt.wp, exEnding)
+		}
+	}
+
+	if words[0].getType() == runeContFromPrev {
+		exBegining = words[0]
+		words = words[1:]
+	}
 
 	// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
 	if l, _ := words[0].surroundingSpaces(); l != 2 && l%4 != 0 {
-		if !naturalEnd || !words[0].isNaturalStart() {
+		if words.last().getType() == runeContToNext {
+			// ignore
+		} else if !naturalEnd || !words[0].isNaturalStart() {
 			words[0].value = words[0].value[l:]
 			if words[0].len -= l; words[0].len == 0 {
 				words = words[1:]
@@ -40,23 +59,27 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 
 	if !naturalEnd && len(words) > 0 {
 		word := words.last()
-		// the trailing spaces will always be discarded
-		_, r := word.surroundingSpaces()
-		word.value = word.value[:uint32(len(word.value))-r]
-		if word.len -= r; word.len == 0 {
-			words = words[:len(words)-1]
+		if word.getType() == runeContToNext {
+			// ignore
+		} else {
+			// the trailing spaces will always be discarded
+			_, r := word.surroundingSpaces()
+			word.value = word.value[:uint32(len(word.value))-r]
+			if word.len -= r; word.len == 0 {
+				words = words[:len(words)-1]
+			}
 		}
 	}
 
 	for i, word := range words {
 		// fmt.Println(string(word.value), word.len, word.getType())
 		if word.len > 0 {
-			if word.getType() == runeExtraAtEnd || word.getType() == runeContinues {
+			if word.getType() == runeExtraAtEnd || word.getType() == runeContToNext {
 				exEnding = word
 				continue
 			}
 
-			if word.getURL(opt.urls) == "" && i < len(words)-1 {
+			if i < len(words)-1 {
 				if t := word.getType(); t == runeFullDelim || t == runeHalfDelim {
 					opt.wd = append(opt.wd, word)
 				}
@@ -75,11 +98,8 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 	// adjust
 	gap, fillstart := opt.Columns-length, uint32(0)
 	if len(opt.wp) <= 1 {
-		if exEnding != nil {
-			opt.wp = append(opt.wp, exEnding)
-		}
-		opt.wp.join(opt)
-		return
+		setEx()
+		return opt.wp.join(opt)
 	}
 
 	// extendable punctuations are those which are full wide but look like half wide. If it stays at the end
@@ -89,11 +109,8 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 	}
 
 	if naturalEnd || gap == 0 {
-		if exEnding != nil {
-			opt.wp = append(opt.wp, exEnding)
-		}
-		opt.wp.join(opt)
-		return
+		setEx()
+		return opt.wp.join(opt)
 	}
 
 	if opt.wp[0].startsWith("  ") {
@@ -103,8 +120,8 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 	ln := uint32(len(opt.wp)) - 1 - fillstart
 	lnh := uint32(len(opt.wd))
 	if ln == 0 {
-		opt.wp.join(opt)
-		return
+		setEx()
+		return opt.wp.join(opt)
 	}
 
 	// fmt.Println("===", lnh, gap)
@@ -146,101 +163,46 @@ func (w *words_t) adjustableJoin(opt *Formatter) {
 		}
 	}
 
-	if exEnding != nil {
-		opt.wp = append(opt.wp, exEnding)
-	}
-	opt.wp.join(opt)
+	setEx()
+	return opt.wp.join(opt)
 }
 
-func (w *words_t) updateURL(o *Formatter) {
-	o.urls = append(o.urls, w.rawJoin())
-	for _, word := range *w {
-		word.setURL(uint16(len(o.urls)))
-	}
-}
-
-func (w words_t) dup() words_t {
-	w2 := make(words_t, len(w))
-	for i, word := range w {
-		w2[i] = word.dup()
-	}
-
-	return w2
-}
-
-func (w *words_t) join(opt *Formatter) {
+func (w *words_t) join(opt *Formatter) bool {
 	words := *w
 	opt.Rows++
+	dy := opt.calcDy()
 
-	var x, dx int
-	if opt.Img != nil {
-		opt.CurrentY += opt.calcDy()
-		dx = (int(opt.Img.MeasureString("a")) >> 6)
-		x = dx * 2
+	if opt.CurrentY+dy*2 > opt.Img.Dst.Bounds().Dy() {
+		return false
 	}
 
-	opt.write("<div")
-	if len(words) > 0 && words[0].getURL(opt.urls) != "" {
-		u := words[0].getURL(opt.urls)
-		if strings.HasPrefix(u, "#toc-f-") {
-			opt.write(" class=cls-toc-f id=toc-r-", u[7:])
-		}
+	opt.CurrentY += dy
 
-		if strings.HasPrefix(u, "#toc-r-") {
-			opt.write(" class=cls-toc-r id=toc-f-", u[7:])
-		}
+	dx := (int(opt.Img.MeasureString("a")) >> 6)
+	if len(words) > 0 && words[0].getType() == runeContFromPrev {
+		opt.Img.Dot = fixed.P(1, opt.CurrentY+dy/4)
+		opt.Img.Src = grayFG
+		opt.Img.DrawString("\u2937")
+		opt.Img.Src = image.Black
+		words = words[1:]
 	}
-	opt.write(">")
+
+	x := dx*2 + 2
 
 	for i := 0; i < len(words); i++ {
 		word := words[i]
-		u := word.getURL(opt.urls)
+		switch word.getType() {
+		case runeContToNext:
+			x++
+			opt.Img.Dot = fixed.P(x, opt.CurrentY+dy/4)
+			opt.Img.Src = grayFG
+			opt.Img.DrawString("\u2936")
+			opt.Img.Src = image.Black
+			x += dx*2 + 1
+		default:
+			opt.Img.Src = opt.Theme[TNNormal]
 
-		if u != "" {
-			if word.getType() == runeImage {
-				opt.write("<img class='_image' src='", u, "' alt='", u, "'>")
-				// TODO: img to opt.Img
-				break
-			}
-
-			if i == 0 || words[i-1].getURL(opt.urls) != u {
-				opt.write("<a ")
-				if u[0] != '#' {
-					opt.write("target=_blank")
-				}
-				opt.write(" href='", u, "'>")
-			}
-		}
-
-		if opt.Img == nil {
-			if i == 0 && len(word.value) >= 4 && word.startsWith("====") {
-				opt.tmp.Reset()
-				opt.write("<hr>")
-				opt.flush()
-				return
-			}
-
-			if bytes.HasSuffix(opt.tmp.Bytes(), []byte("</dl>")) {
-				opt.tmp.Truncate(opt.tmp.Len() - 5)
-			} else {
-				opt.write("<dl>")
-			}
-
-			opt.write(calcTag(word.value))
-			if word.getType() == runeContinues {
-				opt.tmp.Truncate(opt.tmp.Len() - 2)
-				opt.write(" class=conj>&rarr;")
-			}
-
-			opt.write("</dl>")
-
-			if u != "" {
-				if i == len(words)-1 || words[i+1].getURL(opt.urls) != u {
-					opt.write("</a>")
-				}
-			}
-		} else {
-			if word.getType() != runeContinues {
+			if !word.isCode() {
 				for _, r := range word.value {
 					if w := RuneWidth(r); w == 1 {
 						opt.Img.Dot = fixed.P(x, opt.CurrentY)
@@ -252,34 +214,96 @@ func (w *words_t) join(opt *Formatter) {
 						opt.Img.DrawString(string(r))
 						x += dx*2 + 1
 					}
-
 				}
 			} else {
-				x++
-				opt.Img.Dot = fixed.P(x, opt.CurrentY)
-				opt.Img.Src = grayFG
-				opt.Img.DrawString("→")
-				opt.Img.Src = image.Black
-				x += dx*2 + 1
+				str := string(word.value)
+
+				if _, err := strconv.ParseFloat(str, 64); err == nil {
+					opt.Img.Src = opt.Theme[TNNumber]
+				}
+
+				if word.isInMap(latinSymbol) {
+					opt.Img.Src = opt.Theme[TNSymbol]
+				}
+
+				if opt.inQuote {
+					opt.Img.Src = opt.Theme[TNString]
+				}
+
+				if opt.inComment != "" {
+					opt.Img.Src = opt.Theme[TNComment]
+				}
+
+				for i, r := range word.value {
+					next, prev := func() rune {
+						if i == len(word.value)-1 {
+							return 0
+						}
+						return word.value[i+1]
+					}, func() rune {
+						if i == 0 {
+							return 0
+						}
+						return word.value[i-1]
+					}
+
+					if w := RuneWidth(r); w == 1 {
+						do := func() {
+							opt.Img.Dot = fixed.P(x, opt.CurrentY)
+							opt.Img.DrawString(string(r))
+							x += dx + 1
+						}
+
+						if r == '"' && prev() != '\\' {
+							if opt.inComment != "" {
+								do()
+							} else {
+								opt.inQuote = !opt.inQuote
+								if opt.inQuote {
+									opt.Img.Src = opt.Theme[TNString]
+									do()
+								} else {
+									do()
+									opt.Img.Src = opt.Theme[TNNormal]
+								}
+							}
+						} else if (r == '/' && next() == '/') || (r == '/' && next() == '*') {
+							if opt.inQuote || opt.inComment != "" {
+								do()
+							} else {
+								opt.inComment = string(r) + string(next())
+								opt.Img.Src = opt.Theme[TNComment]
+								do()
+							}
+						} else if r == '*' && next() == '/' {
+							if opt.inQuote {
+								do()
+							} else {
+								opt.inComment = ""
+								do()
+								opt.Img.Src = opt.Theme[TNNormal]
+							}
+						} else {
+							do()
+						}
+					} else {
+						x++
+						opt.Img.Dot = fixed.P(x, opt.CurrentY)
+						opt.Img.DrawString(string(r))
+						x += dx*2 + 1
+					}
+				}
 			}
+
+			opt.Img.Src = opt.Theme[TNNormal]
 		}
 	}
-	opt.write("</div>")
-	opt.flush()
-}
 
-func (w *words_t) rawJoin() string {
-	buf := &bytes.Buffer{}
-
-	for _, word := range *w {
-		if word.value != nil && word.getType() != runeContinues {
-			for i := 0; i < len(word.value); i++ {
-				buf.WriteRune(word.value[i])
-			}
-		}
+	if last := words.last(); last != nil && opt.inComment == "//" && last.getType() != runeContToNext {
+		opt.inComment = ""
 	}
 
-	return buf.String()
+	return true
 }
 
 func (w *words_t) last() *word_t {

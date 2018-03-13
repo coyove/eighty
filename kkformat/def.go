@@ -2,6 +2,8 @@ package kkformat
 
 import (
 	"bytes"
+	"image"
+	"image/color"
 	"regexp"
 	"strings"
 	"unicode"
@@ -14,8 +16,10 @@ var (
 	extendablePunc  = regexp.MustCompile(`^[。，：．、]+$`)
 	validURIChars   = regexp.MustCompile(`^[A-Za-z0-9\-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%]+$`)
 	doubleBytes     = regexp.MustCompile(`[^\x00-\xff]`)
+	latinSymbol     = regexp.MustCompile(`^[\(\)\+\-\*\\\/\!\%\^\&\=<>\[\]\s\:\;]+$`)
 	spaces          = strings.Repeat(" ", 80)
-	lineContinues   = (&word_t{}).setType(runeContinues).setLen(1).setValue([]rune{'\\'})
+	lineContTo      = (&word_t{}).setType(runeContToNext).setLen(1).setValue([]rune{'\\'})
+	lineContFrom    = (&word_t{}).setType(runeContFromPrev).setLen(1).setValue([]rune{'\\'})
 	newLine         = (&word_t{}).setType(runeNewline)
 )
 
@@ -37,9 +41,68 @@ const (
 	// not actually runes
 	runeImage
 	runeExtraAtEnd
-	runeContinues
+	runeContToNext
+	runeContFromPrev
 	runeEndOfBuffer
 )
+
+const (
+	TNBackground = iota
+	TNNormal
+	TNLineWrap
+	TNSymbol
+	TNString
+	TNNumber
+	TNComment
+)
+
+var WhiteTheme = []image.Image{
+	image.White,
+	image.Black,
+	grayFG,
+	image.NewUniform(color.RGBA{0x5d, 0x40, 0x37, 255}),
+	image.NewUniform(color.RGBA{0x51, 0x2d, 0xa8, 255}),
+	image.NewUniform(color.RGBA{0xff, 0x57, 0x22, 255}),
+	image.NewUniform(color.RGBA{0x00, 0x79, 0x6b, 255}),
+}
+
+var PureWhiteTheme = []image.Image{
+	image.White,
+	image.Black,
+	grayFG,
+	image.Black,
+	image.Black,
+	image.Black,
+	image.Black,
+}
+
+var PureBlackTheme = []image.Image{
+	image.Black,
+	image.White,
+	grayFG,
+	image.White,
+	image.White,
+	image.White,
+	image.White,
+}
+
+var BlackTheme = []image.Image{
+	image.Black,
+	image.White,
+	grayFG,
+	image.NewUniform(color.RGBA{0xbb, 0xbb, 0xbb, 255}),
+	image.NewUniform(color.RGBA{0x00, 0xbc, 0xd4, 255}),
+	image.NewUniform(color.RGBA{0xff, 0x98, 0x00, 255}),
+	image.NewUniform(color.RGBA{0x00, 0x96, 0x88, 255}),
+}
+
+func GetTheme(theme []image.Image) (color.Palette, image.Image) {
+	p := make(color.Palette, TNComment+1)
+	for i := 0; i <= TNComment; i++ {
+		p[i] = theme[i].At(0, 0)
+	}
+	return p, theme[TNBackground]
+}
 
 func runeType(r rune) uint16 {
 	if r == ' ' || r == '\t' || r == fullSpace {

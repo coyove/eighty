@@ -24,12 +24,21 @@ func (w *word_t) isNaturalStart() bool {
 }
 
 func (w *word_t) setType(ty uint16) *word_t {
-	w.ty = (w.ty & 0x8000) + (ty << 1 >> 1)
+	w.ty = (w.ty & 0xc000) + (ty << 2 >> 2)
 	return w
 }
 
 func (w *word_t) getType() uint16 {
-	return w.ty << 1 >> 1
+	return w.ty << 2 >> 2
+}
+
+func (w *word_t) setIsCode() *word_t {
+	w.ty = w.ty | 0x4000
+	return w
+}
+
+func (w *word_t) isCode() bool {
+	return (w.ty << 1 >> 15) == 1
 }
 
 func (w *word_t) setURL(ty uint16) *word_t {

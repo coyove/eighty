@@ -1,12 +1,10 @@
 package kkformat
 
 import (
-	"bytes"
+	"image"
 	"io"
-	"strconv"
 	"strings"
 	"unicode/utf8"
-	"unsafe"
 
 	"golang.org/x/image/font"
 )
@@ -123,23 +121,22 @@ func (s *stream_t) nextWord() *word_t {
 
 // Formatter struct
 type Formatter struct {
-	Source  []byte // source buffer of the input
-	Columns uint32 // columns of the output
-	SkipToC bool   // skip the generation of ToC
-	Rows    int
+	Source    []byte // source buffer of the input
+	Columns   uint32 // columns of the output
+	inQuote   bool
+	inComment string
+	Rows      int
 
 	Img      *font.Drawer
 	FontSize int
 	DPI      int
 	CurrentY int
 
-	urls []string
-	tmp  *bytes.Buffer
-	len  int64
-	w    io.Writer
-	wp   words_t // for a single line, wp holds the content whose spaces have been processed
-	wd   words_t // for a single line, wd holds the delimeters in it
-	wl   words_t // for a single line, wl holds the latin characters, it will be appended to wd eventually
+	Theme []image.Image
+
+	wp words_t // for a single line, wp holds the content whose spaces have been processed
+	wd words_t // for a single line, wd holds the delimeters in it
+	wl words_t // for a single line, wl holds the latin characters, it will be appended to wd eventually
 }
 
 func (o *Formatter) calcDy() int {
@@ -152,55 +149,37 @@ func (o *Formatter) resetPDL() {
 	o.wl = o.wl[:0]
 }
 
-func (o *Formatter) write(ss ...string) {
-	for _, s := range ss {
-		buf := *(*[]byte)(unsafe.Pointer(&s))
-		o.tmp.Write(buf)
-		o.len += int64(len(buf))
-	}
-}
-
-func (o *Formatter) flush() {
-	o.w.Write(o.tmp.Bytes())
-	o.tmp.Reset()
-}
-
-func IsImageURL(url string) bool {
-	if len(url) < 11 {
-		return false
-	}
-
-	qm := strings.Index(url, "?")
-	if qm > -1 {
-		url = url[:qm]
-	}
-
-	return strings.HasSuffix(url, ".jpg") || strings.HasSuffix(url, ".png") ||
-		strings.HasSuffix(url, ".gif") || strings.HasSuffix(url, ".webp")
-}
-
 // WriteTo renders the content to "w"
-func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
+func (o *Formatter) WriteTo(w io.Writer) {
 	// Init Formatter
-	o.w = w
-	o.tmp = &bytes.Buffer{}
 	o.wp, o.wd, o.wl = make(words_t, 0, 32), make(words_t, 0, 32), make(words_t, 0, 32)
 	ws := stream_t{buf: o.Source}
 
 	// Do the job
-	line, lines, length := make(words_t, 0, 10), []words_t{}, uint32(0)
+	line, length := make(words_t, 0, 10), uint32(0)
 	nobrk := false
+	cont := true
 	nextWordIsNaturalStart := true
 
 	appendReset := func() {
-		lines = append(lines, line)
-		line = make(words_t, 0, 10)
+		// lines = append(lines, line)
+		last := line.last()
+		cont = line.adjustableJoin(o)
+
+		line = line[:0]
+		if last != nil && last.getType() == runeContToNext {
+			line = append(line, lineContFrom)
+		}
 	}
 
-	for t := ws.nextWord(); t != nil; t = ws.nextWord() {
+	for t := ws.nextWord(); t != nil && cont; t = ws.nextWord() {
 		if t.startsWith("```") {
 			nobrk = !nobrk
 			continue
+		}
+
+		if nobrk {
+			t.setIsCode()
 		}
 
 		read := func(t *word_t, appendMark bool) {
@@ -216,12 +195,12 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 						t2 := t.dup()
 						t2.value = t.value[:len1]
 						t2.setLen(len1)
-						line = append(line, t2, lineContinues.dup())
+						line = append(line, t2, lineContTo.dup())
 						appendReset()
 						t.value = t.value[len1:]
 						t.incLen(-len1)
 					} else {
-						line = append(line, lineContinues.dup())
+						line = append(line, lineContTo.dup())
 						appendReset()
 					}
 					goto AGAIN
@@ -249,7 +228,7 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 				}
 
 				if appendMark {
-					line = append(line, lineContinues.dup())
+					line = append(line, lineContTo.dup())
 				}
 				appendReset()
 			}
@@ -277,104 +256,9 @@ func (o *Formatter) WriteTo(w io.Writer) (int64, error) {
 		nextWordIsNaturalStart = false
 	}
 
-	if len(line) > 0 {
-		lines = append(lines, line)
-	}
-
-	urlWordList, inURLSpace := words_t{}, false
-	toc := []words_t{}
-
-	for i := 0; i < len(lines); i++ {
-		line := lines[i]
-
-		if len(line) > 1 && line[0].startsWith("####") {
-			line = line[1:]
-			toc = append(toc, line)
-			lines[i] = line
-		}
-
-		for i := 0; i < len(line); {
-			word := line[i]
-			if inURLSpace {
-				if word.getType() != runeContinues &&
-					(word.isSpacesOnly() || word.getType() == runeNewline || !word.isInMap(validURIChars)) {
-					inURLSpace = false
-					urlWordList.updateURL(o)
-				} else {
-					urlWordList = append(urlWordList, word)
-				}
-			} else if word.isInMap(uriSchemes) && i < len(line)-1 && line[i+1].startsWith("://") {
-				inURLSpace = true
-				urlWordList = []*word_t{word, line[i+1]}
-				i += 2
-				continue
-			}
-			i++
-		}
-	}
-
-	if inURLSpace {
-		urlWordList.updateURL(o)
-	}
-
-	lastURL := ""
-	for i := 0; i < len(lines); {
-		line := lines[i]
-		if len(line) == 0 {
-			i++
-			continue
-		}
-
-		if url := line[0].getURL(o.urls); IsImageURL(url) {
-			if url == lastURL {
-				lines = append(lines[:i], lines[i+1:]...)
-				continue
-			}
-
-			lines[i] = line[:1]
-			line[0].setType(runeImage)
-			lastURL = url
-		}
-
-		i++
-	}
-
-	if tocnum := len(toc); tocnum > 0 && !o.SkipToC {
-		toclines := make([]words_t, tocnum+1)
-
-		for i, t := range toc {
-			num := strconv.Itoa(i + 1)
-			toclines[i] = make(words_t, 3, 10)
-			toclines[i][0] = (&word_t{}).setType(runeLatin).setLen(uint32(len(num))).setValue([]rune(num))
-			toclines[i][1] = (&word_t{}).setType(runeHalfDelim).setLen(1).setValue([]rune{'.'})
-			toclines[i][2] = (&word_t{}).setType(runeSpace).setLen(1).setValue([]rune{' '})
-			toclines[i] = append(toclines[i], t.dup()...) // TODO: bad
-
-			if toclines[i].last().getType() != runeNewline {
-				toclines[i] = append(toclines[i], newLine)
-			}
-
-			o.urls = append(o.urls, "#toc-f-0-"+num)
-			for _, w := range toclines[i] {
-				w.setURL(uint16(len(o.urls)))
-			}
-
-			o.urls = append(o.urls, "#toc-r-0-"+num)
-			for _, w := range t {
-				w.setURL(uint16(len(o.urls)))
-			}
-		}
-
-		toclines[tocnum] = words_t{newLine}
-		lines = append(toclines, lines...)
-	}
-
-	for _, line := range lines {
-		if line != nil {
-			line.adjustableJoin(o)
-		}
+	if len(line) > 0 && cont {
+		appendReset()
 	}
 
 	o.CurrentY += o.calcDy()
-	return o.len, nil
 }

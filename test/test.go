@@ -11,8 +11,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
-	"github.com/coyove/eighty/kkformat"
+	"../kkformat"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 )
@@ -21,55 +22,20 @@ var (
 	dpi      = flag.Float64("dpi", 72, "screen resolution in Dots Per Inch")
 	fontfile = flag.String("fontfile", "simsun.ttc", "filename of the ttf font")
 	hinting  = flag.String("hinting", "none", "none | full")
-	size     = flag.Float64("size", 14, "font size in points")
+	size     = flag.Float64("size", 16, "font size in points")
 	spacing  = flag.Float64("spacing", 1.5, "line spacing (e.g. 2 means double spaced)")
 	wonb     = flag.Bool("whiteonblack", false, "white text on a black background")
 )
 
 const title = "Jabberwocky"
 
-var text = []string{
-	"```Twas brillig, and the slithy toves",
-	"Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;Did gyre andgimbedwqdddjjnnfgdfgdfgfdgfdgwertretertertertle in the wabe;Did gyre and gimble in the wabe;Did gyre and gimble in the wabe;",
-	"All mimsy were the borogoves,",
-	"And the mome raths outgrabe.",
-	"",
-	"“Beware the Jabberwock, my son!",
-	"The jaws that bite, the claws that catch!",
-	"Beware the Jubjub bird, and shun",
-	"The frumious Bandersnatch!”",
-	"",
-	"He took zzzz的武器的气温为dwe额外 hand:",
-	"Long time the manxでwrうぇれwome foe he sought—",
-	"So rested he by the Tumtum tree,",
-	"And stood awhile in thought.",
-	"",
-	"And as in uffish thought he stood,",
-	"The Jabberwock, with eyes of flame,",
-	"Came whiffling through the tulgey wood,",
-	"And burbled as it came!",
-	"",
-	"One, two! One, two! and through and through",
-	"The vorpal blade went snicker-snack!",
-	"He left it dead, and with its head",
-	"He went galumphing back.",
-	"",
-	"“And hast thou slain the Jabberwock?",
-	"Come to my arms, my beamish boy!",
-	"O frabjous day! Callooh! Callay!”",
-	"He chortled in his joy.",
-	"",
-	"’Twas brillig, and the slithy toves",
-	"Did gyre and gimble in the wabe;",
-	"All mimsy were the borogoves,",
-	"And the mome raths outgrabe.",
-}
+var text = " ``` "
 
 func main() {
 	flag.Parse()
 
 	// Read the font data.
-	fontBytes, err := ioutil.ReadFile("yc.ttf")
+	fontBytes, err := ioutil.ReadFile("unifont-10.0.07.ttf")
 	if err != nil {
 		log.Println(err)
 		return
@@ -80,18 +46,14 @@ func main() {
 		return
 	}
 
-	// Draw the background and the guidelines.
-	fg, bg := image.Black, image.White
-	if *wonb {
-		fg, bg = image.White, image.Black
-	}
-	const imgW, imgH = 672, 14 * 50 * 6 / 5
-	rgba := image.NewGray(image.Rect(0, 0, imgW, imgH))
+	const imgW, imgH = 756, 9500
+	th := kkformat.BlackTheme
+	pp, bg := kkformat.GetTheme(th)
+	rgba := image.NewPaletted(image.Rect(0, 0, imgW, imgH), pp)
 	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 
 	d := &font.Drawer{
 		Dst: rgba,
-		Src: fg,
 		Face: truetype.NewFace(f, &truetype.Options{
 			Size:    *size,
 			DPI:     *dpi,
@@ -99,10 +61,13 @@ func main() {
 		}),
 	}
 
-	ibuf, _ := ioutil.ReadFile("../_raw/images.txt")
-	fo := &kkformat.Formatter{Source: ibuf, Img: d, FontSize: int(*size), DPI: int(*dpi), Columns: 80}
+	start := time.Now()
+	ibuf, _ := ioutil.ReadFile(`D:\Revit\other\revit\Source\Revit\PersistenceDB\Permissions\EditingPermissionsImpl.cpp`)
+	ibuf = append([]byte("```\na(/*/**//*/)\na(\"/*/**//*/\")\n//\"\n"), ibuf...)
+	fo := &kkformat.Formatter{Source: ibuf, Img: d, FontSize: int(*size), DPI: int(*dpi), Columns: 80, Theme: th}
 	buf := &bytes.Buffer{}
 	fo.WriteTo(buf)
+	log.Println(time.Now().Sub(start).Nanoseconds() / 1e6)
 
 	// Save that RGBA image to disk.
 	outFile, err := os.Create("out.png")
