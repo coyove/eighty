@@ -2,7 +2,6 @@ package kkformat
 
 import (
 	"image"
-	"io"
 	"strings"
 	"unicode/utf8"
 
@@ -121,26 +120,19 @@ func (s *stream_t) nextWord() *word_t {
 
 // Formatter struct
 type Formatter struct {
-	Source    []byte // source buffer of the input
-	Columns   uint32 // columns of the output
-	inQuote   bool
-	inComment string
-	Rows      int
-
-	Img      *font.Drawer
-	FontSize int
-	DPI      int
-	CurrentY int
-
-	Theme []image.Image
+	Source     []byte // source buffer of the input
+	Columns    uint32 // columns of the output
+	inQuote    bool
+	inComment  string
+	Rows       int
+	Img        *font.Drawer
+	LineHeight int
+	CurrentY   int
+	Theme      []image.Image
 
 	wp words_t // for a single line, wp holds the content whose spaces have been processed
 	wd words_t // for a single line, wd holds the delimeters in it
 	wl words_t // for a single line, wl holds the latin characters, it will be appended to wd eventually
-}
-
-func (o *Formatter) calcDy() int {
-	return o.FontSize * o.DPI * 6 / 5 / 72
 }
 
 func (o *Formatter) resetPDL() {
@@ -149,8 +141,8 @@ func (o *Formatter) resetPDL() {
 	o.wl = o.wl[:0]
 }
 
-// WriteTo renders the content to "w"
-func (o *Formatter) WriteTo(w io.Writer) {
+// Render renders the content into an image
+func (o *Formatter) Render() image.Image {
 	// Init Formatter
 	o.wp, o.wd, o.wl = make(words_t, 0, 32), make(words_t, 0, 32), make(words_t, 0, 32)
 	ws := stream_t{buf: o.Source}
@@ -260,5 +252,17 @@ func (o *Formatter) WriteTo(w io.Writer) {
 		appendReset()
 	}
 
-	o.CurrentY += o.calcDy()
+	o.CurrentY += o.LineHeight / 2
+
+	height := o.CurrentY
+	maxHeight := o.Img.Dst.Bounds().Dy()
+	if height > maxHeight {
+		height = maxHeight
+	}
+
+	type image_i interface {
+		SubImage(image.Rectangle) image.Image
+	}
+
+	return o.Img.Dst.(image_i).SubImage(image.Rect(0, 0, o.Img.Dst.Bounds().Dx(), height))
 }

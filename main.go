@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"io"
+	"image"
+	"image/draw"
+	"image/png"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -16,7 +20,9 @@ import (
 	"github.com/NYTimes/gziphandler"
 	"github.com/coyove/eighty/kkformat"
 	"github.com/coyove/eighty/static"
+	"github.com/golang/freetype/truetype"
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/image/font"
 )
 
 var adminpassword = flag.String("p", "123456", "password")
@@ -25,8 +31,39 @@ var truereferer = flag.String("r", "http://127.0.0.1:8102", "referer")
 var listen = flag.String("l", ":8102", "listen address")
 var production = flag.Bool("pd", false, "go production")
 
+const (
+	fontSize   = 16
+	dpi        = 72
+	imgW, imgH = 756, 9500
+)
+
+var fontDrawer *font.Drawer
+var largeImagePool chan draw.Image
+
+func init() {
+	if fontBytes, err := ioutil.ReadFile("test/unifont-10.0.07.ttf"); err != nil {
+		log.Fatalln(err)
+	} else if f, err := truetype.Parse(fontBytes); err != nil {
+		log.Fatalln(err)
+	} else {
+		fontDrawer = &font.Drawer{
+			Face: truetype.NewFace(f, &truetype.Options{
+				Size:    fontSize,
+				DPI:     dpi,
+				Hinting: font.HintingNone,
+			}),
+		}
+		largeImagePool = make(chan draw.Image, 1)
+		largeImagePool <- image.NewPaletted(image.Rect(0, 0, imgW, imgH), nil)
+	}
+}
+
 func checkReferer(r *http.Request) bool {
 	return strings.HasPrefix(r.Referer(), *truereferer)
+}
+
+func filterHTML(in string) string {
+	return strings.Replace(in, "<", "&lt;", -1)
 }
 
 func serveHeader(w http.ResponseWriter, title string) {
@@ -36,6 +73,7 @@ func serveHeader(w http.ResponseWriter, title string) {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
 	<meta charset="utf-8">
 	` + static.CSS + `
+	<div id=container>
 	<div class=header>
 	<a href=/>` + static.NewSnippet + `</a> <span class=sep>|</span>
 	<a href=/list>` + static.AllSnippets + `</a>
@@ -51,7 +89,7 @@ func serveFooter(w http.ResponseWriter) {
 		<span>%d snippets</span> <span class=sep>|</span> 
 		<span>%d blocks</span> <span class=sep>|</span> 
 		<span>%0.2f%% cap</span>
-		</div>`, *sitename, s, b, bk.Capacity*100)))
+		</div></div>`, *sitename, s, b, bk.Capacity*100)))
 }
 
 func serveError(w http.ResponseWriter, r *http.Request, code int, info string) {
@@ -62,28 +100,21 @@ func serveError(w http.ResponseWriter, r *http.Request, code int, info string) {
 		rf = "/"
 	}
 
-	w.Write([]byte("<div><dl class=err>"))
-	write(w, info)
-	w.Write([]byte("</dl></div><div><a href='" + rf + "'><dl>"))
-	write(w, static.Back)
-	w.Write([]byte("</dl></a></div>"))
+	w.Write([]byte("<div class=err>" + info + "<br><a href='" + rf + "'>" + static.Back + "</a></div>"))
 	serveFooter(w)
 }
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	if len(r.URL.Path) > 1 {
-		uri, raw := r.URL.Path[1:], strings.HasSuffix(r.URL.Path, ".txt")
-		if raw {
-			uri = uri[:len(uri)-4]
-		}
+		uri, raw, png := r.URL.Path[1:], strings.HasSuffix(r.URL.Path, ".txt"), strings.HasSuffix(r.URL.Path, ".png")
 
-		if strings.Contains(r.UserAgent(), "curl") {
-			raw = true
+		if raw || png {
+			uri = uri[:len(uri)-4]
 		}
 
 		id, _ := strconv.ParseUint(uri, 16, 64)
 		if id == 0 {
-			if raw {
+			if raw || png {
 				w.WriteHeader(400)
 			} else {
 				serveError(w, r, 400, static.InternalError)
@@ -101,25 +132,30 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		bk.IncrSnippetViews(s.ID)
+
 		if raw {
 			w.Header().Add("Content-Type", "text/plain; charset=utf8")
 			w.Write([]byte(s.Raw))
 			return
+		} else if png {
+			w.Header().Add("Content-Type", "image/png")
+			s.WriteTo(w, false)
+			return
 		}
 
 		serveHeader(w, s.Title)
-		w.Write([]byte("<h2>" + strings.Replace(s.Title, "<", "&lt;", -1) + "</h2>"))
+		w.Write([]byte("<div class=snippet><h2>" + filterHTML(s.Title) + "</h2>"))
 		if kkformat.OwnSnippet(r, s) || isAdmin(r) {
-			w.Write([]byte(fmt.Sprintf("<div><a href='/delete?id=%x&ts=%d'><dl>", s.ID, time.Now().UnixNano())))
-			write(w, static.Delete)
-			w.Write([]byte("</dl></a><dl>"))
-			write(w, " > "+s.Token())
-			w.Write([]byte("</dl></div>"))
+			w.Write([]byte(fmt.Sprintf("<div><a href='/delete?id=%x&ts=%d'>%s</a> %s</div>",
+				s.ID,
+				time.Now().UnixNano(),
+				static.Delete,
+				s.Token(),
+			)))
 		}
-		writeInfo(w, s, 0)
-		w.Write([]byte("<hr>"))
-		s.WriteTo(w, false)
-		bk.IncrSnippetViews(s.ID)
+		writeInfo(w, s)
+		w.Write([]byte(fmt.Sprintf("</div><img src='/%x.png'>", s.ID)))
 	} else {
 		serveHeader(w, static.NewSnippet)
 		w.Write([]byte(static.NewSnippetForm))
@@ -191,18 +227,7 @@ ADMIN:
 	http.Redirect(w, r, r.Referer(), 301)
 }
 
-func write(w http.ResponseWriter, in string) {
-	for _, r := range in {
-		if kkformat.RuneWidth(r) == 1 {
-			w.Write([]byte("<dt>"))
-		} else {
-			w.Write([]byte("<dd>"))
-		}
-		w.Write([]byte(string(r)))
-	}
-}
-
-func writeInfo(w http.ResponseWriter, s *kkformat.Snippet, leftPadding uint32) {
+func writeInfo(w http.ResponseWriter, s *kkformat.Snippet) {
 	var h, m, sec int64
 	if s.TTL > 0 {
 		rem := s.Time + s.TTL*1e9 - time.Now().UnixNano()
@@ -222,40 +247,16 @@ func writeInfo(w http.ResponseWriter, s *kkformat.Snippet, leftPadding uint32) {
 		sec = 99
 	}
 
-	info := fmt.Sprintf("%.2fKB · %s (%02d:%02d:%02d) · %d",
+	info := fmt.Sprintf(`<div class=info>
+@%s · %.2fKB · %s (%02d:%02d:%02d) · %d · <a href='/%x.txt'>RAW</a> · <a href='/%x.png'>SRC</a>
+</div>`,
+		filterHTML(kkformat.Trunc(s.Author, 10)),
 		float64(s.Size)/1024,
 		time.Unix(0, s.Time).Format("2006-01-02 15:04:05"),
 		h, m, sec,
-		s.Views)
+		s.Views, s.ID, s.ID)
 
-	author := "@" + kkformat.Trunc(s.Author, 10)
-	gap := 80 - kkformat.StringWidth(info) - kkformat.StringWidth(author) - leftPadding
-	rawButton := leftPadding == 0
-	if rawButton {
-		gap -= 6
-	}
-
-	if gap > 80 {
-		gap = 0
-	}
-
-	w.Write([]byte("<div><dl>"))
-	for i := uint32(0); i < leftPadding; i++ {
-		w.Write([]byte("<dt> "))
-	}
-	w.Write([]byte("</dl><dl>"))
-	write(w, author)
-	w.Write([]byte("</dl><dl>"))
-	for i := uint32(0); i < gap; i++ {
-		w.Write([]byte("<dt> "))
-	}
-	w.Write([]byte("</dl>"))
-	if rawButton {
-		w.Write([]byte("<a href='/" + strconv.FormatUint(s.ID, 16) + ".txt'><dl><dt>R<dt>A<dt>W</dl></a><dl><dt> <dt>·<dt> </dl>"))
-	}
-	w.Write([]byte("<dl>"))
-	write(w, info)
-	w.Write([]byte("</dl></div>"))
+	w.Write([]byte(info))
 }
 
 func serveList(w http.ResponseWriter, r *http.Request) {
@@ -263,6 +264,7 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 	start := startPage * 25
 	end := start + 25
 	ss := bk.GetSnippetsLite(uint64(start), uint64(end))
+	zebra := false
 
 	serveHeader(w, static.AllSnippets)
 	w.Write([]byte(`<form method=POST action=/delete>`))
@@ -274,40 +276,32 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		w.Write([]byte("<div><input type=checkbox class=del name=s" + id + ">"))
-		w.Write([]byte("<dl>"))
-		write(w, fmt.Sprintf("%06x ", s.ID))
-		w.Write([]byte("</dl><a target=_blank href='/" + id + "'><dl>"))
-		write(w, kkformat.Trunc(s.Title, 71))
-		w.Write([]byte("</dl></a>"))
+		zebra = !zebra
+		title := fmt.Sprintf(`<div class="title zebra-%v"><div class=upper>
+<input type=checkbox class=del name=s%x id=s%x><label class=id for=s%x>%x</label>
+<a href='/%x'><b>%s</b></a></div>`, zebra, s.ID, s.ID, s.ID, s.ID, s.ID, filterHTML(s.Title))
+		w.Write([]byte(title))
+		writeInfo(w, s)
 		w.Write([]byte("</div>"))
-
-		writeInfo(w, s, 9)
 	}
 
-	w.Write([]byte("<div><dl>"))
+	w.Write([]byte("<div class='paging title'>"))
 	for p := startPage - 3; p <= startPage+3; p++ {
 		if p < 0 {
 			continue
 		}
 
 		if p != startPage {
-			w.Write([]byte(fmt.Sprintf("</dl><a href='?p=%d'><dl>", p)))
-		}
-
-		write(w, fmt.Sprintf("[ %d ]", p))
-
-		if p != startPage {
-			w.Write([]byte("</dl></a><dl>"))
+			w.Write([]byte(fmt.Sprintf("<span>[ <a href='?p=%d'>%d</a> ]</span>", p, p)))
+		} else {
+			w.Write([]byte(fmt.Sprintf("<span>[ <b>%d</b> ]</span>", p)))
 		}
 	}
-	w.Write([]byte("</dl></div>"))
-
 	if isAdmin(r) {
 		w.Write([]byte("<input type=submit value=delete>"))
 	}
 
-	w.Write([]byte("</form>"))
+	w.Write([]byte("</div></form>"))
 	serveFooter(w)
 }
 
@@ -350,41 +344,76 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	largeContent := len(s.Raw) > 102400
-
-	fo := &kkformat.Formatter{Source: []byte(s.Raw), ID: 0, Columns: 80}
-
-	fontsize, _ := strconv.Atoi(r.FormValue("fontsize"))
-	if fontsize <= 0 {
-		fontsize = 14
+	var th []image.Image
+	switch r.FormValue("theme") {
+	case "black":
+		th = kkformat.BlackTheme
+	case "pureblack":
+		th = kkformat.PureBlackTheme
+	case "purewhite":
+		th = kkformat.PureWhiteTheme
+	default:
+		th = kkformat.WhiteTheme
 	}
 
-	var output io.Writer
-	var err error
-	if largeContent {
+	pp, bg := kkformat.GetTheme(th)
+	canvas := <-largeImagePool
+	defer func() {
+		largeImagePool <- canvas
+	}()
+	canvas.(*image.Paletted).Palette = pp
+	draw.Draw(canvas, canvas.Bounds(), bg, image.ZP, draw.Src)
+	fontDrawer.Dst = canvas
+
+	fo := &kkformat.Formatter{
+		Source:     []byte(s.Raw),
+		Img:        fontDrawer,
+		LineHeight: fontSize * dpi * 6 / 5 / 72,
+		Columns:    80,
+		Theme:      th,
+	}
+	img := fo.Render()
+
+	if fo.Rows > 50 {
 		nn := time.Now().UnixNano()
 		os.MkdirAll(fmt.Sprintf("larges/%d", nn/3600e9), 0777)
-		fn := fmt.Sprintf("larges/%d/%d", nn/3600e9, nn)
-		output, err = os.Create(fn)
+		fn := fmt.Sprintf("larges/%d/%d.png", nn/3600e9, nn)
+
+		output, err := os.Create(fn)
 		s.P80 = []byte(string(kkformat.LargeP80Magic) + fn)
 		if err != nil {
 			log.Fatalln(err)
 		}
-	} else {
-		output = &bytes.Buffer{}
-	}
 
-	s.Size, _ = fo.WriteTo(output)
+		b := bufio.NewWriter(output)
+		if err = png.Encode(b, img); err != nil {
+			log.Println(err)
+			serveError(w, r, 502, static.InternalError)
+			return
+		}
 
-	if !largeContent {
-		s.P80 = output.(*bytes.Buffer).Bytes()
+		if err = b.Flush(); err != nil {
+			log.Println(err)
+			serveError(w, r, 502, static.InternalError)
+			return
+		}
+
+		st, _ := output.Stat()
+		s.Size = st.Size()
+		output.Close()
 	} else {
-		output.(*os.File).Close()
+		b := &bytes.Buffer{}
+		if err := png.Encode(b, img); err != nil {
+			log.Println(err)
+			serveError(w, r, 502, static.InternalError)
+			return
+		}
+		s.P80, s.Size = b.Bytes(), int64(b.Len())
 	}
 
 	if err := bk.AddSnippet(s); err != nil {
 		log.Println(err)
-		serveError(w, r, 403, static.InternalError)
+		serveError(w, r, 502, static.InternalError)
 		return
 	}
 

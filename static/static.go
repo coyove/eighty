@@ -3,31 +3,31 @@ package static
 const CSS = `<style>
 *{box-sizing:border-box;margin:0}
 body{font-size:14px;font-family:Arial,Helvetica,sans-serif}
-#content-0{padding:2px 0}
-#content-0 div{padding:1px 0;min-height:1em;margin:0;max-height:280px;width:100%;line-height:1.5}
-#content-0 dl.err{color:red}
-#content-0 dl,
-#content-0 dt,
-#content-0 dd{display:inline-block;zoom:1;*display:inline;white-space:pre;padding:0;margin:0;font-family:consolas,monospace;text-align:center;text-decoration:none}
-#content-0 a{border-bottom: solid 1px;cursor:pointer;text-decoration:none}
-#content-0 a:hover{background-color:#ffa}
-#content-0 dt.conj{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;color:#ccc}
-#content-0 ._image{width:auto;max-width:100%;max-height:280px}
-#content-0 .cls-toc-r *{color:black}
-#content-0 dt{width:8px}
-#content-0 dd,#content-0 input.del{width:16px}
-#content-0,.header,.footer{margin:0 auto;width:642px}
-#post-form{margin:4px 0}
-#post-form td{padding:2px;}
-#post-form, #post-form .ctrl{resize:vertical;width:100%;max-width:100%;min-width:100%}
+a{text-decoration:none;}
+a:hover{text-decoration:underline}
+#container{border-right:dotted 1px #ccc;border-left:dotted 1px #ccc;width:100%;max-width:700px;margin:0 auto}
+#content-0{width:100%}
+#content-0 img{display:block;width:100%;}
+#content-0 .err{color:red;padding:4px;}
+.zebra-false{background:#eee}
+.title,.snippet{padding:4px}
+.title .upper{margin:-4px;margin-bottom:4px;padding:4px;border-bottom: dotted 1px #ccc;}
+.title .id{display: inline-block;margin:-4px 4px -4px -4px;padding:4px;border-right: dotted 1px #ccc;font-family:consolas,monospace}
+.snippet{border-bottom:dotted 1px #ccc;}
+.paging *{font-family:consolas,monospace}
+.paging a{color:#898}
+.info{padding:4px 0;font-size:80%;color:#898}
+#post-form{border-collapse:collapse}
+#post-form td{padding: 4px;border: dotted 1px #ccc;border-left: none;border-right: none;}
+#post-form, #post-form .ctrl{resize:vertical;width:100%;max-width:100%;min-width:100%;border:none}
+#post-form .ctrl{display:block}
 #post-form .title{white-space:nowrap;width:1px;text-align:right}
 .header a,
 .footer a,
 .header span,
-.footer span{color:white;text-decoration:none;display:inline-block;zoom:1;*display:inline;padding:0 2px}
+.footer span{color:white;display:inline-block;zoom:1;*display:inline;padding:0 2px}
 .header .sep,.footer .sep{color:#ccc}
-.header a:hover,.footer a:hover{text-decoration:underline}
-.header,.footer{background:#667;padding:4px;color:white}
+.header,.footer{background:#667;padding:4px;color:white;margin:0 -1px}
 </style>`
 
 const UntitledSnippet = "无标题"
@@ -52,23 +52,30 @@ const Error = "错误"
 
 const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 <tr>
-	<td class=title>标题:</td><td><input class=ctrl name=title placeholder="` + UntitledSnippet + `"></td>
-	<td class=title>发布者:</td><td><input class=ctrl name=author placeholder="N/A"></td>
-	<td class=title>有效期:</td><td class=title><select name=ttl>
-		<option value="3600">1小时</option>
-		<option value="86400">1天</option>
-		<option value="2592000">30天</option>
-		<option value="0" selected>永久</option>
-	</select></td>	
+	<td class=title>标题</td><td><input class=ctrl name=title placeholder="` + UntitledSnippet + `"></td>
+	<td class=title style="border-left:dotted 1px #ccc">发布者</td><td><input class=ctrl name=author placeholder="N/A"></td>
 </tr>
-<tr><td colspan=6><textarea class=ctrl name=content rows=10></textarea></td></tr>
-<tr><td colspan=6 style="text-align:center"><input type=submit value="发布"></td></tr>
+<tr><td colspan=4 style="padding:0"><textarea class=ctrl name=content rows=10></textarea></td></tr>
+<tr><td colspan=4 style="border-bottom:none">有效期:
+<select name=ttl>
+<option value="3600">1小时</option>
+<option value="86400">1天</option>
+<option value="2592000">30天</option>
+<option value="0" selected>永久</option>
+</select>&nbsp;
+颜色:
+<select name=theme>
+<option value="black">black</option>
+<option value="pureblack">black2</option>
+<option value="purewhite">white2</option>
+<option value="white" selected>white</option>
+</select>
+<input type=submit value="发布" style="float:right"></td></tr>
 </table>
 </form>
 <div style="margin:4px 0;font-size:0.9em">
 <ol>
-<li>每行文本可能会被插入多个空格以保证与80列对齐，若不想被空格破坏格式（如代码），请使用一对三反引号包起：` + "```" + ` &lt;your code...&gt; ` + "```" + `；
-<li>段落标题以4个井号（####）开头，发布后自动生成目录，4个等号（====）单独一行转换为分割线；
-<li>请不要发布过长的文本（虽然最高允许1MB），其渲染结果可能包含数十万个HTML标签，导致老旧的浏览器直接崩溃；
+<li>每行文本可能会被插入多个空格以保证与80列对齐
+<li>若不想被空格破坏格式（如代码），请使用一对三反引号包起：` + "```" + ` &lt;your code...&gt; ` + "```" + `；
 </ol>
 </div>`

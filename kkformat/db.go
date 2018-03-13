@@ -34,7 +34,6 @@ type Snippet struct {
 	Author string
 	Raw    string
 	Size   int64
-	P40    []byte
 	P80    []byte
 }
 
@@ -245,7 +244,6 @@ func (b *Backend) GetSnippetsLite(start, end uint64) []*Snippet {
 				s.Dead = true
 			}
 
-			s.P40 = nil
 			s.P80 = nil
 			s.Raw = ""
 			ss = append(ss, s)
@@ -305,12 +303,7 @@ func (b *Backend) DeleteSnippets(ids ...uint64) error {
 }
 
 func (s *Snippet) WriteTo(w io.Writer, narrow bool) {
-	var b []byte
-	if narrow {
-		b = s.P40
-	} else {
-		b = s.P80
-	}
+	b := s.P80
 
 	if bytes.HasPrefix(b, []byte(LargeP80Magic)) {
 		fi, err := os.Open(string(b[len(LargeP80Magic):]))

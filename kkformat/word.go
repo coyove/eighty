@@ -11,8 +11,7 @@ var _fmt_print_ = fmt.Println
 type word_t struct {
 	value []rune // word content
 	len   uint32 // length
-	ty    uint16 // high 1bit: flag: natural start of a line, low 15bit: type
-	url   uint16 // URL index
+	ty    uint16
 }
 
 func (w *word_t) setIsNaturalStart() {
@@ -39,19 +38,6 @@ func (w *word_t) setIsCode() *word_t {
 
 func (w *word_t) isCode() bool {
 	return (w.ty << 1 >> 15) == 1
-}
-
-func (w *word_t) setURL(ty uint16) *word_t {
-	w.url = ty
-	return w
-}
-
-func (w *word_t) getURL(urls []string) string {
-	i := w.url
-	if i-1 >= 0 && i-1 < uint16(len(urls)) {
-		return urls[i-1]
-	}
-	return ""
 }
 
 func (w *word_t) setLen(l uint32) *word_t {

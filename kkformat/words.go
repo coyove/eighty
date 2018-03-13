@@ -170,9 +170,9 @@ func (w *words_t) adjustableJoin(opt *Formatter) bool {
 func (w *words_t) join(opt *Formatter) bool {
 	words := *w
 	opt.Rows++
-	dy := opt.calcDy()
+	dy := opt.LineHeight
 
-	if opt.CurrentY+dy*2 > opt.Img.Dst.Bounds().Dy() {
+	if opt.CurrentY+dy+dy/2 > opt.Img.Dst.Bounds().Dy() {
 		return false
 	}
 

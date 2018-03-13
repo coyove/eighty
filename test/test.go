@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"flag"
 	"fmt"
 	"image"
@@ -13,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"../kkformat"
+	"github.com/coyove/eighty/kkformat"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 )
@@ -62,11 +61,10 @@ func main() {
 	}
 
 	start := time.Now()
-	ibuf, _ := ioutil.ReadFile(`D:\Revit\other\revit\Source\Revit\PersistenceDB\Permissions\EditingPermissionsImpl.cpp`)
-	ibuf = append([]byte("```\na(/*/**//*/)\na(\"/*/**//*/\")\n//\"\n"), ibuf...)
-	fo := &kkformat.Formatter{Source: ibuf, Img: d, FontSize: int(*size), DPI: int(*dpi), Columns: 80, Theme: th}
-	buf := &bytes.Buffer{}
-	fo.WriteTo(buf)
+	ibuf, _ := ioutil.ReadFile(`../_raw/lorem.txt`)
+	ibuf = append([]byte(" \na(/*/**//*/)\na(\"/*/**//*/\")\n//\"\n"), ibuf...)
+	fo := &kkformat.Formatter{Source: ibuf, Img: d, LineHeight: int(*size * *dpi * 6 / 5 / 72), Columns: 80, Theme: th}
+	img := fo.Render()
 	log.Println(time.Now().Sub(start).Nanoseconds() / 1e6)
 
 	// Save that RGBA image to disk.
@@ -77,11 +75,7 @@ func main() {
 	}
 	defer outFile.Close()
 	b := bufio.NewWriter(outFile)
-	height := fo.CurrentY
-	if height > imgH {
-		height = imgH
-	}
-	err = png.Encode(b, rgba.SubImage(image.Rect(0, 0, imgW, height)))
+	err = png.Encode(b, img)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
