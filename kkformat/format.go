@@ -118,11 +118,29 @@ func (s *stream_t) nextWord() *word_t {
 	return ret
 }
 
+func splitRune(in []rune, at uint32) ([]rune, []rune, bool) {
+	for i := 0; i < len(in); i++ {
+		w := RuneWidth(in[i])
+		if w == at {
+			return in[:i+1], in[i+1:], true
+		}
+
+		if w < at {
+			at -= w
+			continue
+		}
+
+		return in[:i], in[i:], false
+	}
+
+	panic("?")
+}
+
 // Formatter struct
 type Formatter struct {
 	Source     []byte // source buffer of the input
 	Columns    uint32 // columns of the output
-	inQuote    bool
+	inQuote    rune
 	inComment  string
 	Rows       int
 	Img        *font.Drawer
@@ -185,16 +203,16 @@ func (o *Formatter) Render() image.Image {
 				if nobrk {
 					if len1 > 0 {
 						t2 := t.dup()
-						t2.value = t.value[:len1]
-						t2.setLen(len1)
-						line = append(line, t2, lineContTo.dup())
-						appendReset()
-						t.value = t.value[len1:]
-						t.incLen(-len1)
-					} else {
-						line = append(line, lineContTo.dup())
-						appendReset()
+						var perfect bool
+						t2.value, t.value, perfect = splitRune(t.value, len1)
+						t2.len, t.len = StringWidth(t2.value), StringWidth(t.value)
+						line = append(line, t2)
+						if !perfect {
+							line = append(line, spaceWord.dup())
+						}
 					}
+					line = append(line, lineContTo.dup())
+					appendReset()
 					goto AGAIN
 				}
 

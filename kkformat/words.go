@@ -45,8 +45,8 @@ func (w *words_t) adjustableJoin(opt *Formatter) bool {
 		words = words[1:]
 	}
 
-	// the leading spaces of 2, 4, 8, 16 ... will be preserved, others will be discarded
-	if l, _ := words[0].surroundingSpaces(); l != 2 && l%4 != 0 {
+	// the leading spaces of 2, 4, 6, 8 ... will be preserved, others will be discarded
+	if l, _ := words[0].surroundingSpaces(); l%2 != 0 {
 		if words.last().getType() == runeContToNext || words[0].isCode() {
 			// ignore
 		} else if !naturalEnd || !words[0].isNaturalStart() {
@@ -104,9 +104,11 @@ func (w *words_t) adjustableJoin(opt *Formatter) bool {
 
 	// extendable punctuations are those which are full wide but look like half wide. If it stays at the end
 	// of a line, the format would be a little awkward because there seems 1 space after it.
-	if !naturalEnd && opt.wp.last().isInMap(extendablePunc) {
-		gap++
-	}
+	// if !naturalEnd && opt.wp.last().isInMap(extendablePunc) {
+	// 	if !opt.wp[0].isCode() {
+	// 		gap++
+	// 	}
+	// }
 
 	if naturalEnd || gap == 0 {
 		setEx()
@@ -193,12 +195,11 @@ func (w *words_t) join(opt *Formatter) bool {
 		word := words[i]
 		switch word.getType() {
 		case runeContToNext:
-			x++
+			x = (dx + 1) * (int(opt.Columns) + 2)
 			opt.Img.Dot = fixed.P(x, opt.CurrentY+dy/4)
 			opt.Img.Src = grayFG
 			opt.Img.DrawString("\u2936")
 			opt.Img.Src = image.Black
-			x += dx*2 + 1
 		default:
 			opt.Img.Src = opt.Theme[TNNormal]
 
@@ -254,12 +255,12 @@ func (w *words_t) join(opt *Formatter) bool {
 							x += dx + 1
 						}
 
-						if r == '"' && prev() != '\\' {
+						if r == '"' || r == '\'' {
 							if opt.inComment != "" {
 								do()
 							} else {
-								opt.inQuote = !opt.inQuote
-								if opt.inQuote {
+								if opt.inQuote == 0 {
+									opt.inQuote = r
 									opt.Img.Src = opt.Theme[TNString]
 									do()
 								} else {
@@ -268,7 +269,7 @@ func (w *words_t) join(opt *Formatter) bool {
 								}
 							}
 						} else if (r == '/' && next() == '/') || (r == '/' && next() == '*') {
-							if opt.inQuote || opt.inComment != "" {
+							if opt.inQuote != 0 || opt.inComment != "" {
 								do()
 							} else {
 								opt.inComment = string(r) + string(next())
@@ -276,7 +277,7 @@ func (w *words_t) join(opt *Formatter) bool {
 								do()
 							}
 						} else if r == '*' && next() == '/' {
-							if opt.inQuote {
+							if opt.inQuote != 0 {
 								do()
 							} else {
 								opt.inComment = ""

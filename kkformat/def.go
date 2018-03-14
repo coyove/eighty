@@ -20,6 +20,7 @@ var (
 	spaces          = strings.Repeat(" ", 80)
 	lineContTo      = (&word_t{}).setType(runeContToNext).setLen(1).setValue([]rune{'\\'})
 	lineContFrom    = (&word_t{}).setType(runeContFromPrev).setLen(1).setValue([]rune{'\\'})
+	spaceWord       = (&word_t{}).setType(runeSpace).setLen(1).setValue([]rune{' '})
 	newLine         = (&word_t{}).setType(runeNewline)
 )
 
