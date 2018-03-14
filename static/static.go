@@ -1,33 +1,34 @@
 package static
 
 const CSS = `<style>
-*{box-sizing:border-box;margin:0}
-body{font-size:14px;font-family:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box;margin:0;font-family:Arial,Helvetica,sans-serif,Tahoma,'Microsoft Yahei','Simsun'}
+body{font-size:14px}
 a{text-decoration:none;}
 a:hover{text-decoration:underline}
-#container{border-right:dotted 1px #ccc;border-left:dotted 1px #ccc;width:100%;max-width:700px;margin:0 auto}
+#container{border-right:dotted 1px #ccc;border-left:dotted 1px #ccc;width:100%;max-width:700px;min-width:320px;margin:0 auto}
 #content-0{width:100%}
 #content-0 img{display:block;width:100%;}
 #content-0 .err{color:red;padding:4px;}
-.zebra-false{background:#eee}
-.title,.snippet{padding:4px}
-.title .upper{margin:-4px;margin-bottom:4px;padding:4px;border-bottom: dotted 1px #ccc;}
-.title .id{display: inline-block;margin:-4px 4px -4px -4px;padding:4px;border-right: dotted 1px #ccc;font-family:consolas,monospace}
-.snippet{border-bottom:dotted 1px #ccc;}
+.zebra-false{background:#f1f2f3;}
+.title,.snippet{padding:4px 4px 0 4px;border-bottom:dotted 1px #ccc;}
+.title .upper{margin:-4px;margin-bottom:0;padding:4px;border-bottom: dotted 1px #ccc;}
+.title .id{display: inline-block;margin-right:4px;font-family:consolas,monospace}
+.paging {padding:4px}
 .paging *{font-family:consolas,monospace}
 .paging a{color:#898}
 .info{padding:4px 0;font-size:80%;color:#898}
+.del{vertical-align: middle;}
+.color-blk{display:inline-block;border:solid 1px black;padding:2px;width:24px;height:24px;line-height:20px;text-align:center}
+.color-blk span{color:violet}
 #post-form{border-collapse:collapse}
-#post-form td{padding: 4px;border: dotted 1px #ccc;border-left: none;border-right: none;}
+#post-form td{border: dotted 1px #ccc;border-left: none;border-right: none;}
 #post-form, #post-form .ctrl{resize:vertical;width:100%;max-width:100%;min-width:100%;border:none}
 #post-form .ctrl{display:block}
-#post-form .title{white-space:nowrap;width:1px;text-align:right}
-.header a,
-.footer a,
-.header span,
-.footer span{color:white;display:inline-block;zoom:1;*display:inline;padding:0 2px}
-.header .sep,.footer .sep{color:#ccc}
-.header,.footer{background:#667;padding:4px;color:white;margin:0 -1px}
+#post-form input.ctrl{padding:4px;}
+#post-form input[type=radio] + label{margin-right:4px}
+#post-form .title{padding: 4px;white-space:nowrap;width:1px;text-align:right}
+.bar-item{color:white;display:inline-block;zoom:1;*display:inline;margin:-4px 0;padding:4px 8px;border-left:solid 1px #889}
+.header,.footer{background:#667;padding:4px 0;color:white;margin:0 -1px}
 </style>`
 
 const UntitledSnippet = "无标题"
@@ -55,27 +56,35 @@ const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 	<td class=title>标题</td><td><input class=ctrl name=title placeholder="` + UntitledSnippet + `"></td>
 	<td class=title style="border-left:dotted 1px #ccc">发布者</td><td><input class=ctrl name=author placeholder="N/A"></td>
 </tr>
-<tr><td colspan=4 style="padding:0"><textarea class=ctrl name=content rows=10></textarea></td></tr>
-<tr><td colspan=4 style="border-bottom:none">有效期:
-<select name=ttl>
-<option value="3600">1小时</option>
-<option value="86400">1天</option>
-<option value="2592000">30天</option>
-<option value="0" selected>永久</option>
-</select>&nbsp;
-颜色:
-<select name=theme>
-<option value="black">black</option>
-<option value="pureblack">black2</option>
-<option value="purewhite">white2</option>
-<option value="white" selected>white</option>
-</select>
-<input type=submit value="发布" style="float:right"></td></tr>
-</table>
-</form>
-<div style="margin:4px 0;font-size:0.9em">
+<tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px"></textarea></td></tr>
+<tr><td colspan=4 style="padding:4px">
+<div style="line-height:2em">有效期:
+<input id=ttl1 type=radio name=ttl value="86400">
+<label for=ttl1>1天</label>
+<input id=ttl2 type=radio name=ttl value="604800">
+<label for=ttl2>1周</label>
+<input id=ttl3 type=radio name=ttl value="2592000">
+<label for=ttl3>30天</label>
+<input id=ttl4 type=radio name=ttl value="0" checked>
+<label for=ttl4>永久</label>
+<input type=submit value="发布" style="float:right">
+</div>
+<div style="line-height:2em">颜色:
+<input id=theme1 type=radio name=theme value=white checked>
+<label for=theme1 class=color-blk style="background:white;color:black;">A<span>+</span></label>
+<input id=theme2 type=radio name=theme value=black>
+<label for=theme2 class=color-blk style="background:black;color:white;">A<span>+</span></label>
+<input id=theme3 type=radio name=theme value=purewhite>
+<label for=theme3 class=color-blk style="background:white;color:black;">A</label>
+<input id=theme4 type=radio name=theme value=pureblack>
+<label for=theme4 class=color-blk style="background:black;color:white;">A</label>
+</div>
+<div>
 <ol>
 <li>每行文本可能会被插入多个空格以保证与80列对齐
 <li>若不想被空格破坏格式（如代码），请使用一对三反引号包起：` + "```" + ` &lt;your code...&gt; ` + "```" + `；
 </ol>
-</div>`
+</div>
+</td></tr>
+</table>
+</form>`

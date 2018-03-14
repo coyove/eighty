@@ -75,20 +75,19 @@ func serveHeader(w http.ResponseWriter, title string) {
 	` + static.CSS + `
 	<div id=container>
 	<div class=header>
-	<a href=/>` + static.NewSnippet + `</a> <span class=sep>|</span>
-	<a href=/list>` + static.AllSnippets + `</a>
+   <a class=bar-item href=/>` + static.NewSnippet + `</a><!--
+--><a class=bar-item href=/list>` + static.AllSnippets + `</a>
 	</div><div id=content-0>`
 	w.Write([]byte(templ))
 }
 
 func serveFooter(w http.ResponseWriter) {
 	s, b := bk.TotalSnippets()
-	w.Write([]byte(fmt.Sprintf(`</div>
-		<div class=footer>
-		<span>%s</span> <span class=sep>|</span> 
-		<span>%d snippets</span> <span class=sep>|</span> 
-		<span>%d blocks</span> <span class=sep>|</span> 
-		<span>%0.2f%% cap</span>
+	w.Write([]byte(fmt.Sprintf(`</div><div class=footer><!--
+--><span class=bar-item>%s</span><!--
+--><span class=bar-item>%d snippets</span><!--
+--><span class=bar-item>%d blocks</span><!--
+--><span class=bar-item>%0.2f%% cap</span>
 		</div></div>`, *sitename, s, b, bk.Capacity*100)))
 }
 
@@ -139,8 +138,14 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(s.Raw))
 			return
 		} else if png {
-			w.Header().Add("Content-Type", "image/png")
-			s.WriteTo(w, false)
+			etag := fmt.Sprintf("%x", s.GUID[:4])
+			if r.Header.Get("If-None-Match") == etag {
+				w.WriteHeader(304)
+			} else {
+				w.Header().Add("Content-Type", "image/png")
+				w.Header().Add("ETag", etag)
+				s.WriteTo(w, false)
+			}
 			return
 		}
 
@@ -278,7 +283,8 @@ func serveList(w http.ResponseWriter, r *http.Request) {
 
 		zebra = !zebra
 		title := fmt.Sprintf(`<div class="title zebra-%v"><div class=upper>
-<input type=checkbox class=del name=s%x id=s%x><label class=id for=s%x>%x</label>
+<input type=checkbox class=del name=s%x id=s%x>
+<label class=id for=s%x>%x</label>
 <a href='/%x'><b>%s</b></a></div>`, zebra, s.ID, s.ID, s.ID, s.ID, s.ID, filterHTML(s.Title))
 		w.Write([]byte(title))
 		writeInfo(w, s)
