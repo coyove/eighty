@@ -15,6 +15,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/NYTimes/gziphandler"
@@ -32,9 +33,10 @@ var listen = flag.String("l", ":8102", "listen address")
 var production = flag.Bool("pd", false, "go production")
 
 const (
+	cooldown   = 60
 	fontSize   = 16
 	dpi        = 72
-	imgW, imgH = 756, 9500
+	imgW, imgH = 756, 10000
 )
 
 var fontDrawer *font.Drawer
@@ -68,27 +70,13 @@ func filterHTML(in string) string {
 
 func serveHeader(w http.ResponseWriter, title string) {
 	w.Header().Add("Content-Type", "text/html")
-	var templ = `<!DOCTYPE html><html>
-	<title>` + title + ` - ` + *sitename + `</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
-	<meta charset="utf-8">
-	` + static.CSS + `
-	<div id=container>
-	<div class=header>
-   <a class=bar-item href=/>` + static.NewSnippet + `</a><!--
---><a class=bar-item href=/list>` + static.AllSnippets + `</a>
-	</div><div id=content-0>`
+	var templ = `<!DOCTYPE html><html><title>` + title + ` - ` + *sitename + `</title>` + static.Header
 	w.Write([]byte(templ))
 }
 
 func serveFooter(w http.ResponseWriter) {
 	s, b := bk.TotalSnippets()
-	w.Write([]byte(fmt.Sprintf(`</div><div class=footer><!--
---><span class=bar-item>%s</span><!--
---><span class=bar-item>%d snippets</span><!--
---><span class=bar-item>%d blocks</span><!--
---><span class=bar-item>%0.2f%% cap</span>
-		</div></div>`, *sitename, s, b, bk.Capacity*100)))
+	w.Write([]byte(fmt.Sprintf(static.Footer, *sitename, s, b, bk.Capacity*100)))
 }
 
 func serveError(w http.ResponseWriter, r *http.Request, code int, info string) {
@@ -325,6 +313,16 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ipAccess.Lock()
+	defer ipAccess.Unlock()
+
+	if ipAccess.m[r.RemoteAddr] == nil {
+		ipAccess.m[r.RemoteAddr] = &ipInfo{r.RemoteAddr, 1, time.Now().UnixNano()}
+	} else if !isAdmin(r) {
+		serveError(w, r, 502, static.CooldownTime)
+		return
+	}
+
 	start := time.Now()
 	s := &kkformat.Snippet{}
 
@@ -433,7 +431,18 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	log.Println("post:", time.Now().Sub(start).Nanoseconds()/1e6, "ms")
 }
 
+type ipInfo struct {
+	ip   string
+	debt int
+	last int64
+}
+
 var bk *kkformat.Backend
+
+var ipAccess struct {
+	sync.RWMutex
+	m map[string]*ipInfo
+}
 
 func main() {
 	flag.Parse()
@@ -452,6 +461,24 @@ func main() {
 	for p, h := range handlers {
 		http.Handle(p, gziphandler.GzipHandler(http.HandlerFunc(h)))
 	}
+
+	ipAccess.m = make(map[string]*ipInfo)
+	go func() {
+		for range time.Tick(time.Second) {
+			ipAccess.Lock()
+			now, ctr := time.Now().UnixNano(), 0
+			for ip, i := range ipAccess.m {
+				if now-i.last > cooldown*1e9 {
+					delete(ipAccess.m, ip)
+					ctr++
+				}
+			}
+			if ctr > 0 {
+				log.Println("free", ctr, "IPs' debts")
+			}
+			ipAccess.Unlock()
+		}
+	}()
 
 	if !*production {
 		log.Println("server started on", *listen)

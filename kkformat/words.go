@@ -2,18 +2,12 @@ package kkformat
 
 import (
 	"fmt"
-	"image"
-	"image/color"
 	"strconv"
 
 	"golang.org/x/image/math/fixed"
 )
 
 type words_t []*word_t
-
-var (
-	grayFG = image.NewUniform(color.RGBA{0xcc, 0xcc, 0xcc, 255})
-)
 
 func (w *words_t) adjustableJoin(opt *Formatter) bool {
 	_ = fmt.Sprintf
@@ -179,129 +173,103 @@ func (w *words_t) join(opt *Formatter) bool {
 	}
 
 	opt.CurrentY += dy
-
 	dx := (int(opt.Img.MeasureString("a")) >> 6)
+
+	var exEnding bool
+
 	if len(words) > 0 && words[0].getType() == runeContFromPrev {
 		opt.Img.Dot = fixed.P(1, opt.CurrentY+dy/4)
-		opt.Img.Src = grayFG
+		opt.Img.Src = opt.Theme[TNLineWrap]
 		opt.Img.DrawString("\u2937")
-		opt.Img.Src = image.Black
+		opt.Img.Src = opt.Theme[TNNormal]
 		words = words[1:]
+	}
+
+	if len(words) > 0 && words.last().getType() == runeContToNext {
+		opt.Img.Dot = fixed.P((dx+1)*(int(opt.Columns)+2), opt.CurrentY+dy/4)
+		opt.Img.Src = opt.Theme[TNLineWrap]
+		opt.Img.DrawString("\u2936")
+		opt.Img.Src = opt.Theme[TNNormal]
+		words = words[:len(words)-1]
+		exEnding = true
 	}
 
 	x := dx*2 + 2
 
 	for i := 0; i < len(words); i++ {
 		word := words[i]
-		switch word.getType() {
-		case runeContToNext:
-			x = (dx + 1) * (int(opt.Columns) + 2)
-			opt.Img.Dot = fixed.P(x, opt.CurrentY+dy/4)
-			opt.Img.Src = grayFG
-			opt.Img.DrawString("\u2936")
-			opt.Img.Src = image.Black
-		default:
+		opt.Img.Src = opt.Theme[TNNormal]
+
+		draw := func() {
+			for _, r := range word.value {
+				if w := RuneWidth(r); w == 1 {
+					opt.Img.Dot = fixed.P(x, opt.CurrentY)
+					opt.Img.DrawString(string(r))
+					x += dx + 1
+				} else {
+					x++
+					opt.Img.Dot = fixed.P(x, opt.CurrentY)
+					opt.Img.DrawString(string(r))
+					x += dx*2 + 1
+				}
+			}
+		}
+
+		if word.getSpecialType() == specialLineNumber {
+			opt.Img.Src = opt.Theme[TNLineNumber]
+			draw()
+		} else if !word.isCode() {
+			draw()
+		} else {
 			opt.Img.Src = opt.Theme[TNNormal]
 
-			if !word.isCode() {
-				for _, r := range word.value {
-					if w := RuneWidth(r); w == 1 {
-						opt.Img.Dot = fixed.P(x, opt.CurrentY)
-						opt.Img.DrawString(string(r))
-						x += dx + 1
-					} else {
-						x++
-						opt.Img.Dot = fixed.P(x, opt.CurrentY)
-						opt.Img.DrawString(string(r))
-						x += dx*2 + 1
-					}
-				}
-			} else {
-				str := string(word.value)
-
-				if _, err := strconv.ParseFloat(str, 64); err == nil {
+			switch opt.curSpecial {
+			case specialDoubleQuote, specialSingleQuote:
+				opt.Img.Src = opt.Theme[TNString]
+			case specialComment, specialCommentStart, specialCommentEnd, specialCommentHash:
+				opt.Img.Src = opt.Theme[TNComment]
+			default:
+				if _, err := strconv.ParseFloat(string(word.value), 64); err == nil {
 					opt.Img.Src = opt.Theme[TNNumber]
 				}
-
 				if word.isInMap(latinSymbol) {
 					opt.Img.Src = opt.Theme[TNSymbol]
 				}
-
-				if opt.inQuote {
-					opt.Img.Src = opt.Theme[TNString]
-				}
-
-				if opt.inComment != "" {
-					opt.Img.Src = opt.Theme[TNComment]
-				}
-
-				for i, r := range word.value {
-					next, prev := func() rune {
-						if i == len(word.value)-1 {
-							return 0
-						}
-						return word.value[i+1]
-					}, func() rune {
-						if i == 0 {
-							return 0
-						}
-						return word.value[i-1]
-					}
-
-					if w := RuneWidth(r); w == 1 {
-						do := func() {
-							opt.Img.Dot = fixed.P(x, opt.CurrentY)
-							opt.Img.DrawString(string(r))
-							x += dx + 1
-						}
-
-						if r == '"' || r == '\'' {
-							if opt.inComment != "" {
-								do()
-							} else {
-								if opt.inQuote == 0 {
-									opt.inQuote = r
-									opt.Img.Src = opt.Theme[TNString]
-									do()
-								} else {
-									do()
-									opt.Img.Src = opt.Theme[TNNormal]
-								}
-							}
-						} else if (r == '/' && next() == '/') || (r == '/' && next() == '*') {
-							if opt.inQuote != 0 || opt.inComment != "" {
-								do()
-							} else {
-								opt.inComment = string(r) + string(next())
-								opt.Img.Src = opt.Theme[TNComment]
-								do()
-							}
-						} else if r == '*' && next() == '/' {
-							if opt.inQuote != 0 {
-								do()
-							} else {
-								opt.inComment = ""
-								do()
-								opt.Img.Src = opt.Theme[TNNormal]
-							}
-						} else {
-							do()
-						}
-					} else {
-						x++
-						opt.Img.Dot = fixed.P(x, opt.CurrentY)
-						opt.Img.DrawString(string(r))
-						x += dx*2 + 1
-					}
-				}
 			}
 
-			opt.Img.Src = opt.Theme[TNNormal]
+			switch sp := word.getSpecialType(); sp {
+			case specialDoubleQuote, specialSingleQuote:
+				if opt.curSpecial == specialNone { // string starts
+					opt.Img.Src = opt.Theme[TNString]
+					opt.curSpecial = sp
+				} else if sp == opt.curSpecial { // string ends
+					opt.Img.Src = opt.Theme[TNString]
+					opt.curSpecial = specialNone
+				}
+				draw()
+			case specialComment, specialCommentHash, specialCommentStart:
+				if opt.curSpecial == specialNone { // comment starts
+					opt.Img.Src = opt.Theme[TNComment]
+					opt.curSpecial = sp
+				}
+				draw()
+			case specialCommentEnd:
+				if opt.curSpecial == specialCommentStart { // comment ends
+					opt.Img.Src = opt.Theme[TNComment]
+					opt.curSpecial = specialNone
+				}
+				draw()
+			default:
+				draw()
+			}
+
 		}
+
+		opt.Img.Src = opt.Theme[TNNormal]
 	}
 
-	if last := words.last(); last != nil && opt.inComment == "//" && last.getType() != runeContToNext {
-		opt.inComment = ""
+	if !exEnding && (opt.curSpecial == specialCommentHash || opt.curSpecial == specialComment) {
+		opt.curSpecial = specialNone
 	}
 
 	return true

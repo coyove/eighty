@@ -11,7 +11,8 @@ var _fmt_print_ = fmt.Println
 type word_t struct {
 	value []rune // word content
 	len   uint32 // length
-	ty    uint16
+	ty    uint16 // type
+	ty2   uint16 // special type
 }
 
 func (w *word_t) setIsNaturalStart() {
@@ -29,6 +30,15 @@ func (w *word_t) setType(ty uint16) *word_t {
 
 func (w *word_t) getType() uint16 {
 	return w.ty << 2 >> 2
+}
+
+func (w *word_t) setSpecialType(ty uint16) *word_t {
+	w.ty2 = ty
+	return w
+}
+
+func (w *word_t) getSpecialType() uint16 {
+	return w.ty2
 }
 
 func (w *word_t) setIsCode() *word_t {

@@ -26,7 +26,7 @@ var (
 
 const (
 	tabWidth  = 4
-	fullSpace = '　' // it is NOT a ' '
+	fullSpace = '\u3000' // CJK space
 )
 
 const (
@@ -40,7 +40,6 @@ const (
 	runeFull
 
 	// not actually runes
-	runeImage
 	runeExtraAtEnd
 	runeContToNext
 	runeContFromPrev
@@ -48,19 +47,37 @@ const (
 )
 
 const (
+	specialNone         = iota
+	specialComment      // "//"
+	specialCommentStart // "/*"
+	specialCommentEnd   // "*/"
+	specialCommentHash  // "#"
+	specialDoubleQuote  // "\""
+	specialSingleQuote  // "'"
+	specialLineNumber
+)
+
+const (
 	TNBackground = iota
 	TNNormal
 	TNLineWrap
+	TNLineNumber
 	TNSymbol
 	TNString
 	TNNumber
 	TNComment
 )
 
+var (
+	grayFG     = image.NewUniform(color.RGBA{0xcc, 0xcc, 0xcc, 255})
+	darkGrayFG = image.NewUniform(color.RGBA{0x66, 0x66, 0x66, 255})
+)
+
 var WhiteTheme = []image.Image{
 	image.White,
 	image.Black,
 	grayFG,
+	darkGrayFG,
 	image.NewUniform(color.RGBA{0x5d, 0x40, 0x37, 255}),
 	image.NewUniform(color.RGBA{0x51, 0x2d, 0xa8, 255}),
 	image.NewUniform(color.RGBA{0xff, 0x57, 0x22, 255}),
@@ -71,6 +88,7 @@ var PureWhiteTheme = []image.Image{
 	image.White,
 	image.Black,
 	grayFG,
+	darkGrayFG,
 	image.Black,
 	image.Black,
 	image.Black,
@@ -81,6 +99,7 @@ var PureBlackTheme = []image.Image{
 	image.Black,
 	image.White,
 	grayFG,
+	darkGrayFG,
 	image.White,
 	image.White,
 	image.White,
@@ -91,6 +110,7 @@ var BlackTheme = []image.Image{
 	image.Black,
 	image.White,
 	grayFG,
+	darkGrayFG,
 	image.NewUniform(color.RGBA{0xbb, 0xbb, 0xbb, 255}),
 	image.NewUniform(color.RGBA{0x00, 0xbc, 0xd4, 255}),
 	image.NewUniform(color.RGBA{0xff, 0x98, 0x00, 255}),

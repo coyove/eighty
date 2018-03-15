@@ -1,7 +1,9 @@
 package kkformat
 
 import (
+	"fmt"
 	"image"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -16,6 +18,15 @@ type stream_t struct {
 
 func (s *stream_t) nextRune() (rune, int) {
 	return utf8.DecodeRune(s.buf[s.idx:])
+}
+
+func (s *stream_t) prevprevRune() (rune, rune) {
+	p, w := utf8.DecodeLastRune(s.buf[:s.idx])
+	if w > 0 {
+		pp, _ := utf8.DecodeLastRune(s.buf[:s.idx-w])
+		return pp, p
+	}
+	return 0, 0
 }
 
 func (s *stream_t) nextRuneIsEndOfLine() (bool, int) {
@@ -46,6 +57,7 @@ func (s *stream_t) nextWord() *word_t {
 		return (&word_t{}).setType(runeEndOfBuffer)
 	}
 
+	pp, p := s.prevprevRune()
 	r, w := s.nextRune()
 	s.idx += w
 
@@ -54,16 +66,49 @@ func (s *stream_t) nextWord() *word_t {
 		if r != '\r' {
 			//fmt.Println("unknown:", string(r), "=", r)
 		}
-
 		return s.nextWord()
-		//}
-
-		//panic()
 	}
 
 	ret := (&word_t{}).setType(t)
 
-	icspace := func(r rune) string {
+	isSpecial := func(in rune) bool {
+		switch n, w := s.nextRune(); in {
+		case '/':
+			switch n {
+			case '/':
+				s.idx += w
+				ret.setSpecialType(specialComment).setValue([]rune("//")).setLen(2)
+				return true
+			case '*':
+				s.idx += w
+				ret.setSpecialType(specialCommentStart).setValue([]rune("/*")).setLen(2)
+				return true
+			}
+		case '*':
+			if n == '/' {
+				s.idx += w
+				ret.setSpecialType(specialCommentEnd).setValue([]rune("*/")).setLen(2)
+				return true
+			}
+		case '#':
+			ret.setSpecialType(specialCommentHash).setValue([]rune("#")).setLen(1)
+			return true
+		case '"':
+			if p != '\\' || pp == '\\' {
+				ret.setSpecialType(specialDoubleQuote).setValue([]rune{'"'}).setLen(1)
+				return true
+			}
+		case '\'':
+			if p != '\\' || pp == '\\' {
+				ret.setSpecialType(specialSingleQuote).setValue([]rune{'\''}).setLen(1)
+				return true
+			}
+		}
+
+		return false
+	}
+
+	icSpace := func(r rune) string {
 		switch r {
 		case '\t':
 			if tabWidth < 16 {
@@ -77,48 +122,58 @@ func (s *stream_t) nextWord() *word_t {
 		}
 	}
 
-	continue_next := func() {
+	keepReading := func() {
 		for s.idx < len(s.buf) {
 			r, w := s.nextRune()
+			if r == '/' || r == '*' || r == '#' || r == '"' || r == '\'' || r == '\\' {
+				break
+			}
+
+			s.idx += w
 
 			if runeType(r) == t {
 				if t == runeSpace {
-					sp := icspace(r)
+					sp := icSpace(r)
 					ret.value = append(ret.value, []rune(sp)...)
 					ret.len += StringWidth(sp)
 				} else {
 					ret.value = append(ret.value, r)
 					ret.len += RuneWidth(r)
 				}
-			} else {
-				break
+				continue
 			}
 
-			s.idx += w
+			s.idx -= w
+			break
 		}
+	}
+
+	if isSpecial(r) {
+		return ret
 	}
 
 	switch t {
 	case runeNewline:
 		return ret // len = 0
 	case runeSpace:
-		sp := icspace(r)
+		sp := icSpace(r)
 		ret.value = []rune(sp)
 		ret.len = StringWidth(sp)
-		continue_next()
+		keepReading()
 	case runeHalfDelim, runeLatin:
 		ret.value = []rune{r}
 		ret.len = RuneWidth(r)
-		continue_next()
+		keepReading()
 	default:
 		ret.value = []rune{r}
-		ret.setLen(RuneWidth(r))
+		ret.len = RuneWidth(r)
 	}
 
 	return ret
 }
 
 func splitRune(in []rune, at uint32) ([]rune, []rune, bool) {
+	a := at
 	for i := 0; i < len(in); i++ {
 		w := RuneWidth(in[i])
 		if w == at {
@@ -133,15 +188,14 @@ func splitRune(in []rune, at uint32) ([]rune, []rune, bool) {
 		return in[:i], in[i:], false
 	}
 
-	panic("?")
+	panic(string(in) + " " + strconv.Itoa(int(a)))
 }
 
 // Formatter struct
 type Formatter struct {
 	Source     []byte // source buffer of the input
 	Columns    uint32 // columns of the output
-	inQuote    rune
-	inComment  string
+	curSpecial uint16
 	Rows       int
 	Img        *font.Drawer
 	LineHeight int
@@ -165,11 +219,30 @@ func (o *Formatter) Render() image.Image {
 	o.wp, o.wd, o.wl = make(words_t, 0, 32), make(words_t, 0, 32), make(words_t, 0, 32)
 	ws := stream_t{buf: o.Source}
 
-	// Do the job
-	line, length := make(words_t, 0, 10), uint32(0)
+	line, length, lineNo := make(words_t, 0, 10), uint32(0), 0
 	nobrk := false
 	cont := true
 	nextWordIsNaturalStart := true
+
+	insertlineNo := func() {
+		lineNo++
+		s := strconv.Itoa(lineNo)
+		num := (&word_t{}).setType(runeLatin).setValue([]rune(s)).setLen(uint32(len(s))).setSpecialType(specialLineNumber)
+		space := spaceWord.dup().setIsCode()
+
+		switch len(s) {
+		case 1:
+			line = append(line, space, space, num, space)
+		case 2:
+			line = append(line, space, num, space)
+		case 3:
+			line = append(line, num, space)
+		default:
+			panic("?")
+		}
+
+		length = 4
+	}
 
 	appendReset := func() {
 		// lines = append(lines, line)
@@ -179,12 +252,29 @@ func (o *Formatter) Render() image.Image {
 		line = line[:0]
 		if last != nil && last.getType() == runeContToNext {
 			line = append(line, lineContFrom)
+		} else if nobrk {
+			insertlineNo()
 		}
 	}
 
+	_ = fmt.Println
+	var lastWord *word_t
 	for t := ws.nextWord(); t != nil && cont; t = ws.nextWord() {
-		if t.startsWith("```") {
+		// fmt.Println(string(t.value), t.getType(), t.getSpecialType(), ws.idx)
+
+		if t.startsWith("```") && (lastWord == nil || lastWord.getType() == runeNewline) {
 			nobrk = !nobrk
+
+			for t := ws.nextWord(); t != nil; t = ws.nextWord() {
+				if t.getType() == runeNewline || t.getType() == runeEndOfBuffer {
+					break
+				}
+			}
+
+			if nobrk {
+				lineNo = 0
+				insertlineNo()
+			}
 			continue
 		}
 
@@ -221,8 +311,8 @@ func (o *Formatter) Render() image.Image {
 					line = append(line, t)
 					appendReset()
 
-					if y, ni := ws.nextRuneIsEndOfLine(); y {
-						ws.idx = ni
+					if y, _ := ws.nextRuneIsEndOfLine(); y {
+						lastWord = ws.nextWord()
 					}
 					return
 				}
@@ -253,6 +343,7 @@ func (o *Formatter) Render() image.Image {
 			}
 		}
 
+		lastWord = t
 		if words := t.split(o.Columns-length, o.Columns); words == nil {
 			read(t, false)
 			if nextWordIsNaturalStart {
@@ -263,6 +354,7 @@ func (o *Formatter) Render() image.Image {
 				read(w, true)
 			}
 		}
+
 		nextWordIsNaturalStart = false
 	}
 

@@ -43,6 +43,8 @@ const SnippetNotFound = "未找到该片段，其可能已被删除或失效"
 
 const InternalError = "内部错误"
 
+const CooldownTime = "请不要短时间内发布大量内容"
+
 const EmptyContent = "无法提交空内容"
 
 const Back = "后退"
@@ -82,9 +84,27 @@ const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 <div>
 <ol>
 <li>每行文本可能会被插入多个空格以保证与80列对齐
-<li>若不想被空格破坏格式（如代码），请使用一对三反引号包起：` + "```" + ` &lt;your code...&gt; ` + "```" + `；
+<li>若不想被空格破坏格式（如代码），请插入一对三个反引号（单独一行）：
+	<p style="font-family:consolas,monospace">` + "```" + `<br>&nbsp;&nbsp;&nbsp;&nbsp;a = b + c; <br>` + "```" + `</p>
 </ol>
 </div>
 </td></tr>
 </table>
 </form>`
+
+const Header = `<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<meta charset="utf-8">
+` + CSS + `
+<div id=container>
+<div class=header>
+<a class=bar-item href=/>` + NewSnippet + `</a><!--
+--><a class=bar-item href=/list>` + AllSnippets + `</a>
+</div><div id=content-0>`
+
+const Footer = `</div><div class=footer><!--
+--><span class=bar-item>%s</span><!--
+--><span class=bar-item>%d snippets</span><!--
+--><span class=bar-item>%d blocks</span><!--
+--><span class=bar-item>%0.2f%% cap</span><!--
+--><a class=bar-item href="https://github.com/coyove/eighty">Github</a>
+</div></div>`
