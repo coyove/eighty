@@ -273,6 +273,7 @@ func (o *Formatter) Render() image.Image {
 
 			if nobrk {
 				lineNo = 0
+				line = line[:0]
 				insertlineNo()
 			}
 			continue
