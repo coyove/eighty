@@ -5,6 +5,8 @@ import (
 	"strconv"
 
 	"golang.org/x/image/math/fixed"
+	"image"
+	"image/draw"
 )
 
 type words_t []*word_t
@@ -200,16 +202,24 @@ func (w *words_t) join(opt *Formatter) bool {
 		word := words[i]
 		opt.Img.Src = opt.Theme[TNNormal]
 
-		draw := func() {
+		drawWord := func() {
+			drawR := func(r rune) {
+				dr, mask, maskp, _, ok := opt.Img.Face.Glyph(opt.Img.Dot, r)
+				if !ok {
+					return
+				}
+				draw.DrawMask(opt.Img.Dst, dr, opt.Img.Src, image.Point{}, mask, maskp, draw.Over)
+			}
+
 			for _, r := range word.value {
 				if w := RuneWidth(r); w == 1 {
 					opt.Img.Dot = fixed.P(x, opt.CurrentY)
-					opt.Img.DrawString(string(r))
+					drawR(r)
 					x += dx + 1
 				} else {
 					x++
 					opt.Img.Dot = fixed.P(x, opt.CurrentY)
-					opt.Img.DrawString(string(r))
+					drawR(r)
 					x += dx*2 + 1
 				}
 			}
@@ -217,9 +227,9 @@ func (w *words_t) join(opt *Formatter) bool {
 
 		if word.getSpecialType() == specialLineNumber {
 			opt.Img.Src = opt.Theme[TNLineNumber]
-			draw()
+			drawWord()
 		} else if !word.isCode() {
-			draw()
+			drawWord()
 		} else {
 			opt.Img.Src = opt.Theme[TNNormal]
 
@@ -246,23 +256,20 @@ func (w *words_t) join(opt *Formatter) bool {
 					opt.Img.Src = opt.Theme[TNString]
 					opt.curSpecial = specialNone
 				}
-				draw()
 			case specialComment, specialCommentHash, specialCommentStart:
 				if opt.curSpecial == specialNone { // comment starts
 					opt.Img.Src = opt.Theme[TNComment]
 					opt.curSpecial = sp
 				}
-				draw()
 			case specialCommentEnd:
 				if opt.curSpecial == specialCommentStart { // comment ends
 					opt.Img.Src = opt.Theme[TNComment]
 					opt.curSpecial = specialNone
 				}
-				draw()
 			default:
-				draw()
 			}
 
+			drawWord()
 		}
 
 		opt.Img.Src = opt.Theme[TNNormal]

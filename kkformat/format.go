@@ -252,6 +252,10 @@ func (o *Formatter) Render() image.Image {
 		line = line[:0]
 		if last != nil && last.getType() == runeContToNext {
 			line = append(line, lineContFrom)
+			if nobrk {
+				line = append(line, (&word_t{}).setType(runeSpace).setValue([]rune("    ")).setLen(4).setIsCode())
+				length = 4
+			}
 		} else if nobrk {
 			insertlineNo()
 		}
@@ -271,9 +275,10 @@ func (o *Formatter) Render() image.Image {
 				}
 			}
 
+			line = line[:0]
+
 			if nobrk {
 				lineNo = 0
-				line = line[:0]
 				insertlineNo()
 			}
 			continue

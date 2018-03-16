@@ -33,6 +33,7 @@ var listen = flag.String("l", ":8102", "listen address")
 var production = flag.Bool("pd", false, "go production")
 
 const (
+	rawmaxsize = 512 * 1024
 	cooldown   = 60
 	fontSize   = 16
 	dpi        = 72
@@ -324,6 +325,10 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	start := time.Now()
+
+	r.Body = http.MaxBytesReader(w, r.Body, rawmaxsize)
+	r.ParseForm()
+
 	s := &kkformat.Snippet{}
 
 	s.Title = trunc(r.FormValue("title"))
@@ -341,11 +346,11 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.Raw = r.FormValue("content")
-	if len(s.Raw) > 1024*1024 {
-		s.Raw = s.Raw[:1024*1024]
-	} else if len(s.Raw) == 0 {
+	if len(s.Raw) == 0 {
 		serveError(w, r, 400, static.EmptyContent)
 		return
+	} else if len(s.Raw) > 64*1024 {
+		s.Raw = s.Raw[:64*1024]
 	}
 
 	var th []image.Image

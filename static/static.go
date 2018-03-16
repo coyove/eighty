@@ -45,7 +45,7 @@ const InternalError = "内部错误"
 
 const CooldownTime = "请不要短时间内发布大量内容"
 
-const EmptyContent = "无法提交空内容"
+const EmptyContent = "空内容或内容过长"
 
 const Back = "后退"
 
