@@ -199,8 +199,10 @@ type Formatter struct {
 	Rows       int
 	Img        *font.Drawer
 	LineHeight int
-	CurrentY   int
-	Theme      []image.Image
+	Pos        struct {
+		X, Y, Dx int
+	}
+	Theme []image.Image
 
 	wp words_t // for a single line, wp holds the content whose spaces have been processed
 	wd words_t // for a single line, wd holds the delimeters in it
@@ -217,6 +219,7 @@ func (o *Formatter) resetPDL() {
 func (o *Formatter) Render() image.Image {
 	// Init Formatter
 	o.wp, o.wd, o.wl = make(words_t, 0, 32), make(words_t, 0, 32), make(words_t, 0, 32)
+	o.Pos.Dx = (int(o.Img.MeasureString("a")) >> 6)
 	ws := stream_t{buf: o.Source}
 
 	line, length, lineNo := make(words_t, 0, 10), uint32(0), 0
@@ -368,17 +371,17 @@ func (o *Formatter) Render() image.Image {
 		appendReset()
 	}
 
-	o.CurrentY += o.LineHeight / 2
+	o.Pos.Y += o.LineHeight / 2
 
-	height := o.CurrentY
+	height := o.Pos.Y
 	maxHeight := o.Img.Dst.Bounds().Dy()
 	if height > maxHeight {
 		height = maxHeight
 	}
 
-	type image_i interface {
-		SubImage(image.Rectangle) image.Image
-	}
+	return o.Img.Dst.(IImage).SubImage(image.Rect(0, 0, o.Img.Dst.Bounds().Dx(), height))
+}
 
-	return o.Img.Dst.(image_i).SubImage(image.Rect(0, 0, o.Img.Dst.Bounds().Dx(), height))
+type IImage interface {
+	SubImage(image.Rectangle) image.Image
 }

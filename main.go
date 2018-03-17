@@ -3,27 +3,32 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"crypto/sha1"
 	"crypto/tls"
 	"flag"
 	"fmt"
 	"image"
+	"image/color"
 	"image/draw"
 	"image/png"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"golang.org/x/image/font"
+
 	"github.com/NYTimes/gziphandler"
+	"github.com/coyove/eighty/drawerpool"
 	"github.com/coyove/eighty/kkformat"
 	"github.com/coyove/eighty/static"
-	"github.com/golang/freetype/truetype"
+	"github.com/coyove/goflyway/pkg/lru"
 	"golang.org/x/crypto/acme/autocert"
-	"golang.org/x/image/font"
 )
 
 var adminpassword = flag.String("p", "123456", "password")
@@ -35,30 +40,25 @@ var production = flag.Bool("pd", false, "go production")
 const (
 	rawmaxsize = 512 * 1024
 	cooldown   = 60
-	fontSize   = 16
-	dpi        = 72
-	imgW, imgH = 756, 10000
+	imgW       = 756
 )
 
-var fontDrawer *font.Drawer
-var largeImagePool chan draw.Image
+var (
+	s1theme               = color.RGBA{0xf6, 0xf7, 0xeb, 255}
+	largeDrawer           *drawerpool.Pool
+	smallDrawer           *drawerpool.Pool
+	smallPalette, smallBG = kkformat.GetTheme(kkformat.WhiteTheme)
+	smallTemplate         = image.NewPaletted(image.Rect(0, 0, imgW, 200), smallPalette)
+	smallTemplateS1       = image.NewPaletted(image.Rect(0, 0, imgW, 200), append(smallPalette, s1theme))
+	smallCache            = lru.NewCache(1024)
+	simpleEscaper         = regexp.MustCompile(`([\\\/][nstlhp]|\s)`)
+)
 
 func init() {
-	if fontBytes, err := ioutil.ReadFile("test/unifont-10.0.07.ttf"); err != nil {
-		log.Fatalln(err)
-	} else if f, err := truetype.Parse(fontBytes); err != nil {
-		log.Fatalln(err)
-	} else {
-		fontDrawer = &font.Drawer{
-			Face: truetype.NewFace(f, &truetype.Options{
-				Size:    fontSize,
-				DPI:     dpi,
-				Hinting: font.HintingNone,
-			}),
-		}
-		largeImagePool = make(chan draw.Image, 1)
-		largeImagePool <- image.NewPaletted(image.Rect(0, 0, imgW, imgH), nil)
-	}
+	draw.Draw(smallTemplate, smallTemplate.Bounds(), smallBG, image.ZP, draw.Src)
+	draw.Draw(smallTemplateS1, smallTemplateS1.Bounds(), image.NewUniform(s1theme), image.ZP, draw.Src)
+	largeDrawer = drawerpool.NewPool(1, imgW, 10000, nil)
+	smallDrawer = drawerpool.NewPool(10, imgW, 200, func(d *font.Drawer) { d.Dst.(*image.Paletted).Palette = smallTemplateS1.Palette })
 }
 
 func checkReferer(r *http.Request) bool {
@@ -366,18 +366,16 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pp, bg := kkformat.GetTheme(th)
-	canvas := <-largeImagePool
-	defer func() {
-		largeImagePool <- canvas
-	}()
-	canvas.(*image.Paletted).Palette = pp
-	draw.Draw(canvas, canvas.Bounds(), bg, image.ZP, draw.Src)
-	fontDrawer.Dst = canvas
+	drawer := largeDrawer.Get()
+	defer drawer.Free()
+
+	drawer.Dst.(*image.Paletted).Palette = pp
+	draw.Draw(drawer.Dst, drawer.Dst.Bounds(), bg, image.ZP, draw.Src)
 
 	fo := &kkformat.Formatter{
 		Source:     []byte(s.Raw),
-		Img:        fontDrawer,
-		LineHeight: fontSize * dpi * 6 / 5 / 72,
+		Img:        drawer.Drawer,
+		LineHeight: drawerpool.LineHeight,
 		Columns:    80,
 		Theme:      th,
 	}
@@ -436,6 +434,88 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	log.Println("post:", time.Now().Sub(start).Nanoseconds()/1e6, "ms")
 }
 
+func serveSmall(prefix string, raw bool) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		text, _ := url.QueryUnescape(r.RequestURI[len(prefix):])
+		if !raw {
+			text = simpleEscaper.ReplaceAllStringFunc(text, func(in string) string {
+				if in == " " {
+					return "+"
+				}
+				switch in[1] {
+				case 'n':
+					return "\n"
+				case 's':
+					return " "
+				case 't':
+					return "\t"
+				case 'l':
+					return "\\"
+				case 'h':
+					return "#"
+				case 'p':
+					return "%"
+				}
+				return in
+			})
+		}
+
+		if len(text) == 0 {
+			w.WriteHeader(400)
+			return
+		} else if len(text) > 2048 {
+			text = text[:2048]
+		}
+
+		etag := fmt.Sprintf("%x", sha1.Sum([]byte(text)))[:8]
+		if r.Header.Get("If-None-Match") == etag {
+			w.WriteHeader(304)
+			return
+		}
+
+		start := time.Now()
+		drawer := smallDrawer.Get()
+		defer drawer.Free()
+
+		w.Header().Add("Content-Type", "image/png")
+		w.Header().Add("ETag", etag)
+		w.Header().Add("Cache-control", "public")
+		if p, ok := smallCache.Get(prefix + text); ok {
+			w.Write(p.([]byte))
+			return
+		}
+
+		if prefix == "/s1/" {
+			copy(drawer.Dst.(*image.Paletted).Pix, smallTemplateS1.Pix)
+		} else {
+			copy(drawer.Dst.(*image.Paletted).Pix, smallTemplate.Pix)
+		}
+		fo := &kkformat.Formatter{
+			Source:     []byte(text),
+			Img:        drawer.Drawer,
+			LineHeight: drawerpool.LineHeight,
+			Columns:    80,
+			Theme:      kkformat.WhiteTheme,
+		}
+		img := fo.Render()
+
+		if fo.Rows == 1 {
+			img = img.(kkformat.IImage).SubImage(image.Rect(fo.Pos.Dx*2, 0, fo.Pos.X+1, fo.LineHeight*3/2))
+		}
+
+		b := &bytes.Buffer{}
+		if err := png.Encode(b, img); err != nil {
+			log.Println(err)
+			w.WriteHeader(502)
+			return
+		}
+
+		w.Write(b.Bytes())
+		smallCache.Add(prefix+text, b.Bytes())
+		log.Println("small:", time.Now().Sub(start).Nanoseconds()/1e6, "ms, size:", b.Len())
+	}
+}
+
 type ipInfo struct {
 	ip   string
 	debt int
@@ -461,6 +541,9 @@ func main() {
 		"/list":   serveList,
 		"/post":   servePost,
 		"/delete": serveDelete,
+		"/s/":     serveSmall("/s/", false),
+		"/s1/":    serveSmall("/s1/", false),
+		"/r/":     serveSmall("/r/", true),
 	}
 
 	for p, h := range handlers {

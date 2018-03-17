@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"golang.org/x/image/math/fixed"
 	"image"
 	"image/draw"
+
+	"golang.org/x/image/math/fixed"
 )
 
 type words_t []*word_t
@@ -170,17 +171,16 @@ func (w *words_t) join(opt *Formatter) bool {
 	opt.Rows++
 	dy := opt.LineHeight
 
-	if opt.CurrentY+dy+dy/2 > opt.Img.Dst.Bounds().Dy() {
+	if opt.Pos.Y+dy+dy/2 > opt.Img.Dst.Bounds().Dy() {
 		return false
 	}
 
-	opt.CurrentY += dy
-	dx := (int(opt.Img.MeasureString("a")) >> 6)
-
+	opt.Pos.Y += dy
+	dx := opt.Pos.Dx
 	var exEnding bool
 
 	if len(words) > 0 && words[0].getType() == runeContFromPrev {
-		opt.Img.Dot = fixed.P(1, opt.CurrentY+dy/4)
+		opt.Img.Dot = fixed.P(1, opt.Pos.Y+dy/4)
 		opt.Img.Src = opt.Theme[TNLineWrap]
 		opt.Img.DrawString("\u2937")
 		opt.Img.Src = opt.Theme[TNNormal]
@@ -188,7 +188,7 @@ func (w *words_t) join(opt *Formatter) bool {
 	}
 
 	if len(words) > 0 && words.last().getType() == runeContToNext {
-		opt.Img.Dot = fixed.P((dx+1)*(int(opt.Columns)+2), opt.CurrentY+dy/4)
+		opt.Img.Dot = fixed.P((dx+1)*(int(opt.Columns)+2), opt.Pos.Y+dy/4)
 		opt.Img.Src = opt.Theme[TNLineWrap]
 		opt.Img.DrawString("\u2936")
 		opt.Img.Src = opt.Theme[TNNormal]
@@ -196,7 +196,7 @@ func (w *words_t) join(opt *Formatter) bool {
 		exEnding = true
 	}
 
-	x := dx*2 + 2
+	opt.Pos.X = dx*2 + 2
 
 	for i := 0; i < len(words); i++ {
 		word := words[i]
@@ -213,14 +213,14 @@ func (w *words_t) join(opt *Formatter) bool {
 
 			for _, r := range word.value {
 				if w := RuneWidth(r); w == 1 {
-					opt.Img.Dot = fixed.P(x, opt.CurrentY)
+					opt.Img.Dot = fixed.P(opt.Pos.X, opt.Pos.Y)
 					drawR(r)
-					x += dx + 1
+					opt.Pos.X += dx + 1
 				} else {
-					x++
-					opt.Img.Dot = fixed.P(x, opt.CurrentY)
+					opt.Pos.X++
+					opt.Img.Dot = fixed.P(opt.Pos.X, opt.Pos.Y)
 					drawR(r)
-					x += dx*2 + 1
+					opt.Pos.X += dx*2 + 1
 				}
 			}
 		}
