@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"crypto/sha1"
 	"crypto/tls"
 	"flag"
 	"fmt"
@@ -471,18 +470,11 @@ func serveSmall(prefix string, raw bool) func(w http.ResponseWriter, r *http.Req
 			text = text[:2048]
 		}
 
-		etag := fmt.Sprintf("%x", sha1.Sum([]byte(text)))[:8]
-		if r.Header.Get("If-None-Match") == etag {
-			w.WriteHeader(304)
-			return
-		}
-
 		start := time.Now()
 		drawer := smallDrawer.Get()
 		defer drawer.Free()
 
 		w.Header().Add("Content-Type", "image/png")
-		w.Header().Add("ETag", etag)
 		w.Header().Add("Cache-control", "public")
 		if p, ok := smallCache.Get(prefix + text); ok {
 			w.Write(p.([]byte))

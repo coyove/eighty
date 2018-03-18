@@ -59,7 +59,7 @@ const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 	<td class=title>标题</td><td><input class=ctrl name=title placeholder="` + UntitledSnippet + `"></td>
 	<td class=title style="border-left:dotted 1px #ccc">发布者</td><td><input class=ctrl name=author placeholder="N/A"></td>
 </tr>
-<tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px" placeholder="内容 (text)"></textarea></td></tr>
+<tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px" placeholder="内容 text"></textarea></td></tr>
 <tr><td colspan=4 style="padding:4px">
 <div style="line-height:2em">有效期:
 <input id=ttl1 type=radio name=ttl value="86400">
@@ -70,7 +70,7 @@ const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 <label for=ttl3>30天</label>
 <input id=ttl4 type=radio name=ttl value="0" checked>
 <label for=ttl4>永久</label>
-<input type=submit value="发布" style="float:right">
+<input type=submit value="发布 publica" style="float:right">
 </div>
 <div style="line-height:2em">颜色:
 <input id=theme1 type=radio name=theme value=white checked>
