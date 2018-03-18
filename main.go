@@ -32,7 +32,7 @@ import (
 )
 
 var adminpassword = flag.String("p", "123456", "password")
-var sitename = flag.String("n", "zzz.gl", "site name")
+var sitename = flag.String("n", "png.cat", "site name")
 var truereferer = flag.String("r", "http://127.0.0.1:8102", "referer")
 var listen = flag.String("l", ":8102", "listen address")
 var production = flag.Bool("pd", false, "go production")
@@ -458,6 +458,10 @@ func serveSmall(prefix string, raw bool) func(w http.ResponseWriter, r *http.Req
 				}
 				return in
 			})
+		}
+
+		if strings.HasSuffix(text, ".png") {
+			text = text[:len(text)-4]
 		}
 
 		if len(text) == 0 {

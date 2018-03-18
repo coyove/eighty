@@ -54,11 +54,12 @@ const Delete = "删除"
 const Error = "错误"
 
 const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
+<tr><td colspan=4 style="font-size:1.5em;text-align:center;padding:4px">Converteix text a la imatge amb un sol clic</td></tr>
 <tr>
 	<td class=title>标题</td><td><input class=ctrl name=title placeholder="` + UntitledSnippet + `"></td>
 	<td class=title style="border-left:dotted 1px #ccc">发布者</td><td><input class=ctrl name=author placeholder="N/A"></td>
 </tr>
-<tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px"></textarea></td></tr>
+<tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px" placeholder="内容 (text)"></textarea></td></tr>
 <tr><td colspan=4 style="padding:4px">
 <div style="line-height:2em">有效期:
 <input id=ttl1 type=radio name=ttl value="86400">
