@@ -51,10 +51,15 @@ const Back = "后退"
 
 const Delete = "删除"
 
+const Help = "帮助"
+
 const Error = "错误"
 
-const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
-<tr><td colspan=4 style="font-size:1.5em;text-align:center;padding:4px">Converteix text a la imatge amb un sol clic</td></tr>
+const NewSnippetForm = `<form method=POST action=/post target=_blank><table id=post-form>
+<tr><td colspan=4 style="font-size:1.5em;text-align:center;padding:4px">
+<h2>Text-to-Image Converter</h2>
+Converteix text a la imatge amb un sol clic
+</td></tr>
 
 <tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px" placeholder="内容 text">%s</textarea></td></tr>
 <tr><td colspan=4 style="padding:4px">
@@ -72,23 +77,27 @@ const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 <label for=theme5 class=color-blk style="background:#f6f7eb;color:black;">S</label>
 <input type=submit value="发布 publica" style="float:right">
 </div>
-<div>
-<ol>
-<li>每行文本可能会被插入多个空格以保证与80列对齐
-<li>若不想被空格破坏格式（如代码），请插入一对三个反引号（单独一行）：
-	<p style="font-family:consolas,monospace">` + "```" + `<br>&nbsp;&nbsp;&nbsp;&nbsp;a = b + c; <br>` + "```" + `</p>
-</ol>
-</div>
 </td></tr>
 </table>
 </form>`
+
+const HelpPage = `
+<ol style="margin:4px 0">
+<li>考虑到浏览器和反向代理的限制，请避免发布过长的文本（大于2048字符），其内容可能会被截断而导致错误；
+<li>每行文本可能会被插入多个空格以保证与80列对齐；
+<li>若不想被空格破坏格式（如代码），请插入一对三个反引号（单独一行）：
+	<p style="font-family:consolas,monospace">` + "```" + `<br>&nbsp;&nbsp;&nbsp;&nbsp;a = b + c; <br>` + "```" + `</p>
+<li>图片URL的前缀为：“/r/”，“/rb/”，“/rW/”，“/rB/”，我们同时提供它们对应的简单格式：“/s/”，“/sb/”，“/sW/”，“/sB/”，其后跟明文即可输出png格式的图片。
+<li>本网站不提供任何储存服务，亦不对任何图片内容负责；
+</ol>
+`
 
 const Header = `<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
 <meta charset="utf-8">
 ` + CSS + `
 <div id=container>
 <div class=header>
-<a class=bar-item href=/>` + NewSnippet + `</a>
+<a class=bar-item href=/>` + NewSnippet + `</a><a class=bar-item href=/help>` + Help + `</a>
 </div><div id=content-0>`
 
 const Footer = `</div><div class=footer><!--

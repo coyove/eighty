@@ -101,6 +101,12 @@ func serveEdit(w http.ResponseWriter, r *http.Request) {
 	serveFooter(w)
 }
 
+func serveHelp(w http.ResponseWriter, r *http.Request) {
+	serveHeader(w, static.Help)
+	w.Write([]byte(static.HelpPage))
+	serveFooter(w)
+}
+
 func isAdmin(r *http.Request) bool {
 	if c, err := r.Cookie("admin"); err != nil || c.Value != *adminpassword {
 		return false
@@ -178,9 +184,6 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 		serveError(w, r, 502, static.CooldownTime)
 		return
 	}
-
-	start := time.Now()
-
 	r.Body = http.MaxBytesReader(w, r.Body, rawmaxsize)
 	r.ParseForm()
 
@@ -198,11 +201,11 @@ func servePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	content = escape(content)
-	serveHeader(w, content[:4])
-	w.Write([]byte(fmt.Sprintf("<img src='/%s/%s'>", ty, content)))
-	serveFooter(w)
+	// serveHeader(w, content[:4])
+	// w.Write([]byte(fmt.Sprintf("<img src='/%s/%s'>", ty, content)))
+	// serveFooter(w)
 
-	log.Println("post:", time.Now().Sub(start).Nanoseconds()/1e6, "ms")
+	http.Redirect(w, r, fmt.Sprintf("/%s/%s.png", ty, content), 301)
 }
 
 func serveSmall(prefix string, raw bool) func(w http.ResponseWriter, r *http.Request) {
@@ -216,12 +219,14 @@ func serveSmall(prefix string, raw bool) func(w http.ResponseWriter, r *http.Req
 			text = unescape(text)
 		} else {
 			text, _ = url.QueryUnescape(text)
+			line := 1
 			text = simpleEscaper.ReplaceAllStringFunc(text, func(in string) string {
 				if in == " " {
 					return "+"
 				} else if len(in) > 1 {
 					switch in[1] {
 					case 'n':
+						line++
 						return "\n"
 					case 's':
 						return " "
@@ -237,6 +242,9 @@ func serveSmall(prefix string, raw bool) func(w http.ResponseWriter, r *http.Req
 				}
 				return in
 			})
+			if line > 10 {
+				text = strings.Join(strings.Split(text, "\n")[:10], "\n")
+			}
 		}
 
 		if len(text) == 0 {
@@ -323,6 +331,7 @@ func main() {
 	http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/edit/", serveEdit)
 	http.HandleFunc("/post", servePost)
+	http.HandleFunc("/help", serveHelp)
 	http.HandleFunc("/s/", serveSmall("/s/", false))
 	http.HandleFunc("/sb/", serveSmall("/sb/", false))
 	http.HandleFunc("/sW/", serveSmall("/sW/", false))
