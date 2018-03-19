@@ -126,7 +126,7 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(s.Raw))
 			return
 		} else if png {
-			etag := fmt.Sprintf("W/%x", s.GUID[:4])
+			etag := fmt.Sprintf("W/\"%x\"", s.GUID[:4])
 			if r.Header.Get("If-None-Match") == etag {
 				w.WriteHeader(304)
 			} else {
