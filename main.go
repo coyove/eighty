@@ -97,7 +97,11 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 
 func serveEdit(w http.ResponseWriter, r *http.Request) {
 	serveHeader(w, static.NewSnippet)
-	w.Write([]byte(fmt.Sprintf(static.NewSnippetForm, unescape(r.RequestURI[len("/edit/"):]))))
+	text := r.RequestURI[len("/edit/"):]
+	if strings.HasSuffix(text, ".png") {
+		text = text[:len(text)-4]
+	}
+	w.Write([]byte(fmt.Sprintf(static.NewSnippetForm, unescape(text))))
 	serveFooter(w)
 }
 
@@ -244,6 +248,9 @@ func serveSmall(prefix string, raw bool) func(w http.ResponseWriter, r *http.Req
 			})
 			if line > 10 {
 				text = strings.Join(strings.Split(text, "\n")[:10], "\n")
+			}
+			if len(text) > 2048 {
+				text = text[:2048]
 			}
 		}
 
