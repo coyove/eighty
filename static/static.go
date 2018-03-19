@@ -43,7 +43,7 @@ const SnippetNotFound = "未找到该片段，其可能已被删除或失效"
 
 const InternalError = "内部错误"
 
-const CooldownTime = "请不要短时间内发布大量内容"
+const CooldownTime = "冷却时间中"
 
 const EmptyContent = "空内容或内容过长"
 
