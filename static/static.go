@@ -55,32 +55,22 @@ const Error = "错误"
 
 const NewSnippetForm = `<form method=POST action=/post><table id=post-form>
 <tr><td colspan=4 style="font-size:1.5em;text-align:center;padding:4px">Converteix text a la imatge amb un sol clic</td></tr>
-<tr>
-	<td class=title>标题</td><td><input class=ctrl name=title placeholder="` + UntitledSnippet + `"></td>
-	<td class=title style="border-left:dotted 1px #ccc">发布者</td><td><input class=ctrl name=author placeholder="N/A"></td>
-</tr>
-<tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px" placeholder="内容 text"></textarea></td></tr>
+
+<tr><td colspan=4><textarea class=ctrl name=content rows=10 style="padding:4px" placeholder="内容 text">%s</textarea></td></tr>
 <tr><td colspan=4 style="padding:4px">
-<div style="line-height:2em">有效期:
-<input id=ttl1 type=radio name=ttl value="86400">
-<label for=ttl1>1天</label>
-<input id=ttl2 type=radio name=ttl value="604800">
-<label for=ttl2>1周</label>
-<input id=ttl3 type=radio name=ttl value="2592000">
-<label for=ttl3>30天</label>
-<input id=ttl4 type=radio name=ttl value="0" checked>
-<label for=ttl4>永久</label>
-<input type=submit value="发布 publica" style="float:right">
-</div>
+
 <div style="line-height:2em">颜色:
-<input id=theme1 type=radio name=theme value=white checked>
+<input id=theme1 type=radio name=theme value=r checked>
 <label for=theme1 class=color-blk style="background:white;color:black;">A<span>+</span></label>
-<input id=theme2 type=radio name=theme value=black>
+<input id=theme2 type=radio name=theme value=rb>
 <label for=theme2 class=color-blk style="background:black;color:white;">A<span>+</span></label>
-<input id=theme3 type=radio name=theme value=purewhite>
+<input id=theme3 type=radio name=theme value=rW>
 <label for=theme3 class=color-blk style="background:white;color:black;">A</label>
-<input id=theme4 type=radio name=theme value=pureblack>
+<input id=theme4 type=radio name=theme value=rB>
 <label for=theme4 class=color-blk style="background:black;color:white;">A</label>
+<input id=theme5 type=radio name=theme value=rs1>
+<label for=theme5 class=color-blk style="background:#f6f7eb;color:black;">S</label>
+<input type=submit value="发布 publica" style="float:right">
 </div>
 <div>
 <ol>
@@ -98,14 +88,11 @@ const Header = `<meta name="viewport" content="width=device-width, initial-scale
 ` + CSS + `
 <div id=container>
 <div class=header>
-<a class=bar-item href=/>` + NewSnippet + `</a><!--
---><a class=bar-item href=/list>` + AllSnippets + `</a>
+<a class=bar-item href=/>` + NewSnippet + `</a>
 </div><div id=content-0>`
 
 const Footer = `</div><div class=footer><!--
 --><span class=bar-item>%s</span><!--
---><span class=bar-item>%d snippets</span><!--
---><span class=bar-item>%d blocks</span><!--
---><span class=bar-item>%0.2f%% cap</span><!--
+--><span class=bar-item>%.2f KB</span><!--
 --><a class=bar-item href="https://github.com/coyove/eighty">Github</a>
 </div></div>`

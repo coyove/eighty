@@ -117,12 +117,12 @@ var BlackTheme = []image.Image{
 	image.NewUniform(color.RGBA{0x00, 0x96, 0x88, 255}),
 }
 
-func GetTheme(theme []image.Image) (color.Palette, image.Image) {
-	p := make(color.Palette, TNComment+1)
+func GetPalette() color.Palette {
+	p := make(color.Palette, 0)
 	for i := 0; i <= TNComment; i++ {
-		p[i] = theme[i].At(0, 0)
+		p = append(p, WhiteTheme[i].At(0, 0), BlackTheme[i].At(0, 0))
 	}
-	return p, theme[TNBackground]
+	return p
 }
 
 func runeType(r rune) uint16 {
