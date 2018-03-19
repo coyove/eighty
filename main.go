@@ -111,7 +111,7 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 
 		s, err := bk.GetSnippet((id))
 		if err != nil {
-			if raw {
+			if raw || png {
 				w.WriteHeader(404)
 			} else {
 				serveError(w, r, 404, static.SnippetNotFound)
