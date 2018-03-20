@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 )
 
 var (
@@ -244,4 +245,62 @@ func calcTag(value []rune) string {
 	}
 
 	return whole.String()
+}
+
+func BytesToPlane0String(buf []byte) string {
+	str := make([]byte, 0, len(buf))
+	enc := make([]byte, 3)
+
+	for i := 0; i < len(buf); {
+		if buf[i] < 128 {
+			str = append(str, buf[i])
+			i++
+			continue
+		}
+
+		ln := 2 * int((buf[i]&0x7f)+1)
+		if i+1+ln > len(buf) {
+			return ""
+		}
+
+		for j := i + 1; j < i+1+ln; j += 2 {
+			n := utf8.EncodeRune(enc, rune(buf[j])<<8+rune(buf[j+1]))
+			str = append(str, enc[:n]...)
+		}
+
+		i += 1 + ln
+	}
+
+	return string(str)
+}
+
+func Plane0StringToBytes(str string) []byte {
+	buf := make([]byte, 0, len(str))
+	queue := make([]byte, 0, 256)
+
+	appendQueue := func() {
+		buf = append(buf, byte(len(queue)/2-1)|0x80)
+		buf = append(buf, queue...)
+		queue = queue[:0]
+	}
+
+	for _, r := range str {
+		if r < 128 {
+			if len(queue) > 0 {
+				appendQueue()
+			}
+			buf = append(buf, byte(r))
+		} else {
+			queue = append(queue, byte(r>>8), byte(r))
+			if len(queue)/2 == 128 {
+				appendQueue()
+			}
+		}
+	}
+
+	if len(queue) > 0 {
+		appendQueue()
+	}
+
+	return buf
 }

@@ -122,6 +122,19 @@ func unescape(s string) string {
 	t := make([]byte, len(gzipHeader), len(s)+len(gzipHeader))
 	copy(t, gzipHeader)
 
+	if s == "" {
+		return ""
+	}
+
+	switch s[0] {
+	case 'a':
+		s = s[1:] + "=="
+	case 'b':
+		s = s[1:] + "="
+	default:
+		s = s[1:]
+	}
+
 	tu, err := base64.URLEncoding.DecodeString(s)
 	if err != nil {
 		log.Println("unescape:", err)
@@ -144,13 +157,13 @@ func unescape(s string) string {
 		return ""
 	}
 
-	return string(buf)
+	return kkformat.BytesToPlane0String(buf)
 }
 
 func escape(s string) string {
 	b := &bytes.Buffer{}
-	gz := gzip.NewWriter(b)
-	if _, err := gz.Write([]byte(s)); err != nil {
+	gz, _ := gzip.NewWriterLevel(b, gzip.BestCompression)
+	if _, err := gz.Write(kkformat.Plane0StringToBytes(s)); err != nil {
 		log.Println("escape:", err)
 		return ""
 	}
@@ -170,7 +183,15 @@ func escape(s string) string {
 	block, _ := aes.NewCipher(iv)
 	str := cipher.NewCTR(block, iv)
 	str.XORKeyStream(xbuf, xbuf)
-	return base64.URLEncoding.EncodeToString(buf[len(gzipHeader):])
+
+	b64 := base64.URLEncoding.EncodeToString(buf[len(gzipHeader):])
+	if strings.HasSuffix(b64, "==") {
+		return "a" + b64[:len(b64)-2]
+	}
+	if strings.HasSuffix(b64, "=") {
+		return "b" + b64[:len(b64)-1]
+	}
+	return "c" + b64
 }
 
 func servePost(w http.ResponseWriter, r *http.Request) {
